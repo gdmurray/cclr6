@@ -11,7 +11,6 @@ module.exports = withBundleAnalyzer({
         SECRET_KEY: process.env.SECRET_KEY
     },
     buildDir: 'out',
-    target: 'serverless',
     future: {
         webpack5: true
     },
