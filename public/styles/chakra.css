@@ -1,0 +1,30 @@
+.chakra-form__label {
+    margin-bottom: 0.1em !important;
+    @apply text-base !important;
+    @apply dark:text-gray-100;
+}
+
+.chakra-input {
+    @apply dark:bg-gray-800 dark:border-gray-600 !important;
+}
+
+.chakra-form-control {
+    margin-bottom: 1em;
+}
+
+.chakra-menu__menu-list {
+    @apply dark:bg-gray-900 bg-white dark:border-gray-800 border-gray-300 !important;
+}
+
+.chakra-menu__menuitem:focus {
+    outline: 2px solid transparent !important;
+    outline-offset: 2px !important;
+}
+
+.chakra-menu__menuitem {
+    @apply font-normal !important;
+}
+
+.profile-button > span {
+    @apply flex flex-row justify-between items-center;
+}

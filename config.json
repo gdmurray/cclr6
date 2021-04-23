@@ -1,0 +1,36 @@
+{
+  "base_url": "https://www.CCLR6.com",
+  "site_title": "Canadian Contender League R6",
+  "site_description": "The Newest Chapter in Canadian R6",
+  "site_keywords": [
+    {
+      "keyword": "Rainbow 6: Siege"
+    },
+    {
+      "keyword": "Ubisoft"
+    },
+    {
+      "keyword": "Competitive"
+    },
+    {
+      "keyword": "Esports"
+    },
+    {
+      "keyword": "League"
+    },
+    {
+      "keyword": "CCLR6"
+    },
+    {
+      "keyword": "Canada Contenders League"
+    },
+    {
+      "keyword": "Canadian"
+    },
+    {
+      "keyword": "Contender"
+    }
+  ],
+  "posts_per_page": 5,
+  "twitter_account": "@CCLR6S"
+}

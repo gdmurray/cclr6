@@ -1,0 +1,58 @@
+@import "navigation";
+
+
+.text-main {
+  @apply text-gray-900 dark:text-gray-50;
+}
+
+.text-alt {
+  @apply text-gray-700 dark:text-gray-200;
+}
+
+.text-alt-2 {
+  @apply text-gray-600 dark:text-gray-400;
+}
+
+.text-link {
+  @apply text-primary hover:text-red-500 transition-colors duration-150;
+}
+
+.page-title {
+  @apply text-5xl font-heavy font-bold text-main uppercase;
+}
+
+
+.about {
+  @apply flex justify-center items-center flex-col py-6;
+  .hero-title {
+    @apply block font-heavy text-center text-5xl md:text-6xl font-medium uppercase;
+  }
+
+  .cards {
+    & > div {
+      @apply p-6;
+    }
+
+    @apply flex flex-col md:flex-row;
+
+    .title {
+      @apply pb-4 font-heavy text-center tracking-tight text-3xl font-semibold uppercase;
+    }
+
+    .content {
+      @apply tracking-tighter font-medium max-w-md mx-auto text-base text-center;
+    }
+  }
+}
+
+.watch-tabs {
+  .chakra-tabs__tab:focus {
+    box-shadow: none !important;
+    @apply focus:outline-none outline-none;
+  }
+
+  .chakra-tabs__tab {
+    box-shadow: none !important;
+    @apply text-gray-600 dark:text-gray-400 outline-none;
+  }
+}
