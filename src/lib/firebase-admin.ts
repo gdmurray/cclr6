@@ -1,31 +1,12 @@
 import './firebase'
 import * as firebaseAdmin from 'firebase-admin'
 
-export const universalAtob = b64Encoded => {
-    try {
-        return atob(b64Encoded)
-    } catch (err) {
-        return Buffer.from(b64Encoded, 'base64').toString()
-    }
-}
-
-
-export const loadFirebaseServiceAccount = () => {
-    const encodedKey = process.env.FIREBASE_SERVICE_ACCOUNT
-    if (encodedKey) {
-        const decodedData = universalAtob(encodedKey)
-        return JSON.parse(decodedData)
-    }
-    throw new Error('Admin Key Doesn\'t exist')
-}
-
 if (!firebaseAdmin.apps.length) {
-    const serviceAccount = loadFirebaseServiceAccount()
     firebaseAdmin.initializeApp({
         credential: firebaseAdmin.credential.cert({
-            projectId: serviceAccount.project_id,
-            clientEmail: serviceAccount.client_email,
-            privateKey: serviceAccount.private_key
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, '\n')
         })
     })
 }
