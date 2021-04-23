@@ -91,7 +91,7 @@ const DesktopNavigationItem = ({ children, label, onClick, href, active }: INavI
                     {children.map((child) => {
                         return (
                             <MenuItem key={child.label}
-                                      onClick={child.onClick ? child.onClick : () => router.push(child.href)}>{child.label}</MenuItem>
+                                      onClick={child.onClick ? child.onClick : () => navigate(label, child.href)}>{child.label}</MenuItem>
                         )
                     })}
                 </MenuList>

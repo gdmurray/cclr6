@@ -4,12 +4,16 @@
      y="0px"
      viewBox="0 0 903 788" style="enable-background:new 0 0 10 788;" xml:space="preserve">
 	<style>
-		path,
-		polyline,
-		polygon {
-			fill: black;
-			stroke: black;
+
+		@media (prefers-color-scheme: light){
+			path,
+			polyline,
+			polygon {
+				fill: black;
+				stroke: black;
+			}
 		}
+		
 		@media (prefers-color-scheme: dark){
 			path,
 			polyline,
