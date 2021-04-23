@@ -63,6 +63,8 @@ function useFirebaseAuth() {
                 const { user } = result
                 handleUser(user)
             }
+        }).catch((err) => {
+            console.log('Could not get redirect result: ', err)
         })
     }, [])
 
@@ -95,6 +97,8 @@ function useFirebaseAuth() {
             //     console.log('We gotta do some bullshit')
             //     return Promise.resolve()
             // }
+            console.log('Login')
+            //
             return firebase
                 .auth()
                 .signInWithRedirect(new firebase.auth.TwitterAuthProvider())

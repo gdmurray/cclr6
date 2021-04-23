@@ -14,6 +14,9 @@ interface IDashboardButton {
     onClick?(): void;
 }
 
+
+// todo: fix unmount
+
 const DashboardButton = ({ label, className, href }: IDashboardButton): JSX.Element => {
     const { navigate, isLoading } = useSuspenseNavigation()
     return <motion.button
