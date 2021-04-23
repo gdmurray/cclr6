@@ -39,6 +39,7 @@
     }
 
     .nav-child {
+      @extend .text-alt;
       @apply pl-6 cursor-pointer transition-all duration-150 hover:text-primary p-4 bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700 border-t font-semibold text-base;
     }
 

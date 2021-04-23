@@ -10,11 +10,6 @@
     "export": "next build && next export -o ./out",
     "test": "jest"
   },
-  "babelMacros": {
-    "twin": {
-      "preset": "emotion"
-    }
-  },
   "dependencies": {
     "@chakra-ui/react": "^1.5.2",
     "@emotion/css": "^11.1.3",

@@ -1,17 +1,10 @@
 import React from 'react'
-import Layout from '../components/Layout/Layout'
-import BasicMeta from '../components/meta/BasicMeta'
-import OpenGraphMeta from '../components/meta/OpenGraphMeta'
-import TwitterCardMeta from '../components/meta/TwitterCardMeta'
 import { Image } from '@chakra-ui/react'
 
 
 const About = () => {
     return (
-        <>
-            <BasicMeta url={'/about'} />
-            <OpenGraphMeta url={'/about'} />
-            <TwitterCardMeta url={'/about'} />
+        <div className="page-content">
             <div className='about'>
                 <div className='mb-6'>
                     <Image
@@ -27,7 +20,8 @@ const About = () => {
                         <div className='title'>
                             Who We Are
                         </div>
-                        <div className='content text-alt-2'>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                        <div className='content text-alt-2'>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                            sed do
                             eiusmod tempor incididunt
                             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
                             laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
@@ -39,7 +33,8 @@ const About = () => {
                         <div className='title'>Our
                             Mission
                         </div>
-                        <div className='content text-alt-2'>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                        <div className='content text-alt-2'>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                            sed do
                             eiusmod tempor incididunt
                             ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
                             laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
@@ -49,19 +44,12 @@ const About = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 
-About.layout = (children: React.ReactNode): JSX.Element => {
-    return (
-        <Layout>
-            <BasicMeta url={'/positions'} />
-            <OpenGraphMeta url={'/positions'} />
-            <TwitterCardMeta url={'/positions'} />
-            {children}
-        </Layout>
-    )
-
+About.SEO = {
+    title: 'About',
+    url: '/about'
 }
 export default About

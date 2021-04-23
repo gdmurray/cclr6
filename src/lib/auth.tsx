@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext, createContext } from 'react'
 import Router from 'next/router'
 import firebase, { twitterProvider, UserInfo } from './firebase'
 import nookies from 'nookies'
+import { isPrivateMode } from './is-private-mode'
 
 require('firebase/auth')
 
@@ -89,10 +90,18 @@ function useFirebaseAuth() {
                 }
             )
         },
-        login: () => {
-            return firebase
-                .auth()
-                .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
+        login: async () => {
+            const isPrivate = await isPrivateMode()
+            console.log(isPrivate)
+            firebase.auth().settings
+            return Promise.resolve()
+            // if (await isPrivateMode()) {
+            //     console.log('We gotta do some bullshit')
+            //     return Promise.resolve()
+            // }
+            // return firebase
+            //     .auth()
+            //     .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
         }
     }
 

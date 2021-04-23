@@ -14,6 +14,19 @@ module.exports = withBundleAnalyzer({
     future: {
         webpack5: true
     },
+    async headers() {
+        return [
+            {
+                source: '/api/positions',
+                headers: [
+                    {
+                        key: 'cache-control',
+                        value: 's-maxage=3600'
+                    }
+                ]
+            }
+        ]
+    },
     webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
         // config.resolve.fallback = { fs: false, module: false }
         // if (!isServer) {

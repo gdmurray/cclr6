@@ -6,10 +6,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.bordered {
-    @apply dark:bg-gray-900 bg-white dark:border-gray-800 border-gray-300;
-}
-
 
 html,
 body {

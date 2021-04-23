@@ -1,19 +1,30 @@
-import Layout from '../components/Layout/Layout'
-import BasicMeta from '../components/meta/BasicMeta'
-import OpenGraphMeta from '../components/meta/OpenGraphMeta'
-import TwitterCardMeta from '../components/meta/TwitterCardMeta'
 import React, { useEffect, useState } from 'react'
-import { getAvailablePositions } from '../lib/api/getAvailablePositions'
 import { FaChevronRight } from 'react-icons/fa'
-import { Skeleton, Spinner, Stack } from '@chakra-ui/react'
-
 import { motion } from 'framer-motion'
 import Loader from '../components/Loader'
+import { GetStaticProps } from 'next'
+import { host } from '../lib/env'
 
 interface IPosition {
     name: string;
     description: string;
     link: string;
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    const response = await fetch(host + '/api/positions', {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    const data = await response.json()
+    const { positions } = data
+    return {
+        props: {
+            positions
+        },
+        revalidate: 120
+    }
 }
 
 const Position = ({ name, description, link }) => {
@@ -24,7 +35,7 @@ const Position = ({ name, description, link }) => {
 
     return (
         <motion.div
-            className='bordered hover:border-2 hover:shadow-sm border rounded-xl p-6 cursor-pointer flex flex-row justify-between'
+            className='bordered dark:hover:border-gray-700 hover:border-gray-400 hover:shadow-sm border rounded-xl p-6 cursor-pointer flex flex-row justify-between'
             onClick={() => openApplication(link)}
             whileHover={{
                 y: -2
@@ -45,42 +56,25 @@ const Position = ({ name, description, link }) => {
         </motion.div>
     )
 }
-const Positions = () => {
-    const [loading, setLoading] = useState<boolean>(true)
-    const [data, setData] = useState<IPosition[]>([])
 
-    useEffect(() => {
-        fetch('/api/positions', {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(result => {
-            result.json().then(data => {
-                const { positions } = data
-                setLoading(false)
-                setData(positions)
-            })
-        })
-    }, [])
-
+const Positions = ({ positions = [] }: { positions: IPosition[] }) => {
     return (
-        <>
-            <div className='px-6 pt-1 font-bold text-xl dark:text-gray-200 text-gray-800'>
-                Positions available for CCL
-            </div>
+        <div className='page-content'>
+            <div className='page-title mb-6'>CCLR6 Positions</div>
             <div className='px-6 space-y-4 py-8'>
-                {loading && (
-                    <Loader text={'Loading Positions'} />
-                )}
-                {data.map((position) => {
+                {positions.map((position) => {
                     return (
                         <Position key={position.name} {...position} />
                     )
                 })}
             </div>
-        </>
+        </div>
     )
 }
 
+Positions.SEO = {
+    url: '/positions',
+    title: 'Positions'
+}
 export default Positions
 
