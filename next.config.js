@@ -10,6 +10,7 @@ module.exports = withBundleAnalyzer({
         FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
         FIREBASE_SERVICE_ACCOUNT: process.env.FIREBASE_SERVICE_ACCOUNT
     },
+    buildDir: 'out',
     future: {
         webpack5: true
     },
