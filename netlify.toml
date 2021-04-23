@@ -1,7 +1,6 @@
 [build]
   publish = "out"
-  command = "yarn run build"
-  base = "/"
+  command = "yarn run export"
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 [context.production.environment]

@@ -6,8 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "next build && next start -o ./dist",
-    "export": "next build && next export -o ./dist",
+    "deploy": "next build && next start",
+    "export": "next build && next export -o ./out",
     "test": "jest"
   },
   "babelMacros": {

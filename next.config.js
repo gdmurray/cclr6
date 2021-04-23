@@ -11,6 +11,7 @@ module.exports = withBundleAnalyzer({
         FIREBASE_SERVICE_ACCOUNT: process.env.FIREBASE_SERVICE_ACCOUNT
     },
     buildDir: 'out',
+    target: 'serverless',
     future: {
         webpack5: true
     },
