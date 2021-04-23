@@ -18,6 +18,7 @@ import BasicMeta from '../components/meta/BasicMeta'
 import TwitterCardMeta from '../components/meta/TwitterCardMeta'
 import OpenGraphMeta from '../components/meta/OpenGraphMeta'
 import config from '../lib/config'
+import { LoadingProvider } from '../components/Layout/useSuspenseNavigation'
 
 interface SEOProps {
     title?: string;
@@ -38,21 +39,23 @@ export default function App({ Component, pageProps }: SEOAppProps) {
     const SEO = Component.SEO
     return (
         <ChakraProvider theme={theme}>
-            <AuthProvider>
-                {SEO && (
-                    <Head>
-                        <title>{SEO.title ? [SEO.title, config.site_title].join(' | ') : config.site_title}
-                        </title>
-                        <BasicMeta url={SEO.url} {...SEO} />
-                        <TwitterCardMeta url={SEO.url} {...SEO} />
-                        <OpenGraphMeta url={SEO.url} {...SEO} />
-                    </Head>
-                )}
+            <LoadingProvider>
+                <AuthProvider>
+                    {SEO && (
+                        <Head>
+                            <title>{SEO.title ? [SEO.title, config.site_title].join(' | ') : config.site_title}
+                            </title>
+                            <BasicMeta url={SEO.url} {...SEO} />
+                            <TwitterCardMeta url={SEO.url} {...SEO} />
+                            <OpenGraphMeta url={SEO.url} {...SEO} />
+                        </Head>
+                    )}
 
-                <Layout>
-                    <Component {...pageProps} />
-                </Layout>
-            </AuthProvider>
+                    <Layout>
+                        <Component {...pageProps} />
+                    </Layout>
+                </AuthProvider>
+            </LoadingProvider>
         </ChakraProvider>
     )
 }

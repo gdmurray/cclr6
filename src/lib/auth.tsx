@@ -68,7 +68,7 @@ function useFirebaseAuth() {
 
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
-    console.log(user)
+
     const Twitter = {
         link: () => {
             return firebase.auth().currentUser.linkWithPopup(twitterProvider).then(

@@ -2,6 +2,17 @@ const { fontFamily } = require('tailwindcss/defaultTheme')
 
 const colors = require('tailwindcss/colors')
 
+const extendedColors = {
+    primary: '#e50a25',
+    twitter: {
+        DEFAULT: '#1DA1F2',
+        darker: '#00B6F1'
+    },
+    twitch: {
+        DEFAULT: '#9146ff',
+        darker: '#6441A4'
+    }
+}
 module.exports = {
     mode: 'jit',
     purge: ['./src/**/*.{js,ts,jsx,tsx}'],
@@ -10,17 +21,14 @@ module.exports = {
         backgroundColor: theme => ({
             ...theme('colors'),
             gray: colors.warmGray,
-            twitter: {
-                DEFAULT: '#1DA1F2',
-                darker: '#00B6F1'
-            },
-            twitch: {
-                DEFAULT: '#9146ff',
-                darker: '#6441A4'
-            },
+            ...extendedColors,
             'primary': '#e50a25',
             'light': '#fff',
             'dark': '#131313'
+        }),
+        gradientColorStops: theme => ({
+            ...theme('colors'),
+            ...extendedColors
         }),
         fontFamily: {
             'sans': ['Inter', ...fontFamily.sans],
@@ -36,15 +44,7 @@ module.exports = {
             ...theme('colors')
         }),
         color: {
-            primary: '#e50a25',
-            twitter: {
-                DEFAULT: '#1DA1F2',
-                darker: '#00B6F1'
-            },
-            twitch: {
-                DEFAULT: '#9146ff',
-                darker: '#6441A4'
-            },
+            ...extendedColors,
             ...colors
         },
         borderColor: theme => ({

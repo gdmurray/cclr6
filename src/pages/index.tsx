@@ -21,18 +21,16 @@ const Index = () => {
                         A NEW CHAPTER
                     </h1>
                     <p className='mb-8 text-xl font-normal tracking-tight leading-snug max-w-2xl'>Canada Contenders
-                        League is the newest chapter in Competitive Rainbow Six: Siege in Canada</p>
+                        League is the newest chapter in Canadian Rainbow Six Esports</p>
                     <div className='flex justify-center space-x-8'>
                         <DashboardButton
+                            label={'Learn More'}
                             href={'/about'}
-                            className={'bg-primary font-heavy hover:bg-red-600 active:bg-red-500'}>
-                            Learn More
-                        </DashboardButton>
+                            className={'bg-primary font-heavy hover:bg-red-600 active:bg-red-500'} />
                         <DashboardButton
+                            label={'Register Team'}
                             href='/team/register'
-                            className={'dark:bg-white dark:hover:bg-gray-50 dark:active:bg-gray-100 dark:text-gray-900 bg-gray-900 text-gray-50 font-heavy'}>
-                            Register Team
-                        </DashboardButton>
+                            className={'dark:bg-white dark:hover:bg-gray-50 dark:active:bg-gray-100 dark:text-gray-900 bg-gray-900 text-gray-50 font-heavy'} />
                     </div>
                 </div>
             </div>

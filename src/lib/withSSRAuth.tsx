@@ -56,8 +56,8 @@ export const withAuthSSR = (
             AuthUser = token
         }
     } catch (e) {
-        const { code } = e
-        console.log(code)
+        // const { code } = e
+
     }
 
     // is unauthed

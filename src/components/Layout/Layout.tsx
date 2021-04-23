@@ -31,8 +31,19 @@ export default function Layout({ children }: React.PropsWithChildren<React.React
             <Footer />
             <style jsx>{`
 
+              @media (prefers-color-scheme: light) {
+                .content-wrapper {
+                  background-image: url('/images/ccl-logo-leaf-background.svg');
+                }
+              }
+
+              @media (prefers-color-scheme: dark) {
+                .content-wrapper {
+                  background-image: url("/images/ccl-logo-leaf-background-dark.svg");
+                }
+              }
+
               .content-wrapper {
-                background-image: url('/images/ccl-logo-leaf-background.svg');
                 background-size: 2500px;
                 background-position: -1000px;
                 background-attachment: fixed;

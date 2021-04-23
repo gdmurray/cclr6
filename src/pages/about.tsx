@@ -20,26 +20,14 @@ const About = () => {
                         <div className='title'>
                             Who We Are
                         </div>
-                        <div className='content text-alt-2'>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                            sed do
-                            eiusmod tempor incididunt
-                            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                        <div className='content text-alt-2'>The Canada Contenders League, also known as CCL, is a Canadian-based Rainbow Six: Siege league focused on diversifying and developing the competitive scene in Canada.
                         </div>
                     </div>
                     <div>
-                        <div className='title'>Our
-                            Mission
+                        <div className='title'>
+                            Our Mission
                         </div>
-                        <div className='content text-alt-2'>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                            sed do
-                            eiusmod tempor incididunt
-                            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                        <div className='content text-alt-2'>The CCL staff strives to supply participants with a safe and competitive environment to showcase and develop their skills.
                         </div>
                     </div>
                 </div>

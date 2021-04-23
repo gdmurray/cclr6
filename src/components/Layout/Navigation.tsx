@@ -14,6 +14,7 @@ import {
     useDisclosure
 } from '@chakra-ui/react'
 import { FaBars, FaChevronDown, FaChevronLeft, FaTimes } from 'react-icons/fa'
+import { useSuspenseNavigation } from './useSuspenseNavigation'
 
 
 interface INavItem extends NavItem {
@@ -60,14 +61,14 @@ const MobileNavigationItem = ({ children, label, onClick, href }: INavItem) => {
 }
 
 const DesktopNavigationItem = ({ children, label, onClick, href, active }: INavItem) => {
-    const router = useRouter()
+    const { navigate, isLoading } = useSuspenseNavigation()
     if (!children) {
         if (!onClick) {
             return (
-                <Link href={href}>
+                <div onClick={() => navigate(label, href)}>
                     <div
-                        className={`navigation-item ${active ? 'text-primary underline' : 'text-gray-900 dark:text-gray-50'}`}>{label}</div>
-                </Link>
+                        className={`${isLoading(label) ? 'primary-loading' : ''} navigation-item ${active ? 'text-primary underline' : 'text-gray-900 dark:text-gray-50'}`}>{label}</div>
+                </div>
             )
         } else {
             return (

@@ -65,16 +65,16 @@ const LoginForm = (): JSX.Element => {
             <div className='space-y-3 mb-4 flex flex-col md:flex-row items-center md:space-x-2 md:space-y-0'>
                 <button
                     onClick={Twitter.login}
-                    className='social-button bg-twitter hover:bg-twitter-darker'>
+                    className='social-button text-gray-50 bg-twitter hover:bg-twitter-darker'>
                     <FaTwitter className='mr-2' />Twitter Login
                 </button>
                 <button
                     disabled={true}
-                    className='social-button bg-twitch hover:bg-twitch-darker'>
+                    className='social-button text-gray-50 bg-twitch hover:bg-twitch-darker'>
                     <FaTwitch className='mr-2' />Twitch Login
                 </button>
             </div>
-            <Divider className='my-4' />
+            <Divider className='my-6' />
             <form className='w-full max-w-xl mb-8' onSubmit={handleSubmit(onSubmit)}>
                 <FormControl
                     id='email'

@@ -2,62 +2,36 @@ import { motion } from 'framer-motion'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Spinner } from '@chakra-ui/react'
+import { useSuspenseNavigation } from './Layout/useSuspenseNavigation'
 
 interface IDashboardButton {
+    label: string;
     className?: string;
-    children: React.ReactNode;
+    children?: React.ReactNode;
     useLoader?: boolean;
     href?: string;
 
     onClick?(): void;
 }
 
-const DashboardButton = ({ children, className, onClick, href }: IDashboardButton): JSX.Element => {
-    console.log('Dashboard button?:')
-    const { push, pathname, events } = useRouter()
-    const [loading, setLoading] = useState<boolean>(false)
-    const [clicked, setClicked] = useState<boolean>(false)
-    useEffect(() => {
-        const handleStart = (_: string) => {
-            setLoading(true)
-        }
-
-        const handleFinish = (_: string) => {
-            setLoading(false)
-        }
-
-        events.on('routeChangeStart', handleStart)
-        events.on('routeChangeComplete', handleFinish)
-        return (): void => {
-            events.off('routeChangeStart', handleStart)
-            events.off('routeChangeComplete', handleFinish)
-        }
-    }, [pathname])
-
-    const handleClick = (): void => {
-        setClicked(true)
-        if (href) {
-            push(href)
-        } else if (onClick) {
-            onClick()
-        }
-    }
-
-
+const DashboardButton = ({ label, className, href }: IDashboardButton): JSX.Element => {
+    const { navigate, isLoading } = useSuspenseNavigation()
     return <motion.button
-        onClick={handleClick}
+        onClick={() => navigate(label, href)}
         className={'items-center tracking-wide font-semibold inline-flex text-white border-0 py-2 px-4 focus:outline-none text-lg ' + className}
         whileTap={{ scale: 0.95 }}
+        whileHover={{ y: -1 }}
     >
-        {loading && clicked && (
+        {isLoading(label) && (
             <Spinner className='mr-2' size='xs' />
         )}
-        {children}
+        {label}
     </motion.button>
 }
 
 DashboardButton.defaultProps = {
     className: '',
+    label: '',
     children: <></>,
     onClick: () => {
     }
