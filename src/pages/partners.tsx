@@ -3,7 +3,7 @@ import { FaTwitter } from 'react-icons/fa'
 
 const Partners = () => {
     return (
-        <div className="page-content">
+        <div className='page-content'>
             <div className='page-title mb-12'>CCLR6 Partners</div>
             <div className='text-center mx-auto max-w-3xl'>
                 <img className='mx-auto mb-4' alt='cclr6-logo' src={'/images/ccl-logo-leaf-red.svg'} width='120' />
@@ -28,7 +28,10 @@ const Partners = () => {
                         </h2>
                     </div>
                     <div className='flex justify-center'>
-                        <a href='https://twitter.com/messages/compose?recipient_id=1384309303599714305'>
+                        <a
+                            href='https://twitter.com/messages/compose?recipient_id=1384309303599714305'
+                            target='_blank' rel='noopener'
+                        >
                                 <span
                                     className='text-main flex items-center font-bold text-lg social-button bg-twitter px-4 py-2 hover:bg-twitter-darker '><FaTwitter
                                     className='mr-2' /> DM us on Twitter</span>

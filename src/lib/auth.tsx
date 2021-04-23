@@ -90,18 +90,14 @@ function useFirebaseAuth() {
                 }
             )
         },
-        login: async () => {
-            const isPrivate = await isPrivateMode()
-            console.log(isPrivate)
-            firebase.auth().settings
-            return Promise.resolve()
+        login: () => {
             // if (await isPrivateMode()) {
             //     console.log('We gotta do some bullshit')
             //     return Promise.resolve()
             // }
-            // return firebase
-            //     .auth()
-            //     .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
+            return firebase
+                .auth()
+                .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
         }
     }
 
