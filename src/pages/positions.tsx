@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Loader from '../components/Loader'
 import { GetStaticProps } from 'next'
 import { host } from '../lib/env'
+import { getAvailablePositions } from '../lib/api/getAvailablePositions'
 
 interface IPosition {
     name: string;
@@ -12,13 +13,7 @@ interface IPosition {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-    const response = await fetch(host + '/api/positions', {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    const data = await response.json()
-    const { positions } = data
+    const positions = await getAvailablePositions()
     return {
         props: {
             positions
