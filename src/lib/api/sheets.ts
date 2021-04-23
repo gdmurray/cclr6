@@ -1,4 +1,6 @@
 import { google, sheets_v4 } from 'googleapis'
+import { GOOGLE_DATA } from '../config'
+import { decrypt } from '../crypto'
 
 
 export enum Sheets {
@@ -19,15 +21,24 @@ export const sheetMap: SheetMap = {
     }
 }
 
+export const loadGoogleAccount = () => {
+    const encodedData = GOOGLE_DATA
+    if (encodedData) {
+        const decodedData = decrypt(encodedData)
+        return JSON.parse(decodedData)
+    }
+}
+
 export async function getSheetsClient(): Promise<sheets_v4.Sheets> {
     try {
         const scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+        const googleAccount = loadGoogleAccount()
         const jwt = new google.auth.JWT(
-            process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
+            googleAccount.client_email,
             null,
             // we need to replace the escaped newline characters
             // https://stackoverflow.com/questions/50299329/node-js-firebase-service-account-private-key-wont-parse
-            process.env.GOOGLE_SHEETS_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            googleAccount.private_key.replace(/\\n/g, '\n'),
             scopes
         )
 
