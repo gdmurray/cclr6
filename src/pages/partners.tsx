@@ -3,7 +3,7 @@ import { FaTwitter } from 'react-icons/fa'
 
 const Partners = () => {
     return (
-        <div className='page-content'>
+        <div className='page-content mb-6'>
             <div className='page-title mb-12'>CCLR6 Partners</div>
             <div className='text-center mx-auto max-w-3xl'>
                 <img className='mx-auto mb-4' alt='cclr6-logo' src={'/images/ccl-logo-leaf-red.svg'} width='120' />
@@ -64,7 +64,6 @@ const Partners = () => {
                     margin: auto;
                   }
                 `}
-
                 </style>
             </div>
 

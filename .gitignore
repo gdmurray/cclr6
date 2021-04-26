@@ -34,4 +34,4 @@ yarn-error.log*
 .mdx-data
 
 .idea
-secret
+/secret

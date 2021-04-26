@@ -154,7 +154,6 @@ function useFirebaseAuth() {
                 nookies.set(undefined, 'token', '', { path: '/' })
             } else {
                 const token = await user.getIdToken()
-                console.log('onIDTokenChanged')
                 handleUser(user)
                 nookies.set(undefined, 'token', token, { path: '/' })
             }

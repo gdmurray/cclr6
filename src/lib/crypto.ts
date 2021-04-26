@@ -1,38 +1,15 @@
 import crypto from 'crypto'
 
 const algorithm = 'aes-256-ctr'
-const secretKey = process.env.SECRET_KEY
+const FIREBASE_KEY = 'HRfFS:@z2r9kM>2_<ijf~z=HH#-VkCZu'
+const GOOGLE_KEY = 's9nF~XU1ec:b2M><~pH8lVJxLwuBz.0!'
 const iv = crypto.randomBytes(16)
 
-export const encrypt = (text) => {
+export const decrypt = (hash, secret) => {
 
-    const cipher = crypto.createCipheriv(algorithm, secretKey, iv)
+    const decipher = crypto.createDecipheriv(algorithm, secret, Buffer.from(hash.iv, 'hex'))
 
-    const encrypted = Buffer.concat([cipher.update(text), cipher.final()])
+    const decrypted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()])
 
-    return {
-        iv: iv.toString('hex'),
-        content: encrypted.toString('hex')
-    }
+    return decrypted.toString()
 }
-
-export const decrypt = (hash) => {
-
-    const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'))
-
-    const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()])
-
-    return decrpyted.toString()
-}
-
-// const secretBlob = {}
-// fs.readdir('./secret', function(err, filenames) {
-//     filenames.forEach(function(filename) {
-//         fs.readFile(`./secret/${filename}`, 'utf-8', function(err, content) {
-//             const fileString = JSON.stringify(JSON.parse(content))
-//             const encrypted = encrypt(fileString)
-//             fs.writeFileSync(`./secret/secret-${filename}.json`, JSON.stringify(encrypted))
-//         })
-//     })
-// })
-//

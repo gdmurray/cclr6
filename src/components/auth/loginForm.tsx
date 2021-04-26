@@ -9,6 +9,7 @@ import { useAuth } from '../../lib/auth'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Loader from '../Loader'
 import { useRouter } from 'next/router'
+import useRedirect from '../Layout/useRedirect'
 
 
 const schema = yup.object().shape({
@@ -22,24 +23,18 @@ interface LoginFormInputs {
 }
 
 const LoginForm = (): JSX.Element => {
-    const { push } = useRouter()
-
+    const { redirect, getNext } = useRedirect()
     const { register, handleSubmit, setError, formState: { errors } } = useForm<LoginFormInputs>({
         mode: 'onSubmit',
         resolver: yupResolver(schema)
     })
 
-    const { signinWithEmail, Twitter, loading, user } = useAuth()
+    const { signinWithEmail, Twitter, loading } = useAuth()
 
-    useEffect(() => {
-        if (user !== null) {
-            push('/')
-        }
-    }, [user])
 
     const onSubmit = data => {
         const { email, password } = data
-        signinWithEmail(email, password, '/').catch(err => {
+        signinWithEmail(email, password, redirect).catch(err => {
             const { code, message } = err
             if (code === 'auth/wrong-password') {
                 setError('password', {
@@ -106,11 +101,11 @@ const LoginForm = (): JSX.Element => {
                     </div>
                 </div>
             </form>
-            <div className='font-medium text-sm tracking-tight text-center dark:text-gray-300 '>Already have an
-                account?&nbsp;&nbsp;
-                <Link href='/login'>
+            <div className='font-medium text-sm tracking-tight text-center dark:text-gray-300 '>Don't have an
+                account yet?&nbsp;&nbsp;
+                <Link href='/register'>
                         <span
-                            className='cursor-pointer font-semibold text-primary hover:text-red-500 transition-all duration-150'>Sign In</span>
+                            className='cursor-pointer font-semibold text-primary hover:text-red-500 transition-all duration-150'>Sign Up</span>
                 </Link>
             </div>
         </>

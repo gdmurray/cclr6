@@ -45,7 +45,8 @@ export const withAuthSSR = (
         whenAuthed = AuthAction.RENDER,
         whenUnauthed = AuthAction.RENDER,
         appPageURL = AppPageURL,
-        authPageURL = AuthPageURL
+        authPageURL = AuthPageURL,
+        referral = null
     } = {}
 ) => (getServerSidePropsFunc) => async (ctx) => {
     let AuthUser = null
@@ -60,11 +61,17 @@ export const withAuthSSR = (
 
     }
 
+    const constructUrl = (destination: string): string => {
+        if (referral) {
+            return `${destination}?next=${encodeURIComponent(referral)}`
+        }
+        return destination
+    }
     // is unauthed
     if (!AuthUser && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
         return {
             redirect: {
-                destination: authPageURL,
+                destination: constructUrl(authPageURL),
                 permanent: false
             }
         }
@@ -73,7 +80,7 @@ export const withAuthSSR = (
     if (!AuthUser && whenUnauthed === AuthAction.REDIRECT_TO_APP) {
         return {
             redirect: {
-                destination: appPageURL,
+                destination: constructUrl(appPageURL),
                 permanent: false
             }
         }
@@ -82,7 +89,7 @@ export const withAuthSSR = (
     if (AuthUser && whenAuthed === AuthAction.REDIRECT_TO_APP) {
         return {
             redirect: {
-                destination: appPageURL,
+                destination: constructUrl(appPageURL),
                 permanent: false
             }
         }
@@ -91,7 +98,7 @@ export const withAuthSSR = (
     if (AuthUser && whenAuthed === AuthAction.REDIRECT_TO_LOGIN) {
         return {
             redirect: {
-                destination: authPageURL,
+                destination: constructUrl(authPageURL),
                 permanent: false
             }
         }

@@ -8,6 +8,7 @@ import { FaTwitch, FaTwitter } from 'react-icons/fa'
 import firebaseClient from '../../lib/firebase'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import useRedirect from '../Layout/useRedirect'
 
 const schema = yup.object().shape({
     email: yup.string().email().required('Email Address is Required'),
@@ -24,16 +25,19 @@ interface RegisterFormInputs {
 
 export default function RegisterForm() {
     const router = useRouter()
+    const { redirect, getNext } = useRedirect()
+
     const { register, handleSubmit, setError, formState: { errors, touchedFields } } = useForm<RegisterFormInputs>({
         mode: 'onBlur',
         resolver: yupResolver(schema)
     })
 
+
     const onSubmit = data => {
         try {
             const { email, password } = data
             firebaseClient.auth().createUserWithEmailAndPassword(email, password).then((result) => {
-                router.push('/')
+                router.push(redirect)
             })
         } catch (e) {
             // todo: set errors if theres an error
@@ -54,11 +58,11 @@ export default function RegisterForm() {
                 </div>
                 <div className='space-y-3 mb-4 flex flex-col md:flex-row items-center space-x-2 md:space-y-0'>
                     <button
-                        className='social-button bg-twitter hover:bg-twitter-darker'>
+                        className='social-button bg-twitter hover:bg-twitter-darker text-gray-50'>
                         <FaTwitter className='mr-2' />Twitter Sign Up
                     </button>
                     <button
-                        className='social-button bg-twitch hover:bg-twitch-darker'>
+                        className='social-button bg-twitch hover:bg-twitch-darker text-gray-50'>
                         <FaTwitch className='mr-2' />Twitch Sign Up
                     </button>
                 </div>
@@ -102,7 +106,7 @@ export default function RegisterForm() {
                 </form>
                 <div className='font-medium text-sm tracking-tight text-center dark:text-gray-300 '>Already have an
                     account?&nbsp;&nbsp;
-                    <Link href='/login'>
+                    <Link href={getNext('/login')}>
                         <span
                             className='cursor-pointer font-semibold text-primary hover:text-red-500 transition-all duration-150'>Sign In</span>
                     </Link>

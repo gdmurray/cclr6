@@ -1,6 +1,5 @@
 import { google, sheets_v4 } from 'googleapis'
-import { GOOGLE_DATA } from '../config'
-import { decrypt } from '../crypto'
+import decrypted from '../secret/google-account'
 
 
 export enum Sheets {
@@ -21,18 +20,10 @@ export const sheetMap: SheetMap = {
     }
 }
 
-export const loadGoogleAccount = () => {
-    const encodedData = GOOGLE_DATA
-    if (encodedData) {
-        const decodedData = decrypt(encodedData)
-        return JSON.parse(decodedData)
-    }
-}
-
 export async function getSheetsClient(): Promise<sheets_v4.Sheets> {
     try {
         const scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-        const googleAccount = loadGoogleAccount()
+        const googleAccount = decrypted
         const jwt = new google.auth.JWT(
             googleAccount.client_email,
             null,

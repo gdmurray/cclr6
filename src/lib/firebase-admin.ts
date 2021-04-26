@@ -1,20 +1,10 @@
 import './firebase'
 import * as firebaseAdmin from 'firebase-admin'
-import { decrypt } from './crypto'
-import { ADMIN_DATA } from './config'
+import decrypted from './secret/firebase-account'
 
-
-export const loadFirebaseServiceAccount = () => {
-    const encodedKey = ADMIN_DATA
-    if (encodedKey) {
-        const decodedData = decrypt(encodedKey)
-        return JSON.parse(decodedData)
-    }
-    throw new Error('Admin Key Doesn\'t exist')
-}
 
 if (!firebaseAdmin.apps.length) {
-    const serviceAccount = loadFirebaseServiceAccount()
+    const serviceAccount = decrypted
     firebaseAdmin.initializeApp({
         credential: firebaseAdmin.credential.cert({
             projectId: serviceAccount.project_id,

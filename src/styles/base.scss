@@ -39,10 +39,22 @@
   @apply text-primary hover:text-red-500 transition-colors duration-150;
 }
 
-.page-title {
+.base-title {
   @extend .text-main;
-  @apply text-5xl font-heavy font-bold uppercase;
+  @apply font-heavy font-bold uppercase;
 }
+
+.page-title {
+  @extend .base-title;
+  @apply text-5xl;
+}
+
+.page-title-sm {
+  @extend .base-title;
+  @apply text-3xl;
+}
+
+
 
 
 .about {

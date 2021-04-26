@@ -171,9 +171,9 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
     return (
         <Flex display={desktopScreen} className='desktop'>
             <>
-                <img alt='leaf-logo' onClick={() => router.push('/')} width='80' className='logo-dark'
+                <img alt='leaf-logo' onClick={() => router.push('/')} width='80' height='74' className='logo-dark'
                      src={'/images/ccl-logo-redwhite.png'} />
-                <img alt='leaf-logo' onClick={() => router.push('/')} width='80' className='logo-light'
+                <img alt='leaf-logo' onClick={() => router.push('/')} width='80' height='74' className='logo-light'
                      src={'/images/ccl-logo-redblack.png'} />
             </>
             <div className='flex flex-row space-x-4'>
