@@ -24,7 +24,9 @@ export default function Layout({ children }: React.PropsWithChildren<React.React
                 <nav className='navigation'>
                     <Navigation />
                 </nav>
-                <main className='flex-1'>
+                <main className='flex-1' style={{
+                    minHeight: '85vh'
+                }}>
                     {children}
                 </main>
             </div>

@@ -3,7 +3,6 @@ import React, { useState, useEffect, useContext, createContext } from 'react'
 import Router from 'next/router'
 import firebase, { twitterProvider, UserInfo } from './firebase'
 import nookies from 'nookies'
-import { isPrivateMode } from './is-private-mode'
 
 require('firebase/auth')
 
@@ -52,7 +51,6 @@ export interface User {
     providers: Record<string, UserInfo>;
     token: string;
     uid: string;
-
 }
 
 function useFirebaseAuth() {
@@ -112,7 +110,6 @@ function useFirebaseAuth() {
             // createUser(user.uid, userWithoutToken)
             setUser(user)
             setLoading(false)
-
             return user
         } else {
             setUser(null)
@@ -137,7 +134,6 @@ function useFirebaseAuth() {
     }
 
     const signOut = () => {
-        console.log('Signing Out')
         return firebase
             .auth()
             .signOut()

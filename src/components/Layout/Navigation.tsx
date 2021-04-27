@@ -23,13 +23,14 @@ interface INavItem extends NavItem {
 
 const MobileNavigationItem = ({ children, label, onClick, href }: INavItem) => {
     const router = useRouter()
+    const { navigate, isLoading } = useSuspenseNavigation()
     const { isOpen, onToggle } = useDisclosure()
     if (!children) {
         return (
             <div
-                onClick={onClick ? onClick : () => router.push(href)}
+                onClick={onClick ? onClick : () => navigate(label, href)}
                 className='nav-item'>
-                {label}
+                <span className={`${isLoading(label) ? 'primary-loading' : ''}`}>{label}</span>
             </div>
         )
     } else {

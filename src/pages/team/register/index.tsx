@@ -1,5 +1,6 @@
 import React from 'react'
 import { AuthAction, withAuthSSR } from '../../../lib/withSSRAuth'
+import RegisterTeamForm from '../../../components/teams/registerTeamForm'
 
 
 export const getServerSideProps = withAuthSSR({
@@ -13,6 +14,9 @@ const Register = () => {
         <div className='page-content'>
             <div className='page-title-sm'>
                 Team Registration Information
+            </div>
+            <div className='p-6 py-12 max-w-2xl'>
+                <RegisterTeamForm />
             </div>
         </div>
     )

@@ -1,6 +1,7 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
+import 'firebase/storage'
 
 
 // let twitterProvider
@@ -9,11 +10,13 @@ if (!firebase.apps.length) {
         apiKey: process.env.FIREBASE_API_KEY,
         authDomain: process.env.FIREBASE_AUTH_DOMAIN,
         projectId: process.env.FIREBASE_PROJECT_ID,
-        appId: process.env.FIREBASE_APP_ID
+        appId: process.env.FIREBASE_APP_ID,
+        storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`
     })
 }
 
 const twitterProvider = new firebase.auth.TwitterAuthProvider()
+export const storage = firebase.storage()
 export type FirebaseUser = firebase.User;
 export type UserInfo = firebase.UserInfo
 twitterProvider.setCustomParameters({
