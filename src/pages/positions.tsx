@@ -3,8 +3,7 @@ import { FaChevronRight } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import Loader from '../components/Loader'
 import { GetStaticProps } from 'next'
-import { host } from '../lib/env'
-import { getAvailablePositions } from '../lib/api/getAvailablePositions'
+import { getAvailablePositions } from '@lib/api/getAvailablePositions'
 
 interface IPosition {
     name: string;
@@ -56,7 +55,7 @@ const Positions = ({ positions = [] }: { positions: IPosition[] }) => {
     return (
         <div className='page-content'>
             <div className='page-title mb-6'>CCLR6 Positions</div>
-            <div className='px-6 space-y-4 py-8'>
+            <div className='px-6 space-y-4 py-8 max-w-7xl mx-auto'>
                 {positions.map((position) => {
                     return (
                         <Position key={position.name} {...position} />
