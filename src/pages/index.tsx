@@ -73,9 +73,9 @@ const Index = (): JSX.Element => {
                     </div>
                     <div className="mb-24">
                         <Flex className='player-wrapper'
-                              h={{ base: 360, sm: 504, md: 648 }}
+                              h={{ base: "auto", sm: 504, md: 648 }}
                         >
-                            <Flex w={{ base: 640, sm: 896, md: 1152 }} className='mx-auto'>
+                            <Flex w={{ base: "auto", sm: 896, md: 1152 }} className='mx-auto'>
                                 <ReactPlayer
                                     controls
                                     width='100%'

@@ -101,7 +101,7 @@ export default function Footer(): JSX.Element {
                              src={'/images/ccl-logo-redblack.svg'} />
                     </>
                 </div>
-                <div className='flex-grow flex flex-row justify-around'>
+                <div className='flex-grow flex flex-col items-center space-y-4 sm:space-y-0 sm:flex-row justify-around'>
                     {FooterData.map((footerColumn) => {
                         return (
                             <div key={footerColumn.name}>
