@@ -10,9 +10,9 @@ import {
 } from '@chakra-ui/react'
 import { FaArrowRight, FaEnvelope, FaTimes, FaUsers } from 'react-icons/fa'
 import React, { useEffect, useReducer, useRef, useState } from 'react'
-import { useAuth } from '../../lib/auth'
-import { storage } from '../../lib/firebase'
-import firestore, { ITeam, Teams } from '../../lib/firestore'
+import { useAuth } from '@lib/auth'
+import { storage } from '@lib/firebase'
+import { ITeam, Teams } from '@lib/models/team'
 import Loader from '../Loader'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
@@ -82,7 +82,7 @@ export default function RegisterTeamForm(): JSX.Element {
     const uploadRef = useRef<HTMLInputElement>()
 
     const { push } = useRouter()
-    const { redirect } = useRedirect('/team/register/players')
+    const { redirect } = useRedirect('/team/players')
     const [team, setTeam] = useState<ITeam | null>(null)
     const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm<RegisterTeamFormInputs>({
         mode: 'onSubmit',
@@ -279,10 +279,10 @@ export default function RegisterTeamForm(): JSX.Element {
             <div className='flex justify-end px-8'>
                 <div className='text-right'>
                     <Button type='submit' isLoading={loading}>
-                        Next: Players&nbsp;&nbsp;<FaArrowRight className='text-xs' />
+                        Register: Players&nbsp;&nbsp;<FaArrowRight className='text-xs' />
                     </Button>
                     <div className='mt-2 text-alt-2 font-normal text-sm tracking-tight text-center'>
-                        This Information can be changed after the Next Step
+                        This Information can be changed after registration
                     </div>
                 </div>
             </div>

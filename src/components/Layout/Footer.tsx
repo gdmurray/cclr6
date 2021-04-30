@@ -1,6 +1,8 @@
 import React from 'react'
 import { FaDiscord, FaYoutube, FaTwitch, FaTwitter } from 'react-icons/fa'
+import config from '@lib/config'
 import { useRouter } from 'next/router'
+import { Link } from '@chakra-ui/react'
 
 interface FooterLink {
     name: string;
@@ -19,22 +21,22 @@ const FooterData: FooterData[] = [
         links: [
             {
                 name: 'Discord',
-                link: 'https://google.com',
+                link: config.socials.discord,
                 icon: <FaDiscord />
             },
             {
                 name: 'Twitter',
-                link: 'https://twitter.com',
+                link: config.socials.twitter,
                 icon: <FaTwitter />
             },
             {
                 name: 'Twitch',
-                link: 'https://twitch.tv/',
+                link: config.socials.twitch,
                 icon: <FaTwitch />
             },
             {
                 name: 'Youtube',
-                link: 'https://youtube.com',
+                link: config.socials.youtube,
                 icon: <FaYoutube />
             }
         ]
@@ -64,6 +66,10 @@ const FooterData: FooterData[] = [
         name: 'Help',
         links: [
             {
+                name: 'Rulebook',
+                link: '/rules'
+            },
+            {
                 name: 'Contact',
                 link: '/contact'
             },
@@ -72,8 +78,8 @@ const FooterData: FooterData[] = [
                 link: '/privacy'
             },
             {
-                name: 'Rulebook',
-                link: '/rules'
+                name: 'Legal',
+                link: '/legal'
             }
         ]
     }
@@ -87,12 +93,12 @@ export default function Footer(): JSX.Element {
             <div className='flex flex-col sm:flex-row max-w-6xl mx-auto p-6 py-24'>
                 <div className='w-48 my-auto mx-auto pb-16 sm:pb-0'>
                     <>
-                        <img alt='leaf-logo' width='150'
+                        <img alt='leaf-logo' width='120'
                              className='logo-dark mx-auto'
-                             src={'/images/ccl-logo-redwhite.png'} />
-                        <img alt='leaf-logo' width='150'
+                             src={'/images/ccl-logo-redwhite.svg'} />
+                        <img alt='leaf-logo' width='120'
                              className='logo-light mx-auto'
-                             src={'/images/ccl-logo-redblack.png'} />
+                             src={'/images/ccl-logo-redblack.svg'} />
                     </>
                 </div>
                 <div className='flex-grow flex flex-row justify-around'>
@@ -100,7 +106,7 @@ export default function Footer(): JSX.Element {
                         return (
                             <div key={footerColumn.name}>
                                 <div
-                                    className='text-main pl-4 font-bold text-base uppercase tracking-wider mb-2'>{footerColumn.name}</div>
+                                    className='text-main pl-4 font-bold text-lg uppercase tracking-wider mb-2'>{footerColumn.name}</div>
                                 <div>
                                     {footerColumn.links.map((sub) => {
                                         if (sub.link.startsWith('/')) {
@@ -119,6 +125,8 @@ export default function Footer(): JSX.Element {
                                         }
                                         return (
                                             <a
+                                                target='_blank'
+                                                rel='noopener'
                                                 key={sub.name}
                                                 href={sub.link}
                                                 className='py-1 pl-4 w-36 group flex flex-row items-center cursor-pointer hover:text-primary transition-colors duration-200'>
@@ -137,8 +145,9 @@ export default function Footer(): JSX.Element {
                 </div>
             </div>
             <div className='p-4 px-12 bg-gray-100 dark:bg-gray-800'>
-                <div className='max-w-6xl mx-auto'>
-                    <span className='font-medium text-sm text-alt'>© 2021 Canada Contender League</span>
+                <div className='max-w-6xl mx-auto flex justify-between font-medium text-sm text-alt'>
+                    <span>© 2021 Canada Contender League</span>
+                    <Link href='/legal'>Legal</Link>
                 </div>
             </div>
             <style jsx>{`
@@ -154,7 +163,6 @@ export default function Footer(): JSX.Element {
                 }
               }
             `}
-
             </style>
         </footer>
     )

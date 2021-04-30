@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useState } from 'react'
-import { User } from '../../lib/auth'
 import { useRouter } from 'next/router'
 
 interface LoadingContext {
@@ -50,8 +49,8 @@ export function useSuspenseNavigation() {
         push(route)
     }
 
-    function isLoading(div) {
-        return (loading && (div === key))
+    function isLoading(label) {
+        return (loading && (label === key))
     }
 
     return {

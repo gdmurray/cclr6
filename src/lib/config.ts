@@ -6,6 +6,12 @@ type Config = {
     readonly site_description: string;
     readonly site_keywords: { keyword: string }[];
     readonly twitter_account: string;
+    readonly socials: {
+        twitter: string;
+        discord: string;
+        twitch: string;
+        youtube: string;
+    };
 };
 
 export default config as Config

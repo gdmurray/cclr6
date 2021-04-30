@@ -1,6 +1,5 @@
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useAuth } from '../../lib/auth'
+import { useAuth } from '@lib/auth'
 import React, { useEffect } from 'react'
 import {
     Button,
@@ -15,11 +14,14 @@ import {
 } from '@chakra-ui/react'
 import { FaBars, FaChevronDown, FaChevronLeft, FaTimes } from 'react-icons/fa'
 import { useSuspenseNavigation } from './useSuspenseNavigation'
+import useTeam from '@lib/useTeam'
+import { features } from '@lib/features'
 
 
 interface INavItem extends NavItem {
     active: boolean;
 }
+
 
 const MobileNavigationItem = ({ children, label, onClick, href }: INavItem) => {
     const router = useRouter()
@@ -147,7 +149,6 @@ const MobileNav = ({ routes }: { routes: NavItem[] }) => {
                          onClick={() => push('/')}
                          width='60' />
                 </div>
-                <span className='title'>Contenders League</span>
                 <Button px={0} className='focus:outline-none outline-none'
                         aria-label='open-menu'
                         onClick={onToggle}>
@@ -172,10 +173,10 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
     return (
         <Flex display={desktopScreen} className='desktop'>
             <>
-                <img alt='leaf-logo' onClick={() => router.push('/')} width='80' height='74' className='logo-dark'
-                     src={'/images/ccl-logo-redwhite.png'} />
-                <img alt='leaf-logo' onClick={() => router.push('/')} width='80' height='74' className='logo-light'
-                     src={'/images/ccl-logo-redblack.png'} />
+                <img alt='leaf-logo' onClick={() => router.push('/')} width='90' className='logo-dark'
+                     src={'/images/ccl-logo-redwhite.svg'} />
+                <img alt='leaf-logo' onClick={() => router.push('/')} width='90' className='logo-light'
+                     src={'/images/ccl-logo-redblack.svg'} />
             </>
             <div className='flex flex-row space-x-4'>
                 {routes.map((route) => {
@@ -189,29 +190,37 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
     )
 }
 
+const baseRoutes: NavItem[] = [
+    {
+        label: 'Home',
+        href: '/'
+    },
+    // {
+    //     label: 'About',
+    //     href: '/about'
+    // },
+    {
+        label: 'Partners',
+        href: '/partners'
+    },
+    {
+        label: 'Watch',
+        href: '/watch'
+    },
+    {
+        label: 'Get Involved',
+        href: '/positions'
+    }
+]
+
 export default function Navigation() {
     const { user, signOut } = useAuth()
-
-    const baseRoutes: NavItem[] = [
-        {
-            label: 'About',
-            href: '/about'
-        },
-        {
-            label: 'Partners',
-            href: '/partners'
-        },
-        {
-            label: 'Watch',
-            href: '/watch'
-        },
-        {
-            label: 'Get Involved',
-            href: '/positions'
-        }
-    ]
+    const { team } = useTeam({ user })
 
     const getRoutes = (): NavItem[] => {
+        if (!features.login) {
+            return baseRoutes
+        }
         if (!user) {
             return [...baseRoutes, {
                 label: 'Login',
@@ -219,6 +228,27 @@ export default function Navigation() {
             }]
 
         } else {
+            if (team) {
+                return [...baseRoutes, {
+                    label: 'Profile',
+                    children: [
+                        {
+                            label: 'Profile',
+                            href: '/profile'
+                        },
+                        {
+                            label: 'Team',
+                            href: '/team'
+                        },
+                        {
+                            label: 'Sign Out',
+                            onClick: () => {
+                                signOut()
+                            }
+                        }
+                    ]
+                }]
+            }
             return [...baseRoutes, {
                 label: 'Profile',
                 children: [

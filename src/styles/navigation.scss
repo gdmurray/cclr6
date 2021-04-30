@@ -1,12 +1,21 @@
 
 .navigation {
-  .logo-dark {
-    display: none;
-    cursor: pointer;
-  }
 
+  .logo-dark,
   .logo-light {
     cursor: pointer;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .logo-dark {
+      display: none;
+    }
+
+    .logo-light {
+      display: block;
+    }
   }
 
   @media (prefers-color-scheme: dark) {
@@ -55,6 +64,6 @@
   }
 
   .desktop {
-    @apply justify-between items-center px-6 sm:py-6 py-2;
+    @apply justify-between items-center px-6 xl:px-12 sm:py-6 py-2;
   }
 }

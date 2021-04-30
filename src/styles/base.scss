@@ -1,7 +1,32 @@
 @import "navigation";
+@import "teams";
 
 .page-content {
-  @apply py-2 px-4 lg:px-16;
+  @apply py-2 px-6 lg:px-16;
+}
+
+.text-content {
+  @apply max-w-6xl mx-auto;
+}
+
+.privacy-policy {
+  p {
+    @apply font-normal text-alt;
+  }
+
+  p.subheader {
+    @apply mt-6;
+  }
+
+
+  p > strong {
+    @apply font-bold text-main text-xl pt-4 leading-8;
+  }
+
+  a {
+    @apply text-blue-500 hover:text-blue-600;
+    transition: color 0.3s ease;
+  }
 }
 
 

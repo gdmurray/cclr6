@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router'
-import { useState } from 'react'
 
 export default function useRedirect(defaultRedirect = null) {
     const { query } = useRouter()

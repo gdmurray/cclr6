@@ -5,10 +5,10 @@ import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FaTwitch, FaTwitter } from 'react-icons/fa'
-import firebaseClient from '../../lib/firebase'
+import firebaseClient from '@lib/firebase'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import useRedirect from '../Layout/useRedirect'
+import useRedirect from '@components/Layout/useRedirect'
 
 const schema = yup.object().shape({
     email: yup.string().email().required('Email Address is Required'),

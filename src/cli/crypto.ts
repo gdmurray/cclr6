@@ -1,5 +1,5 @@
-const fs = require('fs')
-const crypto = require('crypto')
+import fs from 'fs'
+import crypto from 'crypto'
 
 const algorithm = 'aes-256-ctr'
 const iv = crypto.randomBytes(16)
@@ -23,11 +23,11 @@ const encrypt = (text, secret) => {
 fs.readFile(`./${filename}`, 'utf-8', function(err, content) {
     const fileString = JSON.stringify(JSON.parse(content))
     const encrypted = encrypt(fileString, secret)
-    fs.writeFileSync(`./src/lib/secret/${secretName}.enc.js`, `
-module.exports = {
-    encrypted: "${encrypted.content}"
-}
-    `)
+//     fs.writeFileSync(`./src/lib/secret/${secretName}.enc.js`, `
+// module.exports = {
+//     encrypted: "${encrypted.content}"
+// }
+//     `)
 })
 
 export {}

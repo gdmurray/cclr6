@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import LoginForm from '../components/auth/loginForm'
-import { AuthAction, withAuthSSR } from '../lib/withSSRAuth'
+import LoginForm from '@components/auth/loginForm'
+import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 
 
 export const getServerSideProps = withAuthSSR({

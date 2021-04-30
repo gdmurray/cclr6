@@ -1,12 +1,13 @@
 import React from 'react'
-import { AuthAction, withAuthSSR } from '../../../lib/withSSRAuth'
-import RegisterTeamForm from '../../../components/teams/registerTeamForm'
+import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
+import RegisterTeamForm from '@components/teams/registerTeamForm'
 
+const url = "/team/register"
 
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_APP,
     appPageURL: '/register',
-    referral: '/team/register'
+    referral: url
 })({})
 
 const Register = () => {
@@ -24,7 +25,7 @@ const Register = () => {
 
 Register.SEO = {
     title: 'Register Team',
-    url: '/team/register'
+    url
 }
 
 

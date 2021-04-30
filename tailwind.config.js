@@ -4,6 +4,9 @@ const colors = require('tailwindcss/colors')
 
 const extendedColors = {
     primary: '#e50a25',
+    success: '#34D399',
+    warning: "#FCD34D",
+    error: '#F87171',
     twitter: {
         DEFAULT: '#1DA1F2',
         darker: '#00B6F1'
@@ -40,7 +43,7 @@ module.exports = {
             border: ['hover']
         },
         textColor: theme => ({
-            'primary': '#e50a25',
+            ...extendedColors,
             ...theme('colors')
         }),
         color: {
@@ -57,8 +60,5 @@ module.exports = {
             backgroundColor: ['active'],
             outline: ['focus']
         }
-    },
-    xwind: {
-        mode: 'objectstyles'
     }
 }

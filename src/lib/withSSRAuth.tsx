@@ -1,34 +1,6 @@
-import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
-// import { User } from '@firebase/auth-types'
 import firebaseAdmin from './firebase-admin'
 import nookies from 'nookies'
-
-// import firebase from 'firebase'
-
-
-interface PropsWithUser {
-    user: any
-}
-
-export async function propsWithUser(
-    context: GetServerSidePropsContext
-): Promise<GetServerSidePropsResult<PropsWithUser>> {
-    try {
-        const cookies = nookies.get(context)
-        const token = await firebaseAdmin.auth().verifyIdToken(cookies.token)
-        return {
-            props: {
-                user: token
-            }
-        }
-    } catch (e) {
-        return {
-            props: {
-                user: null
-            }
-        }
-    }
-}
+import { Features, features, featureUrls } from '@lib/features'
 
 export enum AuthAction {
     RENDER,
@@ -49,6 +21,16 @@ export const withAuthSSR = (
         referral = null
     } = {}
 ) => (getServerSidePropsFunc) => async (ctx) => {
+    const { resolvedUrl } = ctx
+    if (!Features.isRouteValid(resolvedUrl)) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
+
     let AuthUser = null
     try {
         const cookies = nookies.get(ctx)
@@ -60,7 +42,6 @@ export const withAuthSSR = (
         // const { code } = e
 
     }
-
     const constructUrl = (destination: string): string => {
         if (referral) {
             return `${destination}?next=${encodeURIComponent(referral)}`

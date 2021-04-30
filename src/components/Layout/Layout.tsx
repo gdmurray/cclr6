@@ -2,10 +2,6 @@ import Head from 'next/head'
 import Navigation from './Navigation'
 import React from 'react'
 import Footer from './Footer'
-import BasicMeta from '../meta/BasicMeta'
-import OpenGraphMeta from '../meta/OpenGraphMeta'
-import TwitterCardMeta from '../meta/TwitterCardMeta'
-import { useRouter } from 'next/router'
 
 
 export default function Layout({ children }: React.PropsWithChildren<React.ReactNode>) {

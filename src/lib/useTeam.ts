@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
-import { ITeam, Teams } from './firestore'
+import { ITeam, Teams } from '@lib/models/team'
 
-export default function useTeam({ user }) {
+interface UseTeam {
+    team: ITeam | null;
+    loading: boolean;
+}
+
+export default function useTeam({ user }): UseTeam {
     const [team, setTeam] = useState<ITeam | null>(undefined)
-
+    const [loading, setLoading] = useState<boolean>(true)
     useEffect(() => {
         const fetchTeam = async () => {
             const userHasTeam = await Teams.getTeamByOwnerID(user.uid)
@@ -14,8 +19,10 @@ export default function useTeam({ user }) {
                     ...userHasTeam.data() as ITeam
                 }
                 setTeam(foundTeam)
+                setLoading(false)
             } else {
                 setTeam(null)
+                setLoading(false)
             }
         }
         if (user && team === undefined) {
@@ -24,6 +31,7 @@ export default function useTeam({ user }) {
     }, [user])
 
     return {
-        team
+        team,
+        loading
     }
 }

@@ -31,5 +31,11 @@
       "keyword": "Contender"
     }
   ],
-  "twitter_account": "@CCLR6S"
+  "twitter_account": "@CCLR6S",
+  "socials": {
+    "discord": "https://discord.gg/f2g5ZThaep",
+    "twitter": "https://twitter.com/cclr6s",
+    "twitch": "https://www.twitch.tv/cclr6s",
+    "youtube": "https://www.youtube.com/channel/UC5ujFuaAWmmmwMsN2fOfWuQ"
+  }
 }

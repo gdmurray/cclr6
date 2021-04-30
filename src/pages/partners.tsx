@@ -33,7 +33,7 @@ const Partners = () => {
                             target='_blank' rel='noopener'
                         >
                                 <span
-                                    className='text-main flex items-center font-bold text-lg social-button bg-twitter px-4 py-2 hover:bg-twitter-darker '><FaTwitter
+                                    className='text-white mr-2 flex items-center font-bold text-lg social-button bg-twitter px-4 py-2 hover:bg-twitter-darker '><FaTwitter
                                     className='mr-2' /> DM us on Twitter</span>
                         </a>
                     </div>

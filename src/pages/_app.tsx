@@ -27,16 +27,19 @@ interface SEOProps {
     url: string;
 }
 
-interface SEOComponent extends React.FC {
+interface CCLComponent extends React.FC {
     SEO?: SEOProps;
+    layout: (p: JSX.Element) => JSX.Element;
 }
 
-type SEOAppProps = AppProps & {
-    Component: SEOComponent;
+
+type CCLAppProps = AppProps & {
+    Component: CCLComponent;
 }
 
-export default function App({ Component, pageProps }: SEOAppProps) {
+export default function App({ Component, pageProps }: CCLAppProps) {
     const SEO = Component.SEO
+    const layout = Component.layout ?? ((p): JSX.Element => <>{p}</>)
     return (
         <ChakraProvider theme={theme}>
             <LoadingProvider>
@@ -50,9 +53,8 @@ export default function App({ Component, pageProps }: SEOAppProps) {
                             <OpenGraphMeta url={SEO.url} {...SEO} />
                         </Head>
                     )}
-
                     <Layout>
-                        <Component {...pageProps} />
+                        {layout(<Component {...pageProps} />)}
                     </Layout>
                 </AuthProvider>
             </LoadingProvider>
