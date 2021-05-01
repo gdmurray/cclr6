@@ -101,10 +101,10 @@ export default function Footer(): JSX.Element {
                              src={'/images/ccl-logo-redblack.svg'} />
                     </>
                 </div>
-                <div className='flex-grow flex flex-col items-center space-y-4 sm:space-y-0 sm:flex-row justify-around'>
+                <div className='flex-grow flex flex-col items-center sm:flex-row justify-around'>
                     {FooterData.map((footerColumn) => {
                         return (
-                            <div key={footerColumn.name}>
+                            <div key={footerColumn.name} className="mt-2">
                                 <div
                                     className='text-main pl-4 font-bold text-lg uppercase tracking-wider mb-2'>{footerColumn.name}</div>
                                 <div>
