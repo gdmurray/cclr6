@@ -2,13 +2,12 @@ import { getSheetsClient, sheetMap, Sheets } from './sheets'
 
 export async function getAvailablePositions() {
     const sheetClient = await getSheetsClient()
-    console.log('GOT SHEET CLIENT')
     const spreadsheet = sheetMap[Sheets.STAFF]
     try {
 
         const response = await sheetClient.spreadsheets.values.get({
             spreadsheetId: spreadsheet.id,
-            range: 'Test!A:D'
+            range: 'A:D'
         })
 
         const rows = response.data.values
