@@ -8,7 +8,10 @@ module.exports = withBundleAnalyzer({
         FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
         FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
         FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
-        SECRET_KEY: process.env.SECRET_KEY
+        FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+        PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
+        PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET,
+        PAYPAL_ACCOUNT: process.env.PAYPAL_ACCOUNT
     },
     buildDir: 'out',
     future: {

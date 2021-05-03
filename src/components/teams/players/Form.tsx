@@ -13,13 +13,18 @@ import Loader from '@components/Loader'
 // TODO: GET YUMRESOLVER BACK WORKING FUCK MAN
 // TODO: LOCK TEAM CHANGES?
 
-function findWithAttr(array, attr, value) {
+function findWithAttr(array: any[], attr: string, value: any): number[] {
     let idx = []
-    for (var i = 0; i < array.length; i += 1) {
-        if (array[i][attr] === value) {
-            idx.push(i)
+    try {
+        for (let i = 0; i < array.length; i += 1) {
+            if (array[i][attr] === value) {
+                idx.push(i)
+            }
         }
+    } catch (err) {
+        console.log('error finding attribute: ', array, attr, value)
     }
+
     return idx
 }
 
@@ -38,13 +43,18 @@ yup.addMethod(yup.array, 'unique', function(message, mapper = a => a) {
             }, {})
             const indexes = Object.keys(counts)
                 .filter(key => counts[key] > 1)
-                .reduce((acc: number[], val: string) => {
+                .reduce((acc: number[][], val: string) => {
                     const values = findWithAttr(list, 'email', val)
-                    return [...acc, ...values]
+                    acc.push(values)
+                    return acc
                 }, [])
             if (indexes.length > 0) {
                 const [idx] = indexes
-                return this.createError({ path: `players.${idx}.email`, message: 'Cannot use the same email address' })
+                const [_, errorIndex] = idx
+                return this.createError({
+                    path: `players.${errorIndex}.email`,
+                    message: 'Cannot use the same email address'
+                })
             }
         }
         return true
@@ -60,22 +70,17 @@ const schema = yup.object().shape({
     ).unique('duplicate email', a => a.email)
 })
 
-
-export default function PlayerForm({ players }) {
+export default function PlayerForm({ players, callback }) {
     const teamContext = useContext(TeamContext)
-    const { team, user } = teamContext
+    const { team } = teamContext
     const toast = useToast()
 
     const methods = useForm({
         mode: 'onTouched',
-        resolver: yupResolver(schema),
-        defaultValues: {
-            players
-        }
+        resolver: yupResolver(schema)
     })
 
     const { formState: { isValid, dirtyFields }, setValue, getValues } = methods
-
 
     const getDefaultCaptain = () => {
         let defaultCaptain = 'players.0'
@@ -107,6 +112,43 @@ export default function PlayerForm({ players }) {
 
     const captainGroup = getRootProps()
 
+    interface TransactionResult {
+        player: IPlayer;
+        created: boolean;
+    }
+
+    const upsertPlayer = (ref, player): Promise<TransactionResult> => {
+        return new Promise((resolve, reject) => {
+            // Existing Player!
+            if (player.id && player.id !== '') {
+                const playerWithId = { ...player }
+                delete player.id
+                ref.collection('players').doc(playerWithId.id).update({
+                    ...player
+                }).then(() => {
+                    resolve({
+                        player: playerWithId,
+                        created: false
+                    })
+                })
+            } else {
+                delete player.id;
+                ref.collection('players').add({
+                    ...player
+                }).then((result) => {
+                    result.get().then(data => {
+                        resolve({
+                            player: {
+                                ...data.data(),
+                                id: data.id
+                            },
+                            created: true
+                        })
+                    })
+                })
+            }
+        })
+    }
     const onSubmit = data => {
         if (isValid && dirtyFields.players) {
             const { players } = data
@@ -116,38 +158,27 @@ export default function PlayerForm({ players }) {
                 .filter((player) => typeof dirtyFields?.players[player.index] !== 'undefined')
 
             const playersCollection = Teams.getPlayersCollection(team.id)
-            validPlayers.forEach((player) => {
-                console.log('valid: ', player)
-                if (player.id && player.id !== '') {
-                    console.log('EXISTING OBJECT', player)
-                } else {
-                    console.log('NEW PLAYER: ', player)
-                }
-                if (player.id && player.id !== '') {
-                    const { id } = player
-                    delete player.id
-                    playersCollection.collection('players').doc(id).update({
-                        ...player
-                    }).then(() => {
+
+            Promise.all<TransactionResult>(validPlayers.map(player => upsertPlayer(playersCollection, player))).then((result: TransactionResult[]) => {
+                result.forEach((updated) => {
+                    if (updated.created) {
                         toast({
-                            title: `Updated Player ${player.index + 1}`,
-                            duration: 1000,
-                            status: 'info',
-                            position: 'top-right'
-                        })
-                    })
-                } else {
-                    playersCollection.collection('players').add({
-                        ...player
-                    }).then((result) => {
-                        toast({
-                            title: `Added Player ${player.index + 1}`,
+                            title: `Added Player ${updated.player.index + 1}`,
                             duration: 1000,
                             status: 'success',
                             position: 'top-right'
                         })
-                    })
-                }
+                    } else {
+                        toast({
+                            title: `Updated Player ${updated.player.index + 1}`,
+                            duration: 1000,
+                            status: 'info',
+                            position: 'top-right'
+                        })
+                    }
+                })
+                const updatedPlayers = result.map(p => p.player);
+                callback(updatedPlayers)
             })
         }
     }

@@ -21,7 +21,7 @@ import useRedirect from '../Layout/useRedirect'
 import { useRouter } from 'next/router'
 
 const schema = yup.object().shape({
-    name: yup.string().min(3).max(32).required('Team Name is Required'),
+    name: yup.string().min(3).max(32, 'Name cannot be longer than 32 characters').required('Team Name is Required'),
     contact: yup.string().email().notRequired()
 })
 
@@ -83,9 +83,8 @@ export default function RegisterTeamForm(): JSX.Element {
 
     const { push } = useRouter()
     const { redirect } = useRedirect('/team/players')
-    const [team, setTeam] = useState<ITeam | null>(null)
     const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm<RegisterTeamFormInputs>({
-        mode: 'onSubmit',
+        mode: 'onBlur',
         resolver: yupResolver(schema)
     })
 
@@ -95,27 +94,6 @@ export default function RegisterTeamForm(): JSX.Element {
 
     const [logoImage, setLogoImage] = useState<string>()
     const { user, loading: userLoading } = useAuth()
-
-    useEffect(() => {
-        const fetchTeams = async () => {
-            const teamsResult = await Teams.getTeamByOwnerID(user.uid)
-            if (teamsResult) {
-                const foundTeam = {
-                    id: teamsResult.id,
-                    ...teamsResult.data() as ITeam
-                }
-                setValue('name', foundTeam.name)
-                setValue('contact', foundTeam.contact_email)
-                if (foundTeam.logo) {
-                    dispatch({ type: 'init', logo: foundTeam.logo })
-                }
-                setTeam(foundTeam)
-            }
-        }
-        if (user && !team) {
-            fetchTeams()
-        }
-    }, [user])
 
     if (userLoading || !user) {
         return (
@@ -161,58 +139,36 @@ export default function RegisterTeamForm(): JSX.Element {
     const onSubmit = data => {
         dispatch({ type: 'submit' })
         const contactEmail = data.contact ? data.contact : user.email!
-        if (team) {
-            const updatedValues = {}
-            if (data.name !== team.name) {
-                Object.assign(updatedValues, {
-                    name: data.name
-                })
-            }
-            if (contactEmail !== team.contact_email) {
-                Object.assign(updatedValues, {
-                    contact_email: contactEmail
-                })
-            }
-            if (Object.keys(updatedValues).length > 0) {
-                Teams.updateTeam(team.id, updatedValues).then(() => {
-                    push(redirect)
-                })
-            } else {
-                push(redirect)
-            }
-
-        } else {
-            if (logo && (typeof logo !== 'string')) {
-                const logoName = `${logo.lastModified}-${logo.name}`
-                const uploadTask = storage.ref(`/images/${logoName}`).put(logo)
-                uploadTask.on('state_changed',
-                    (snapShot) => {
-                        //takes a snap shot of the process as it is happening
-                        console.log(snapShot)
-                    }, (err) => {
-                        //catches the errors
-                        dispatch({ type: 'failure' })
-                    }, () => {
-                        // gets the functions from storage refences the image storage in firebase by the children
-                        // gets the download url then sets the image from firebase as the value for the imgUrl key:
-                        storage.ref('images').child(logoName).getDownloadURL()
-                            .then(fireBaseUrl => {
-                                handleCreate({
-                                    name: data.name,
-                                    logo: fireBaseUrl,
-                                    owner: user.uid,
-                                    contact_email: contactEmail
-                                })
+        if (logo && (typeof logo !== 'string')) {
+            const logoName = `${logo.lastModified}-${logo.name}`
+            const uploadTask = storage.ref(`/images/${logoName}`).put(logo)
+            uploadTask.on('state_changed',
+                (snapShot) => {
+                    //takes a snap shot of the process as it is happening
+                    console.log(snapShot)
+                }, (err) => {
+                    //catches the errors
+                    dispatch({ type: 'failure' })
+                }, () => {
+                    // gets the functions from storage refences the image storage in firebase by the children
+                    // gets the download url then sets the image from firebase as the value for the imgUrl key:
+                    storage.ref('images').child(logoName).getDownloadURL()
+                        .then(fireBaseUrl => {
+                            handleCreate({
+                                name: data.name,
+                                logo: fireBaseUrl,
+                                owner: user.uid,
+                                contact_email: contactEmail
                             })
-                    })
-            } else {
-                handleCreate({
-                    name: data.name,
-                    logo: undefined,
-                    owner: user.uid,
-                    contact_email: contactEmail
+                        })
                 })
-            }
+        } else {
+            handleCreate({
+                name: data.name,
+                logo: undefined,
+                owner: user.uid,
+                contact_email: contactEmail
+            })
         }
 
     }
@@ -227,7 +183,7 @@ export default function RegisterTeamForm(): JSX.Element {
             <div className='flex flex-row justify-between'>
                 <div className='w-32 pt-6'>
                     <FormControl isInvalid={!!error}>
-                        {logo && !team?.logo && (
+                        {logo && (
                             <span style={{
                                 marginLeft: '-15px'
                             }} onClick={handleLogoClear}
@@ -242,11 +198,13 @@ export default function RegisterTeamForm(): JSX.Element {
                             fallbackSrc='https://via.placeholder.com/150?text=Logo'
                             src={(typeof logo === 'string') ? logo : logoImage}
                         />
-                        {!team?.logo && (
-                            <input id='logo' type='file' hidden={true} onChange={handleFileInput} ref={uploadRef} />
-                        )}
+                        <input accept='.png, .jpg, .jpeg' id='logo'
+                               type='file'
+                               hidden={true}
+                               onChange={handleFileInput}
+                               ref={uploadRef} />
                         <div
-                            className='pt-3 text-alt-2 text-main font-normal text-sm text-center'>{!team?.logo && 'Upload'} Logo
+                            className='pt-3 text-alt-2 text-main font-normal text-sm text-center'>Upload Logo
                         </div>
                         <FormErrorMessage>{error}</FormErrorMessage>
                     </FormControl>
@@ -279,7 +237,7 @@ export default function RegisterTeamForm(): JSX.Element {
             <div className='flex justify-end px-8'>
                 <div className='text-right'>
                     <Button type='submit' isLoading={loading}>
-                        Register: Players&nbsp;&nbsp;<FaArrowRight className='text-xs' />
+                        Complete Registration&nbsp;&nbsp;<FaArrowRight className='text-xs' />
                     </Button>
                     <div className='mt-2 text-alt-2 font-normal text-sm tracking-tight text-center'>
                         This Information can be changed after registration

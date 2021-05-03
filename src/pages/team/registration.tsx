@@ -16,10 +16,14 @@ import {
     PopoverTrigger,
     Tooltip
 } from '@chakra-ui/react'
-import LocalizedFormat from 'dayjs/plugin/localizedFormat'
-import dayjs from 'dayjs'
+import { ToornamentClient } from '@lib/api/toornament'
 import { useRouter } from 'next/router'
 import { CreateTeamClient } from '@lib/models/team'
+import { Season, SeasonOne } from '@lib/models/season'
+
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+import dayjs from 'dayjs'
+import SeasonComponent from '@components/teams/seasons/Season'
 
 dayjs.extend(LocalizedFormat)
 
@@ -30,16 +34,19 @@ export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
     referral: url
 })(async ({ user }) => {
-    // async function getData() {
-    //     return new Promise<Tournament[]>((resolve) => {
-    //         setTimeout(() => resolve(tournaments), 300)
-    //     })
-    // }
-    //
-    // const res = await getData()
+    async function getData() {
+        const season = SeasonOne
+        const client = ToornamentClient()
+        for (let i = 0; i < 4; i += 1) {
+            season.qualifiers[i] = await client.getTournament(i)
+        }
+        return Promise.resolve([season])
+    }
+
+    const seasons = await getData()
     return {
         props: {
-            tournaments
+            seasons
         }
     }
 })
@@ -52,55 +59,6 @@ First check if EVENT has ended
     3. Registration has closed
  */
 
-interface RegistrationStatus {
-    active: boolean;
-    reason: string;
-}
-
-let base = {
-    eligible: true,
-    reason: '-',
-    registration: {
-        satisfied: true,
-        message: 'Registration is Closed'
-    },
-    teamRegistered: {
-        satisfied: true,
-        message: 'Team is not Registered'
-    },
-    userPermissions: {
-        satisfied: true,
-        message: 'User not Allowed to Register'
-    },
-    playerCount: {
-        satisfied: true,
-        message: 'Team does not have at least 5 Players'
-    },
-    playerCountry: {
-        satisfied: true,
-        message: 'Team is not at least 3/5 Canadian'
-    },
-    paymentSatisfied: {
-        satisfied: true,
-        message: 'Team has not paid yet'
-    }
-}
-
-interface RegistrationCondition {
-    satisfied: boolean;
-    message: string;
-}
-
-interface Eligibility {
-    eligible: boolean;
-    reason: string;
-    registration: RegistrationCondition;
-    teamRegistered: RegistrationCondition;
-    userPermissions: RegistrationCondition;
-    playerCount: RegistrationCondition;
-    playerCountry: RegistrationCondition;
-    paymentSatisfied: RegistrationCondition;
-}
 
 const TournamentDetails = ({ children, tournament }): JSX.Element => {
     return (
@@ -130,193 +88,24 @@ const TournamentDetails = ({ children, tournament }): JSX.Element => {
     )
 }
 
-function TournamentRegistration({ tournament }: { tournament: Tournament }): JSX.Element {
-    const { push } = useRouter()
-    const teamContext = useContext(TeamContext)
-    const { team, user } = teamContext
-
-    const client = CreateTournamentClient(tournament)
-    const teamClient = CreateTeamClient(team)
-
-    const [eligibility, setEligibility] = useState<Eligibility>()
-
-    useEffect(() => {
-        const canTeamRegister = async (): Promise<void> => {
-            /*
-                Reasons why you cannot register
-                1. Tournament hasnt started
-                2. The Team has already registered
-                3. The User has Permissions to register
-                4. The team has at least 5 players
-                5. At least 3/5 of those players are Canadian
-                6. The Team has PAID
-             */
-            console.log('CAN TEAM REGISTER... ASYNC SHIT')
-
-            let checks = { ...base }
-
-            function not(key) {
-                checks.eligible = false
-                checks[key].satisfied = false
-                return checks
-            }
-
-            // Registration Not Open
-            if (!client.isRegistrationOpen()) {
-                checks = not('registration')
-            }
-
-            // Has Team Registered
-            const registered = await teamClient.hasTeamRegistered(tournament)
-            if (registered) {
-                checks = not('teamRegistered')
-                if (checks.reason === '-') {
-                    checks.reason = eligibility.teamRegistered.message
-                }
-            }
-
-            if (!(teamClient.canUserRegister(user.uid))) {
-                checks = not('userPermissions')
-                if (checks.reason === '-') {
-                    checks.reason = eligibility.userPermissions.message
-                }
-            }
-
-            // Min Players
-            const minimumPlayers = await teamClient.hasMinimumPlayers()
-            console.log('Minimum PlayerS: ', minimumPlayers)
-            if (!minimumPlayers) {
-                checks = not('playerCount')
-                if (checks.reason === '-') {
-                    checks.reason = eligibility.playerCount.message
-                }
-            }
-
-            // Min Canadians
-            const minCanadians = await teamClient.hasMinimumCanadians()
-            if (!minCanadians) {
-                checks = not('playerCountry')
-                if (checks.reason === '-') {
-                    checks.reason = eligibility.playerCountry.message
-                }
-            }
-
-            console.log(checks)
-            setEligibility(checks)
-        }
-        canTeamRegister()
-
-    }, [])
 
 
-    const getRegistrationStatus = (): JSX.Element => {
-        if (client.isRegistrationOpen()) {
-            return <>Registration is Open <FaCheck className='ml-1 text-success' /></>
-        }
-        return <>Registration is Closed <FaBan className='ml-1 text-error' /></>
-    }
-
-
-    const getEligibilityText = (eligibility: Eligibility) => {
-        if (eligibility.eligible) {
-            if (eligibility.registration.satisfied) {
-                return <>Register</>
-            } else {
-                return <>Registered</>
-            }
-        } else {
-            return <>Register <FaBan className='ml-2' /></>
-        }
-    }
-
-    if (eligibility === undefined) {
-        return (
-            <TournamentDetails tournament={tournament}>
-                <div>Loading</div>
-            </TournamentDetails>
-        )
-    }
-
-    const getRegistrationDetails = (): { text: string, date: string } => {
-        if (!client.hasRegistrationStarted()) {
-            return {
-                text: 'Registration Opens on:',
-                date: tournament.registration_opening_datetime
-            }
-        }
-
-        if (client.hasRegistrationClosed()) {
-            return { text: 'Registration Closed on:', date: tournament.registration_closing_datetime }
-        }
-
-        if (client.isRegistrationOpen()) {
-            return { text: 'Registration Ends on:', date: tournament.registration_closing_datetime }
-        }
-    }
-
-    const registrationDetails = getRegistrationDetails()
-
-    return (
-        <TournamentDetails tournament={tournament}>
-            <div className='flex flex-col text-right'>
-                <Tooltip label={eligibility.reason} placement='top' isDisabled={eligibility.eligible}>
-                    <Button
-                        colorScheme='gray'
-                    >
-                        {getEligibilityText(eligibility)}
-                    </Button>
-                </Tooltip>
-                <div className='mt-2 text-right flex flex-col items-end space-y-1'>
-                    <div className='registration-detail'>
-                        {getRegistrationStatus()}
-                    </div>
-                    {eligibility.playerCountry.satisfied ?
-                        (<div className='registration-detail'>
-                            Team is not 3/5 Canadian <FaCheck className='ml-1 text-success' />
-                        </div>)
-                        :
-                        (<div className='registration-detail cursor-pointer hover:underline '
-                              onClick={() => push('/team/players')}>
-                            Team is not 3/5 Canadian <FaBan className='ml-1 text-error' />
-                        </div>)
-                    }
-                    {eligibility.paymentSatisfied.satisfied ?
-                        (<div className='registration-detail'>
-                            Payment was Made <FaCheck className='ml-1 text-success' />
-                        </div>) :
-                        (
-                            <div className='registration-detail cursor-pointer hover:underline '
-                                 onClick={() => push('/team/payments')}>
-                                Payment Not Made <FaBan className='ml-1 text-error' />
-                            </div>
-                        )
-                    }
-                </div>
-            </div>
-            <div className='text-sm text-right'>
-                <div className='font-semibold text-alt '>{registrationDetails.text}</div>
-                <div
-                    className='font-normal text-alt-2'>{dayjs(registrationDetails.date).format('LLL')}</div>
-            </div>
-        </TournamentDetails>
-    )
-}
-
+// <Eligibility tournament={tournament} team={team} user={user} />
 // linear-gradient(180deg, #00000065 40%, #ffffff10 100%)
 interface IRegistration {
-    tournaments: Tournament[]
+    seasons: Season[];
 }
 
-function Registration({ tournaments }: IRegistration): JSX.Element {
+function Registration({ seasons }: IRegistration): JSX.Element {
     return (
         <>
-            {tournaments.length === 0 && (
-                <EmptyState icon={<FaTrophy />} text={'No Tournaments Found!'} />
+            {seasons.length === 0 && (
+                <EmptyState icon={<FaTrophy />} text={'No Seasons Found!'} />
             )}
             <div className={'max-w-4xl mx-auto items-center'}>
-                {tournaments.map((tournament) => {
+                {seasons.map((season) => {
                     return (
-                        <TournamentRegistration key={tournament.id} tournament={tournament} />
+                        <SeasonComponent key={season.name} season={season} />
                     )
                 })}
             </div>
@@ -325,6 +114,7 @@ function Registration({ tournaments }: IRegistration): JSX.Element {
     )
 }
 
+// <TournamentRegistration key={tournament.id} tournament={tournament} />
 Registration.SEO =
     {
         title: 'Team Registration',

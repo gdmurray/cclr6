@@ -6,7 +6,7 @@ export interface Tournament {
     scheduled_date_start: string;
     scheduled_date_end: string;
     timezone: string;
-    prize: string;
+    prize?: string;
     public: boolean;
     size: number;
     online: boolean;
@@ -27,6 +27,8 @@ export interface Tournament {
 }
 
 interface TournamentClient {
+    isOver(): boolean;
+
     hasStarted(): boolean
 
     isRegistrationOpen(): boolean
@@ -37,8 +39,13 @@ interface TournamentClient {
 
 }
 
+// TODO: Cannot register when registration ends (4head)
 export function CreateTournamentClient(tournament: Tournament): TournamentClient {
     return {
+        isOver(): boolean {
+            return dayjs().toDate() > dayjs(tournament.scheduled_date_end).toDate()
+        },
+
         hasStarted(): boolean {
             return dayjs().toDate() > dayjs(tournament.scheduled_date_start).toDate()
         },

@@ -1,0 +1,45 @@
+.chakra-form__label {
+    margin-bottom: 0.1em !important;
+    @apply text-sm !important;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #E7E5E4 inset !important;
+        color: white !important;
+    }
+}
+
+
+.chakra-form__error-message {
+    @apply font-medium;
+}
+
+.chakra-input {
+    @apply dark:bg-gray-800 dark:border-gray-600 !important;
+}
+
+.chakra-form-control {
+    margin-bottom: 1.25em;
+}
+
+.chakra-menu__menu-list {
+    @apply dark:bg-gray-900 bg-white dark:border-gray-800 border-gray-300 !important;
+}
+
+.chakra-menu__menuitem:focus {
+    outline: 2px solid transparent !important;
+    outline-offset: 2px !important;
+}
+
+.chakra-menu__menuitem {
+    @apply font-normal !important;
+}
+
+.profile-button > span {
+    @apply flex flex-row justify-between items-center;
+}

@@ -1,12 +1,17 @@
 import { useFormContext } from 'react-hook-form'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button, FormErrorMessage, HStack, Input, Radio, useRadioGroup, useRadioGroupContext } from '@chakra-ui/react'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import CountryRadio from '@components/teams/players/CountryRadio'
 import { FaEnvelope } from 'react-icons/fa'
+import { TeamContext } from '@components/teams/teamContext'
 
 export default function Player({ player, order, captainRadioProps }): JSX.Element {
-    const { register, formState, setValue, trigger, getValues } = useFormContext()
+    const { register, formState, setValue, getValues } = useFormContext()
+
+    const teamContext = useContext(TeamContext)
+    const { user } = teamContext
+
     const { errors } = formState
     const radioOptions = [
         {
@@ -26,16 +31,17 @@ export default function Player({ player, order, captainRadioProps }): JSX.Elemen
             setValue(`players.${order}.country`, nextValue, {
                 shouldDirty: true
             })
-            console.log(getValues(`players.${order}.country`))
-            // setRadioState(nextValue)
-            // trigger(`players.${order}.country`)
         }
 
     })
     const group = getRootProps()
 
     const showInvite = (): boolean => {
-        return false
+        const userEmail = getValues(`players.${player.index}.email`)
+        if (user.email === userEmail) {
+            return false
+        }
+        return true
     }
     const error = () => {
         if ('players' in errors) {

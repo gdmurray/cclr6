@@ -61,10 +61,6 @@ export default function RegisterForm() {
                         className='social-button bg-twitter hover:bg-twitter-darker text-gray-50'>
                         <FaTwitter className='mr-2' />Twitter Sign Up
                     </button>
-                    <button
-                        className='social-button bg-twitch hover:bg-twitch-darker text-gray-50'>
-                        <FaTwitch className='mr-2' />Twitch Sign Up
-                    </button>
                 </div>
                 <Divider className='my-4' />
                 <form className='w-full max-w-xl mb-8' onSubmit={handleSubmit(onSubmit)}>

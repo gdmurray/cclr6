@@ -1,37 +1,34 @@
-import {getSheetsClient, sheetMap, Sheets} from "./sheets";
+import { getSheetsClient, sheetMap, Sheets } from './sheets'
 
 export async function getAvailablePositions() {
-    const sheetClient = await getSheetsClient();
-    const spreadsheet = sheetMap[Sheets.STAFF];
+    const sheetClient = await getSheetsClient()
+    console.log('GOT SHEET CLIENT')
+    const spreadsheet = sheetMap[Sheets.STAFF]
     try {
 
         const response = await sheetClient.spreadsheets.values.get({
             spreadsheetId: spreadsheet.id,
-            range: spreadsheet.range
-        });
+            range: 'Test!A:D'
+        })
 
-        const rows = response.data.values;
+        const rows = response.data.values
         if (rows.length > 0) {
             const headers = rows[0]
             return rows.slice(1).map((row) => {
-                const position = headers.reduce((acc, val, idx) => {
-                    if (val.toLowerCase() === "active") {
-                        acc[val.toLowerCase()] = JSON.parse(row[idx].toLowerCase());
+                return headers.reduce((acc, val, idx) => {
+                    if (val.toLowerCase() === 'active') {
+                        acc[val.toLowerCase()] = JSON.parse(row[idx].toLowerCase())
                     } else {
-                        acc[val.toLowerCase()] = row[idx];
+                        acc[val.toLowerCase()] = row[idx]
                     }
-                    return acc;
+                    return acc
                 }, {})
-                if (position.active) {
-                    return position
-                }
-
             })
         }
         return []
     } catch (err) {
-        console.log(err);
+        console.log(err)
     }
 
-    return [];
+    return []
 }

@@ -9,7 +9,9 @@ class MyDocument extends Document {
     render() {
         return (
             <Html lang='en'>
-                <Head />
+                <Head>
+                    <script async src={'https://www.googletagmanager.com/gtag/js'} />
+                </Head>
                 <body>
                 <Main />
                 <NextScript />

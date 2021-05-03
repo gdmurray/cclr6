@@ -58,6 +58,7 @@ module.exports = {
     variants: {
         extend: {
             backgroundColor: ['active'],
+            borderWidth: ['last'],
             outline: ['focus']
         }
     }

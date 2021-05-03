@@ -35,6 +35,7 @@ const LoginForm = (): JSX.Element => {
     const onSubmit = data => {
         const { email, password } = data
         signinWithEmail(email, password, redirect).catch(err => {
+            console.log("ERROR: ", err);
             const { code, message } = err
             if (code === 'auth/wrong-password') {
                 setError('password', {
@@ -62,11 +63,6 @@ const LoginForm = (): JSX.Element => {
                     onClick={Twitter.login}
                     className='social-button text-gray-50 bg-twitter hover:bg-twitter-darker'>
                     <FaTwitter className='mr-2' />Twitter Login
-                </button>
-                <button
-                    disabled={true}
-                    className='social-button text-gray-50 bg-twitch hover:bg-twitch-darker'>
-                    <FaTwitch className='mr-2' />Twitch Login
                 </button>
             </div>
             <Divider className='my-6' />

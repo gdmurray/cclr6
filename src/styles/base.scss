@@ -52,6 +52,10 @@
   }
 }
 
+.text-line {
+  @apply flex flex-row items-center;
+}
+
 .text-main {
   @apply text-gray-900 dark:text-gray-50;
 }
@@ -123,4 +127,8 @@
   .chakra-form-control {
     margin-bottom: 0.5em !important;
   }
+}
+
+.chakra-form__label {
+  @extend .text-alt;
 }

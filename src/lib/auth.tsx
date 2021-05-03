@@ -130,6 +130,9 @@ function useFirebaseAuth() {
                 if (redirect) {
                     Router.push(redirect)
                 }
+            }).catch((err) => {
+                setLoading(false)
+                throw err
             })
     }
 
