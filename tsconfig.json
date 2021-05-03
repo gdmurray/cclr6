@@ -28,6 +28,7 @@
     }
   },
   "exclude": [
+    "functions",
     "node_modules"
   ],
   "include": [
