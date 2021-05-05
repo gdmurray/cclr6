@@ -1,0 +1,31 @@
+.rulebook {
+  @apply mb-24;
+  .title {
+    @extend .page-title;
+    @extend .text-main;
+    @apply mb-4;
+  }
+
+  .section {
+    @extend .text-main;
+    @apply font-bold text-2xl tracking-tight mt-6;
+  }
+
+  .subsection {
+    @extend .text-main;
+    @apply font-bold text-xl tracking-tighter ml-2 mt-4 mb-1;
+  }
+
+  .text {
+    @extend .text-alt;
+    @apply font-medium text-base tracking-tight;
+  }
+
+  .text:not(.left-indent) {
+    @apply ml-4;
+  }
+
+  .text.left-indent {
+    @apply ml-8;
+  }
+}

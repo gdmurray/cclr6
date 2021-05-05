@@ -1,24 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React from 'react'
 import TeamLayout from '@components/teams/layout'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
-import { CreateTournamentClient, Tournament } from '@lib/models/tournament'
-import { data as tournaments } from '@components/teams/mockToornament'
-import { TeamContext } from '@components/teams/teamContext'
-import { FaBan, FaCalendarAlt, FaCheck, FaGamepad, FaStop, FaStopCircle, FaTrophy } from 'react-icons/fa'
-import { motion } from 'framer-motion'
+import { FaCalendarAlt,FaTrophy } from 'react-icons/fa'
 import EmptyState from '@components/EmptyState'
-import {
-    Button,
-    Popover,
-    PopoverBody,
-    PopoverCloseButton,
-    PopoverContent,
-    PopoverTrigger,
-    Tooltip
-} from '@chakra-ui/react'
 import { ToornamentClient } from '@lib/api/toornament'
-import { useRouter } from 'next/router'
-import { CreateTeamClient } from '@lib/models/team'
 import { Season, SeasonOne } from '@lib/models/season'
 
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'

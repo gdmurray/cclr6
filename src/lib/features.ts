@@ -1,7 +1,7 @@
 export const features = {
-    registration: true,
-    login: true,
-    profile: true
+    registration: false,
+    login: false,
+    profile: false
 }
 
 export const featureUrls: Record<string, string[]> = {
