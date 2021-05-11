@@ -24,6 +24,7 @@ export const SeasonOne: Season = {
     qualifiers: [
         {
             id: '1'
+            // id: '4585711997166354432'
         },
         {
             id: '2'

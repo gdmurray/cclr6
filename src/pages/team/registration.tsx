@@ -1,7 +1,7 @@
 import React from 'react'
 import TeamLayout from '@components/teams/layout'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
-import { FaCalendarAlt,FaTrophy } from 'react-icons/fa'
+import { FaCalendarAlt, FaTrophy } from 'react-icons/fa'
 import EmptyState from '@components/EmptyState'
 import { ToornamentClient } from '@lib/api/toornament'
 import { Season, SeasonOne } from '@lib/models/season'
@@ -22,6 +22,7 @@ export const getServerSideProps = withAuthSSR({
     async function getData() {
         const season = SeasonOne
         const client = ToornamentClient()
+        client.getTournaments()
         for (let i = 0; i < 4; i += 1) {
             season.qualifiers[i] = await client.getTournament(i)
         }
@@ -44,39 +45,6 @@ First check if EVENT has ended
     3. Registration has closed
  */
 
-
-const TournamentDetails = ({ children, tournament }): JSX.Element => {
-    return (
-        <div className='bordered border rounded-xl h-52 overflow-hidden'>
-            <div className='flex flex-row w-full p-4 h-full z-10 relative'>
-                <div className='flex-1 flex flex-col justify-between'>
-                    <div>
-                        <div className='text-main font-heavy text-2xl md:text-3xl font-bold'>
-                            {tournament.full_name}
-                        </div>
-                        <div className='mt-1'>
-                            <div className='font-semibold text-alt text-sm'>Schedule</div>
-                            <div className='flex flex-row items-center text-alt-2 font-medium text-sm'>
-                                <FaCalendarAlt />&nbsp;{dayjs(tournament.scheduled_date_start).format('LL')}&nbsp;&nbsp;-&nbsp;&nbsp;{dayjs(tournament.scheduled_date_end).format('LL')}
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-
-                    </div>
-                </div>
-                <div className='flex flex-col justify-between'>
-                    {children}
-                </div>
-            </div>
-        </div>
-    )
-}
-
-
-
-// <Eligibility tournament={tournament} team={team} user={user} />
-// linear-gradient(180deg, #00000065 40%, #ffffff10 100%)
 interface IRegistration {
     seasons: Season[];
 }
@@ -99,7 +67,6 @@ function Registration({ seasons }: IRegistration): JSX.Element {
     )
 }
 
-// <TournamentRegistration key={tournament.id} tournament={tournament} />
 Registration.SEO =
     {
         title: 'Team Registration',
@@ -112,6 +79,8 @@ Registration.layout = (content: React.ReactNode): JSX.Element => {
 export default Registration
 
 
+// <Eligibility tournament={tournament} team={team} user={user} />
+// linear-gradient(180deg, #00000065 40%, #ffffff10 100%)
 // <motion.div
 // className='max-w-lg z-0'
 // whileHover={{

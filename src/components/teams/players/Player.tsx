@@ -37,11 +37,12 @@ export default function Player({ player, order, captainRadioProps }): JSX.Elemen
     const group = getRootProps()
 
     const showInvite = (): boolean => {
-        const userEmail = getValues(`players.${player.index}.email`)
-        if (user.email === userEmail) {
-            return false
-        }
-        return true
+        return false;
+        // const userEmail = getValues(`players.${player.index}.email`)
+        // if (user.email === userEmail) {
+        //     return false
+        // }
+        // return true
     }
     const error = () => {
         if ('players' in errors) {

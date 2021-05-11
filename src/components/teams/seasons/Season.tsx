@@ -206,6 +206,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                     button: 'Register',
                     status: 'default'
                 })
+                return
             }
             if (!tournamentClient.isRegistrationOpen()) {
                 if (tournamentClient.hasRegistrationClosed()) {
@@ -215,6 +216,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                         button: 'Closed',
                         status: 'error'
                     })
+                    return
                 }
                 if (!tournamentClient.hasRegistrationStarted()) {
                     setStatus({
@@ -223,6 +225,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                         button: 'Register',
                         status: 'default'
                     })
+                    return
                 }
             } else {
                 teamClient.hasTeamRegistered(qualifier).then(registered => {
@@ -233,9 +236,18 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                             button: 'Registered',
                             status: 'success'
                         })
+                        return
                     }
                 })
             }
+
+            setStatus({
+                disabled: false,
+                message: 'Open for Registration!',
+                button: 'Register',
+                status: 'default'
+            })
+            return
 
         }
     }

@@ -11,7 +11,12 @@ module.exports = withBundleAnalyzer({
         FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
         PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
         PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET,
-        PAYPAL_ACCOUNT: process.env.PAYPAL_ACCOUNT
+        PAYPAL_ACCOUNT: process.env.PAYPAL_ACCOUNT,
+        DISABLED_FEATURES: process.env.DISABED_FEATURES,
+        FIREBASE_ADMIN_DATABASE: process.env.FIREBASE_ADMIN_DATABASE,
+        TOORNAMENT_API_KEY: process.env.TOORNAMENT_API_KEY,
+        TOORNAMENT_CLIENT_ID: process.env.TOORNAMENT_CLIENT_ID,
+        TOORNAMENT_CLIENT_SECRET: process.env.TOORNAMENT_CLIENT_SECRET
     },
     buildDir: 'out',
     future: {
