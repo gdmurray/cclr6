@@ -22,6 +22,7 @@ jobs:
         uses: amondnet/vercel-action@v20.0.0
         with:
           vercel-project-name: cclr6
+          vercel-args: --prod
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
