@@ -16,7 +16,9 @@ module.exports = withBundleAnalyzer({
         FIREBASE_ADMIN_DATABASE: process.env.FIREBASE_ADMIN_DATABASE,
         TOORNAMENT_API_KEY: process.env.TOORNAMENT_API_KEY,
         TOORNAMENT_CLIENT_ID: process.env.TOORNAMENT_CLIENT_ID,
-        TOORNAMENT_CLIENT_SECRET: process.env.TOORNAMENT_CLIENT_SECRET
+        TOORNAMENT_CLIENT_SECRET: process.env.TOORNAMENT_CLIENT_SECRET,
+        AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+        AWS_ACCESS_KEY_SECRET: process.env.AWS_ACCESS_KEY_SECRET
     },
     buildDir: 'out',
     future: {

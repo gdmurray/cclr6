@@ -10,24 +10,24 @@ export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
     referral: '/team/payments'
 })(async ({ user }) => {
-    async function getData() {
-        const season = SeasonOne
-        const client = ToornamentClient()
-        for (let i = 0; i < 4; i += 1) {
-            season.qualifiers[i] = await client.getTournament(i)
-        }
-        return Promise.resolve([season])
-    }
-
-    const seasons = await getData()
+    // async function getData() {
+    //     const season = SeasonOne
+    //     const client = new ToornamentClient()
+    //     for (let i = 0; i < 4; i += 1) {
+    //         season.qualifiers[i] = await client.getTournament(i)
+    //     }
+    //     return Promise.resolve([season])
+    // }
+    //
+    // const seasons = await getData()
     return {
         props: {
-            seasons
+            seasons: []
         }
     }
 })
 
-function Payments({ seasons }): JSX.Element {
+function Payments(): JSX.Element {
     const payments = []
     return (
         <>

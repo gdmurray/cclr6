@@ -23,8 +23,8 @@ export const SeasonOne: Season = {
     name: 'Canada Contenders Series: Season 1',
     qualifiers: [
         {
-            id: '1'
-            // id: '4585711997166354432'
+            // id: '1'
+            id: '4586031971897286656'
         },
         {
             id: '2'

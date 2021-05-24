@@ -109,41 +109,54 @@ const data: Tournament[] = [
 
 
 interface ToornamentAPI {
-    getTournament(id: number): Promise<Tournament>;
+    getTournament(id: string): Promise<Tournament>;
 
     getTournaments(): Promise<Tournament[]>;
+
+    registerTeam(id: string, body: RegisterParticipants): Promise<void>;
 }
 
 interface OAuth2Result {
     expires_in: number;
     access_token: string;
     scope: string;
-
 }
 
-export function ToornamentClient(): ToornamentAPI {
-    async function retrieveCredentials(): Promise<OAuth2Result> {
-        console.log('Retreiving credentials...')
-        const result = await adminDb.ref('toornament').get()
-        if (result.exists()) {
-            const credentials = result.val()
-            const { expires_on, access_token } = credentials
-            if (dayjs() >= dayjs(expires_on)) {
-                console.log('Credentials Expired')
-                const refresh = await refreshCredentials()
-                await setCredentials(refresh)
-                return refresh
-            } else {
-                return credentials
-            }
-        } else {
-            const refresh = await refreshCredentials()
-            await setCredentials(refresh)
-            return refresh
+interface Participant {
+    name: string;
+    custom_user_identifier: string;
+    email: string;
+}
+
+interface RegisterParticipants {
+    name: string;
+    email: string;
+    custom_user_identifier: string;
+    lineup: Participant[]
+}
+
+export class ToornamentClient {
+    private auth: OAuth2Result
+    public authURL = 'https://api.toornament.com/oauth/v2/token'
+    public url = 'https://api.toornament.com/organizer/v2'
+    public scope = 'organizer:view organizer:participant'
+
+
+    constructor() {
+    }
+
+    private init = async () => {
+        this.auth = await this.retrieveCredentials()
+    }
+
+    private headers() {
+        return {
+            'X-Api-Key': process.env.TOORNAMENT_API_KEY,
+            'Authorization': `Bearer ${this.auth.access_token}`
         }
     }
 
-    async function setCredentials(credentials: OAuth2Result): Promise<void> {
+    private async setCredentials(credentials: OAuth2Result): Promise<void> {
         console.log('Setting credentials...')
         const now = new Date()
         now.setSeconds(now.getSeconds() + 10800)
@@ -157,14 +170,14 @@ export function ToornamentClient(): ToornamentAPI {
         return Promise.resolve()
     }
 
-    async function refreshCredentials(): Promise<OAuth2Result> {
+    private async refreshCredentials(): Promise<OAuth2Result> {
         console.log('Refreshing credentials...')
-        const authURL = new URL('https://api.toornament.com/oauth/v2/token')
+        const authURL = new URL(this.authURL)
         const params = {
             grant_type: 'client_credentials',
             client_id: process.env.TOORNAMENT_CLIENT_ID,
             client_secret: process.env.TOORNAMENT_CLIENT_SECRET,
-            scope: 'organizer:view'
+            scope: this.scope
         }
         authURL.search = new URLSearchParams(params).toString()
         const result = await fetch(authURL.toString(), {
@@ -176,21 +189,64 @@ export function ToornamentClient(): ToornamentAPI {
         return Promise.resolve(body)
     }
 
-    return {
-        async getTournaments(): Promise<Tournament[]> {
-            const { access_token } = await retrieveCredentials()
-            const response = await fetch('https://api.toornament.com/organizer/v2/tournaments?public=true', {
-                headers: {
-                    'X-Api-Key': process.env.TOORNAMENT_API_KEY,
-                    'Authorization': `Bearer ${access_token}`,
-                    'Range': 'tournaments=0-49'
-                }
-            })
-            const tournaments = await response.json()
-            return Promise.resolve(tournaments)
-        },
-        async getTournament(id: number): Promise<Tournament> {
-            return Promise.resolve(data[id])
+    private async retrieveCredentials(): Promise<OAuth2Result> {
+        console.log('Retreiving credentials...')
+        const result = await adminDb.ref('toornament').get()
+        if (result.exists()) {
+            const credentials = result.val()
+            const { expires_on, access_token } = credentials
+            if (dayjs() >= dayjs(expires_on)) {
+                console.log('Credentials Expired')
+                const refresh = await this.refreshCredentials()
+                await this.setCredentials(refresh)
+                return refresh
+            } else {
+                return credentials
+            }
+        } else {
+            const refresh = await this.refreshCredentials()
+            await this.setCredentials(refresh)
+            return refresh
         }
+    }
+
+    async getTournaments(query?: string): Promise<Tournament[]> {
+        await this.init()
+        const response = await fetch(this.url + `/tournaments?public=true${query ? `&${query}` : ''}`, {
+            headers: {
+                ...this.headers(),
+                'Range': 'tournaments=0-49'
+            }
+        })
+        const tournaments = await response.json()
+        return Promise.resolve(tournaments)
+    }
+
+    async getTournament(id: string): Promise<Tournament> {
+        await this.init()
+        if (id.length > 1) {
+            const response = await fetch(this.url + `/tournaments/${id}`, {
+                headers: this.headers()
+            })
+            const toornament = await response.json()
+            return Promise.resolve(toornament)
+        } else {
+            return Promise.resolve(data[parseInt(id, 10) - 1])
+        }
+    }
+
+    async registerTeam(id: string, body: RegisterParticipants): Promise<string> {
+        await this.init()
+        const response = await fetch(this.url + `/tournaments/${id}/participants`, {
+            method: 'POST',
+            headers: {
+                ...this.headers(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        })
+        const data = await response.json()
+        const { id: toornamentId } = data
+        return Promise.resolve(toornamentId)
     }
 }

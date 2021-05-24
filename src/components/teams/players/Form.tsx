@@ -7,26 +7,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { Button, useRadioGroup, useToast } from '@chakra-ui/react'
 import Player from '@components/teams/players/Player'
+import { findWithAttr } from '@lib/utils'
 import Loader from '@components/Loader'
-
-
-// TODO: GET YUMRESOLVER BACK WORKING FUCK MAN
-// TODO: LOCK TEAM CHANGES?
-
-function findWithAttr(array: any[], attr: string, value: any): number[] {
-    let idx = []
-    try {
-        for (let i = 0; i < array.length; i += 1) {
-            if (array[i][attr] === value) {
-                idx.push(i)
-            }
-        }
-    } catch (err) {
-        console.log('error finding attribute: ', array, attr, value)
-    }
-
-    return idx
-}
 
 
 yup.addMethod(yup.array, 'unique', function(message, mapper = a => a) {
@@ -61,21 +43,43 @@ yup.addMethod(yup.array, 'unique', function(message, mapper = a => a) {
     })
 })
 
+
+// TODO: LOCK TEAM CHANGES?
+
 const schema = yup.object().shape({
     players: yup.array().of(
         yup.object().shape({
             email: yup.string().email('Must be a Valid Email'),
+            uplay: yup.string().when('email', {
+                is: (email) => email !== '' && email.length > 0,
+                then: yup.string()
+                    .required('Must include players Uplay')
+                    .min(1, 'Player\'s Uplay must be longer than 1 character')
+                    .max(16, 'Player\'s Uplay must be shorter than 16 characters')
+            }),
             is_captain: yup.boolean()
         })
     ).unique('duplicate email', a => a.email)
 })
 
+interface PlayerForm {
+    email: string;
+    uplay: string;
+    is_captain: boolean;
+}
+
+interface PlayersForm {
+    players: PlayerForm[]
+}
+
+// TODO: UPDATE PARTICIPANT DATA ON REGISTERED EVENTS, AND RESTRICT EDITABILITY
+// TODO: ASSIGN USER ID TO PLAYER, INCLUDED IN INVITE
 export default function PlayerForm({ players, callback }) {
     const teamContext = useContext(TeamContext)
     const { team } = teamContext
     const toast = useToast()
 
-    const methods = useForm({
+    const methods = useForm<PlayersForm>({
         mode: 'onTouched',
         resolver: yupResolver(schema)
     })
@@ -132,7 +136,7 @@ export default function PlayerForm({ players, callback }) {
                     })
                 })
             } else {
-                delete player.id;
+                delete player.id
                 ref.collection('players').add({
                     ...player
                 }).then((result) => {
@@ -150,13 +154,14 @@ export default function PlayerForm({ players, callback }) {
         })
     }
     const onSubmit = data => {
+        console.log('ON SUBMIT')
         if (isValid && dirtyFields.players) {
             const { players } = data
             const validPlayers = players
                 .map((p, i) => ({ ...p, index: i }))
                 .filter((player) => player.email !== '')
                 .filter((player) => typeof dirtyFields?.players[player.index] !== 'undefined')
-
+            console.log('VALID PLAYERS: ', validPlayers)
             const playersCollection = Teams.getPlayersCollection(team.id)
 
             Promise.all<TransactionResult>(validPlayers.map(player => upsertPlayer(playersCollection, player))).then((result: TransactionResult[]) => {
@@ -177,7 +182,7 @@ export default function PlayerForm({ players, callback }) {
                         })
                     }
                 })
-                const updatedPlayers = result.map(p => p.player);
+                const updatedPlayers = result.map(p => p.player)
                 callback(updatedPlayers)
             })
         }
@@ -186,7 +191,7 @@ export default function PlayerForm({ players, callback }) {
     return (
         <div>
             <FormProvider {...methods}>
-                <form onSubmit={methods.handleSubmit(onSubmit)}>
+                <form onSubmit={methods.handleSubmit(onSubmit)} noValidate={true}>
                     <div className='player-wrapper flex flex-col max-w-7xl mx-auto items-center' {...captainGroup}>
                         <div className='text-right max-w-3xl w-full'>
                             <div className='space-x-4'>

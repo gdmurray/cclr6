@@ -55,6 +55,7 @@ interface IEligibility {
 function useEligibility({ team, user, season }) {
     const { push } = useRouter()
     const seasonClient = SeasonClient(season)
+    const [loading, setLoading] = useState<boolean>(true)
     const teamClient = CreateTeamClient(team)
     const [eligibility, setEligibility] = useState<IEligibility>({ ...baseConditions })
 
@@ -111,7 +112,6 @@ function useEligibility({ team, user, season }) {
 
             const hasPaid = await teamClient.hasTeamPaid('1')
             if (!hasPaid) {
-                console.log('Has not paid')
                 checks = not('paymentSatisfied')
                 if (checks.reason === '-') {
                     checks.reason = baseConditions.paymentSatisfied.message
@@ -119,6 +119,7 @@ function useEligibility({ team, user, season }) {
             }
 
             setEligibility(checks)
+            setLoading(false)
         }
         canTeamRegister()
 
@@ -174,7 +175,8 @@ function useEligibility({ team, user, season }) {
 
     return {
         eligibility,
-        eligibilityChecklist
+        eligibilityChecklist,
+        loading
     }
 }
 

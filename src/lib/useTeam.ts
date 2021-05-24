@@ -4,6 +4,7 @@ import { ITeam, Teams } from '@lib/models/team'
 interface UseTeam {
     team: ITeam | null;
     loading: boolean;
+    setTeam: (team: ITeam) => void
 }
 
 export default function useTeam({ user }): UseTeam {
@@ -11,19 +12,9 @@ export default function useTeam({ user }): UseTeam {
     const [loading, setLoading] = useState<boolean>(true)
     useEffect(() => {
         const fetchTeam = async () => {
-            const userHasTeam = await Teams.getTeamByOwnerID(user.uid)
-            if (userHasTeam) {
-                const foundTeam = {
-                    id: userHasTeam.id,
-                    role: 'Owner',
-                    ...userHasTeam.data() as ITeam
-                }
-                setTeam(foundTeam)
-                setLoading(false)
-            } else {
-                setTeam(null)
-                setLoading(false)
-            }
+            const foundTeam = await Teams.getTeamByUserID(user.uid)
+            setTeam(foundTeam)
+            setLoading(false)
         }
         if (user && team === undefined) {
             fetchTeam()
@@ -32,6 +23,7 @@ export default function useTeam({ user }): UseTeam {
 
     return {
         team,
-        loading
+        loading,
+        setTeam
     }
 }

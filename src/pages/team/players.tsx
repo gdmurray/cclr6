@@ -6,6 +6,7 @@ import { TeamContext } from '@components/teams/teamContext'
 import { Teams } from '@lib/models/team'
 import { basePlayers, IPlayer } from '@lib/models/player'
 import Loader from '@components/Loader'
+import { InvitationProvider } from '@components/teams/invitationContext'
 
 const url = '/team/players'
 
@@ -106,10 +107,18 @@ function Players(): JSX.Element {
 
     const playerCallback = (players) => {
         dispatch({ type: 'update', players })
+        fetch('/api/team/players/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'applicaton/json'
+            }
+        })
     }
     const { players } = state
     return (
-        <PlayerForm players={players} callback={playerCallback} />
+        <InvitationProvider team={team}>
+            <PlayerForm players={players} callback={playerCallback} />
+        </InvitationProvider>
     )
 }
 

@@ -8,9 +8,9 @@ export const getServerSideProps = withAuthSSR({
 
 const Register = () => {
     return (
-        <>
+        <div className="py-2">
             <RegisterForm />
-        </>
+        </div>
     )
 }
 

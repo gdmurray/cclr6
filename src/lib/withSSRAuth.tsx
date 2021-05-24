@@ -1,12 +1,17 @@
 import firebaseAdmin from './firebase-admin'
 import nookies from 'nookies'
 import { Features, features, featureUrls } from '@lib/features'
+import Router from 'next/router'
 
 export enum AuthAction {
     RENDER,
     RETURN_NULL,
     REDIRECT_TO_LOGIN,
     REDIRECT_TO_APP
+}
+
+export enum Referral {
+    RESOLVED = 'resolved'
 }
 
 const AppPageURL = '/'
@@ -29,6 +34,10 @@ export const withAuthSSR = (
                 permanent: false
             }
         }
+    }
+
+    if (referral === Referral.RESOLVED) {
+        referral = resolvedUrl
     }
 
     let AuthUser = null

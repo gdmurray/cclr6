@@ -6,6 +6,7 @@ type Config = {
     readonly site_description: string;
     readonly site_keywords: { keyword: string }[];
     readonly twitter_account: string;
+    readonly contact_email: string;
     readonly socials: {
         twitter: string;
         discord: string;

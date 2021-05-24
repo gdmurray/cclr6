@@ -26,5 +26,8 @@ export const basePlayers = [
     },
     {
         required: false
+    },
+    {
+        required: false
     }
 ]

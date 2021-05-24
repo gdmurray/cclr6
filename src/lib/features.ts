@@ -2,12 +2,14 @@ interface IFeatures {
     registration: boolean;
     login: boolean;
     profile: boolean;
+    invite: boolean;
 }
 
 export const defaultFeatures = {
     registration: true,
     login: true,
-    profile: true
+    profile: true,
+    invite: true
 }
 
 const getFeatures = (): IFeatures => {
@@ -35,7 +37,8 @@ const getFeatures = (): IFeatures => {
 export const featureUrls: Record<string, string[]> = {
     registration: ['/team/register', '/register'],
     login: ['/login'],
-    profile: ['/profile']
+    profile: ['/profile'],
+    invite: ['/invitation']
 }
 
 export const Features = {

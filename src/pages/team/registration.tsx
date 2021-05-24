@@ -13,26 +13,25 @@ import SeasonComponent from '@components/teams/seasons/Season'
 dayjs.extend(LocalizedFormat)
 
 const url = '/team/registration'
-// TODO: Toggle the eligibility check by first checking if the tournament is even active lmao
-// TODO: this is where we'd fetch some information from toornaments api... when we have access
+
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
     referral: url
 })(async ({ user }) => {
-    async function getData() {
-        const season = SeasonOne
-        const client = ToornamentClient()
-        client.getTournaments()
-        for (let i = 0; i < 4; i += 1) {
-            season.qualifiers[i] = await client.getTournament(i)
-        }
-        return Promise.resolve([season])
+    const season = SeasonOne
+    const client = new ToornamentClient()
+
+    const qualifiers = []
+    for (let i = 0; i < season.qualifiers.length; i += 1) {
+        const { id } = season.qualifiers[i]
+        const qual = await client.getTournament(id)
+        qualifiers.push(qual)
     }
 
-    const seasons = await getData()
+    season.qualifiers = qualifiers
     return {
         props: {
-            seasons
+            seasons: [season]
         }
     }
 })

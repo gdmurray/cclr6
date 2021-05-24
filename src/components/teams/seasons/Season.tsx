@@ -1,101 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react'
-import ReactDOM from 'react-dom'
 import { FaCalendarAlt, FaRegCreditCard, FaTimes, FaTrophy } from 'react-icons/fa'
 import dayjs from 'dayjs'
-import { Button, toast, useToast } from '@chakra-ui/react'
+import { Button, useToast } from '@chakra-ui/react'
 import { SeasonClient } from '@lib/models/season'
-import { PayPalButtons } from '@paypal/react-paypal-js'
 import { TeamContext } from '@components/teams/teamContext'
 import { CreateTeamClient, IRegistration } from '@lib/models/team'
 import { useRouter } from 'next/router'
-import Eligibility from '@components/teams/seasons/Eligibility'
 import useEligibility from '@components/teams/seasons/Eligibility'
 import { CreateTournamentClient } from '@lib/models/tournament'
+import Loader from '@components/Loader'
+import PaymentForm from '@components/teams/Payment'
 
 
-function PaymentForm({ season, team, inProgress, setProgress }): JSX.Element {
-
-    const router = useRouter()
-    const teamClient = CreateTeamClient(team)
-    const [completed, setCompleted] = useState<boolean>(false)
-    const [orderId, setOrderId] = useState('')
-    const [paypalError, setPaypalError] = useState('')
-
-    const createOrder = (data, actions) => {
-        return actions.order
-            .create({
-                purchase_units: [
-                    {
-                        amount: {
-                            value: 25
-                        }
-                    }
-                ],
-                application_context: {
-                    shipping_preference: 'NO_SHIPPING'
-                }
-            }).then((orderId) => {
-                setProgress(true)
-                setOrderId(orderId)
-                return orderId
-            })
-    }
-    const onApprove = (data, actions) => {
-        return actions.order.capture().then(async (details) => {
-            await teamClient.purchasePass(season.id, details)
-            setProgress(false)
-            setCompleted(true)
-        }).catch(err => {
-
-            setPaypalError(`Error Processing Payment: ${err.message}`)
-        })
-    }
-
-    const onCancel = (data, actions) => {
-        setProgress(false)
-    }
-
-    useEffect(() => {
-        if (completed) {
-            setTimeout(() => {
-                router.reload()
-            }, 2500)
-        }
-    }, [completed])
-
-    return (
-        <div className='py-4 px-6 bg-gray-50 rounded-xl border border-gray-600'>
-            <div className='text-gray-800 text-lg font-bold tracking-tight pb-2'>{season.name} <span
-                className='text-gray-600 text-sm'>Qualifiers Payment</span></div>
-            <div className='text-error font-semibold text-sm'>{paypalError}</div>
-            {completed && (
-                <>
-                    <div className='font-heavy text-gray-800 font-semibold text-2xl text-center'>Thank You for
-                        Purchasing!<br /> We look forward to seeing you in the Quals.
-                    </div>
-                    <div className='text-center text-sm tracking-tight text-gray-600 font-medium'>Refreshing Page...
-                    </div>
-                </>)}
-            {!completed && (
-                <PayPalButtons
-                    createOrder={createOrder}
-                    onApprove={onApprove}
-
-                    onCancel={onCancel}
-                    style={{
-                        color: 'gold',
-                        height: 40,
-                        shape: 'pill',
-                        label: 'pay',
-                        tagline: false,
-                        layout: 'vertical'
-                    }} />
-            )}
-        </div>
-    )
-}
-
-// const PaypalButton = paypal.Buttons.driver('react', { React, ReactDOM })
 export default function SeasonComponent({ season }): JSX.Element {
     const seasonClient = SeasonClient(season)
     const [isPurchasing, setIsPurchasing] = useState<boolean>(false)
@@ -126,7 +42,7 @@ export default function SeasonComponent({ season }): JSX.Element {
         })
     }, [])
 
-    const { eligibility, eligibilityChecklist } = useEligibility({ team, user, season })
+    const { eligibility, eligibilityChecklist, loading } = useEligibility({ team, user, season })
 
     return (
         <div className='bordered border rounded-xl'>
@@ -164,10 +80,13 @@ export default function SeasonComponent({ season }): JSX.Element {
                             <div className='font-semibold text-main pb-1'>Qualifiers</div>
                             <div
                                 className={`p-2 bordered border-2 rounded-xl space-y-2 ${eligibility?.eligible ? '' : 'disabled'}`}>
-                                {season.qualifiers.map((qualifier) => {
+                                {loading && (
+                                    <Loader text='Loading Qualifiers' />
+                                )}
+                                {!loading && (season.qualifiers.map((qualifier) => {
                                     return <Qualifier key={qualifier.id} qualifier={qualifier}
                                                       eligibility={eligibility} />
-                                })}
+                                }))}
                             </div>
                         </div>
                     )
@@ -195,7 +114,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
     })
 
     const router = useRouter()
-    const toast = useToast({ position: 'top-right', duration: 2000 })
+    const toast = useToast({ position: 'top-right', duration: 2000, variant: 'solid' })
 
     const getRegistrationStatus = (): void => {
         if (eligibility) {
@@ -208,6 +127,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                 })
                 return
             }
+
             if (!tournamentClient.isRegistrationOpen()) {
                 if (tournamentClient.hasRegistrationClosed()) {
                     setStatus({
@@ -227,27 +147,27 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                     })
                     return
                 }
-            } else {
-                teamClient.hasTeamRegistered(qualifier).then(registered => {
-                    if (registered) {
-                        setStatus({
-                            disabled: true,
-                            message: `Registered on ${dayjs((registered as IRegistration).registered.toDate()).format('LLL')}`,
-                            button: 'Registered',
-                            status: 'success'
-                        })
-                        return
-                    }
-                })
             }
 
-            setStatus({
-                disabled: false,
-                message: 'Open for Registration!',
-                button: 'Register',
-                status: 'default'
+            teamClient.hasTeamRegistered(qualifier.id).then(registered => {
+                if (registered) {
+                    setStatus({
+                        disabled: true,
+                        message: `Registered on ${dayjs((registered as IRegistration).registered).format('LLL')}`,
+                        button: 'Registered',
+                        status: 'success'
+                    })
+                    return
+                } else {
+                    setStatus({
+                        disabled: false,
+                        message: 'Open for Registration!',
+                        button: 'Register',
+                        status: 'default'
+                    })
+                    return
+                }
             })
-            return
 
         }
     }
@@ -257,18 +177,29 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
     }, [eligibility])
 
     const handleRegister = async (tournament) => {
-        teamClient.hasTeamRegistered(tournament).then((hasRegistered) => {
+        teamClient.hasTeamRegistered(tournament.id).then((hasRegistered) => {
             if (!hasRegistered) {
-                teamClient.registerForTournament(tournament).then((registration) => {
-                    if (registration) {
-                        toast({
-                            title: `Registered for ${tournament.name}`,
-                            status: 'success',
-                            onCloseComplete: () => {
-                                router.reload()
-                            }
-                        })
+                fetch(`/api/toornament/${tournament.id}/register`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        team_id: team.id
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
+
+                }).then((result) => {
+                    result.json().then(data => {
+                        if (data.status === 'success') {
+                            toast({
+                                title: `Registered for ${tournament.name}`,
+                                status: 'success',
+                                onCloseComplete: () => {
+                                    router.reload()
+                                }
+                            })
+                        }
+                    })
                 })
             }
         })
@@ -291,7 +222,9 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
             <div className='text-line w-full justify-between'>
                 <div
                     className='text-line font-medium text-lg tracking-tight'>
-                    <FaTrophy />&nbsp;{qualifier.name}</div>
+                    <FaTrophy />&nbsp;{qualifier.id.length > 1 ?
+                    <a target='_blank' rel='noopener' className="hover:underline transition-all duration-150" href={`https://www.toornament.com/en_US/tournaments/${qualifier.id}/information`}>{qualifier.name}</a> : qualifier.name}
+                </div>
                 <div style={{ width: '110px' }} className='text-line justify-between font-medium tracking-tight'>
                     <FaCalendarAlt />&nbsp;{qualifier.scheduled_date_start}
                 </div>

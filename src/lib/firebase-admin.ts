@@ -17,6 +17,8 @@ if (!firebaseAdmin.apps.length) {
 }
 
 const auth = firebaseAdmin.auth()
+export const adminFireStore = firebaseAdmin.firestore()
+export const FieldValue = firebaseAdmin.firestore.FieldValue
 export const adminDb = firebaseAdmin.database()
 export default firebaseAdmin
 export { auth }

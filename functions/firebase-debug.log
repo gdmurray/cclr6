@@ -1,0 +1,22 @@
+[debug] [2021-05-11T18:01:19.316Z] ----------------------------------------------------------------------
+[debug] [2021-05-11T18:01:19.318Z] Command:       /Users/gregmurray/.nvm/versions/node/v12.18.2/bin/node /Users/gregmurray/.nvm/versions/node/v12.18.2/bin/firebase deploy --only functions
+[debug] [2021-05-11T18:01:19.319Z] CLI Version:   9.10.0
+[debug] [2021-05-11T18:01:19.319Z] Platform:      darwin
+[debug] [2021-05-11T18:01:19.319Z] Node Version:  v12.18.2
+[debug] [2021-05-11T18:01:19.320Z] Time:          Tue May 11 2021 14:01:19 GMT-0400 (Eastern Daylight Time)
+[debug] [2021-05-11T18:01:19.320Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-05-11T18:01:19.328Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-05-11T18:01:19.328Z] > authorizing via signed-in user (yaboigotsnacks@gmail.com)
+[debug] [2021-05-11T18:01:19.328Z] [iam] checking project ccl-content for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2021-05-11T18:01:19.330Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/ccl-content:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2021-05-11T18:01:19.685Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 11 May 2021 18:01:19 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=163","alt-svc":"h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-05-11T18:01:19.686Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/ccl-content/serviceAccounts/ccl-content@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2021-05-11T18:01:19.905Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 11 May 2021 18:01:20 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'ccl-content'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
