@@ -1,6 +1,7 @@
 @import "navigation";
 @import "teams";
 @import "rulebook";
+@import "posts";
 
 .page-content {
   @apply py-2 px-6 lg:px-16;
@@ -132,4 +133,16 @@
 
 .chakra-form__label {
   @extend .text-alt;
+}
+
+.chakra-breadcrumb__list-item > a {
+  @apply transition-colors duration-200
+}
+
+.chakra-breadcrumb__list-item > span {
+  cursor: default;
+}
+
+.chakra-breadcrumb__list-item > a:hover {
+  @apply underline text-red-500
 }

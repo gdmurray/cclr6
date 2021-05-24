@@ -18,7 +18,9 @@ module.exports = withBundleAnalyzer({
         TOORNAMENT_CLIENT_ID: process.env.TOORNAMENT_CLIENT_ID,
         TOORNAMENT_CLIENT_SECRET: process.env.TOORNAMENT_CLIENT_SECRET,
         AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
-        AWS_ACCESS_KEY_SECRET: process.env.AWS_ACCESS_KEY_SECRET
+        AWS_ACCESS_KEY_SECRET: process.env.AWS_ACCESS_KEY_SECRET,
+        COSMIC_BUCKET_SLUG: process.env.COSMIC_BUCKET_SLUG,
+        COSMIC_READ_KEY: process.env.COSMIC_READ_KEY
     },
     buildDir: 'out',
     future: {

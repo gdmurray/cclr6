@@ -1,0 +1,21 @@
+.post-content {
+  .post-title {
+    @apply text-main text-2xl font-semibold;
+  }
+
+  .post-date {
+    @apply text-alt-2 text-sm font-medium;
+  }
+
+  @extend .text-alt;
+  @apply text-base font-medium tracking-tight;
+  p > a {
+    @apply font-medium transition-colors duration-150;
+    text-decoration: underline;
+
+    &:hover {
+      @apply text-primary;
+      text-decoration: none;
+    }
+  }
+}

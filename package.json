@@ -24,6 +24,7 @@
     "@tailwindcss/jit": "^0.1.18",
     "@types/js-yaml": "^4.0.0",
     "aws-sdk": "^2.897.0",
+    "cosmicjs": "^4.1.2",
     "date-fns": "^2.19.0",
     "dayjs": "^1.10.4",
     "email-templates": "^8.0.4",

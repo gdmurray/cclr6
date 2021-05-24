@@ -39,7 +39,7 @@ type CCLAppProps = AppProps & {
 }
 
 export default function App({ Component, pageProps }: CCLAppProps) {
-    const SEO = Component.SEO
+    const SEO = pageProps.SEO || Component.SEO
     const layout = Component.layout ?? ((p): JSX.Element => <>{p}</>)
     const paypalOptions = {
         'client-id': process.env.PAYPAL_CLIENT_ID,

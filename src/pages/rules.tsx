@@ -128,7 +128,7 @@ const Rules = ({ content, tableOfContents, modifiedTime }: RulesProps): JSX.Elem
                         <div className="table-content">
                             {tableOfContents.map((section) => {
                                 return (
-                                    <div id={section.section.id} className='table-block'>
+                                    <div key={section.section.id} id={section.section.id} className='table-block'>
                                         <a className='table-section'
                                            href={`#${section.section.id}`}>{section.section.content}</a>
                                         <div className='table-subsections'>
