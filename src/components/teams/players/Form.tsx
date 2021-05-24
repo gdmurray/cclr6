@@ -7,21 +7,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { Button, useRadioGroup, useToast } from '@chakra-ui/react'
 import Player from '@components/teams/players/Player'
+import { findWithAttr } from '@lib/utils'
 import Loader from '@components/Loader'
-
-
-// TODO: GET YUMRESOLVER BACK WORKING FUCK MAN
-// TODO: LOCK TEAM CHANGES?
-
-function findWithAttr(array, attr, value) {
-    let idx = []
-    for (var i = 0; i < array.length; i += 1) {
-        if (array[i][attr] === value) {
-            idx.push(i)
-        }
-    }
-    return idx
-}
 
 
 yup.addMethod(yup.array, 'unique', function(message, mapper = a => a) {
@@ -38,44 +25,66 @@ yup.addMethod(yup.array, 'unique', function(message, mapper = a => a) {
             }, {})
             const indexes = Object.keys(counts)
                 .filter(key => counts[key] > 1)
-                .reduce((acc: number[], val: string) => {
+                .reduce((acc: number[][], val: string) => {
                     const values = findWithAttr(list, 'email', val)
-                    return [...acc, ...values]
+                    acc.push(values)
+                    return acc
                 }, [])
             if (indexes.length > 0) {
                 const [idx] = indexes
-                return this.createError({ path: `players.${idx}.email`, message: 'Cannot use the same email address' })
+                const [_, errorIndex] = idx
+                return this.createError({
+                    path: `players.${errorIndex}.email`,
+                    message: 'Cannot use the same email address'
+                })
             }
         }
         return true
     })
 })
 
+
+// TODO: LOCK TEAM CHANGES?
+
 const schema = yup.object().shape({
     players: yup.array().of(
         yup.object().shape({
             email: yup.string().email('Must be a Valid Email'),
+            uplay: yup.string().when('email', {
+                is: (email) => email !== '' && email.length > 0,
+                then: yup.string()
+                    .required('Must include players Uplay')
+                    .min(1, 'Player\'s Uplay must be longer than 1 character')
+                    .max(16, 'Player\'s Uplay must be shorter than 16 characters')
+            }),
             is_captain: yup.boolean()
         })
     ).unique('duplicate email', a => a.email)
 })
 
+interface PlayerForm {
+    email: string;
+    uplay: string;
+    is_captain: boolean;
+}
 
-export default function PlayerForm({ players }) {
+interface PlayersForm {
+    players: PlayerForm[]
+}
+
+// TODO: UPDATE PARTICIPANT DATA ON REGISTERED EVENTS, AND RESTRICT EDITABILITY
+// TODO: ASSIGN USER ID TO PLAYER, INCLUDED IN INVITE
+export default function PlayerForm({ players, callback }) {
     const teamContext = useContext(TeamContext)
-    const { team, user } = teamContext
+    const { team } = teamContext
     const toast = useToast()
 
-    const methods = useForm({
+    const methods = useForm<PlayersForm>({
         mode: 'onTouched',
-        resolver: yupResolver(schema),
-        defaultValues: {
-            players
-        }
+        resolver: yupResolver(schema)
     })
 
     const { formState: { isValid, dirtyFields }, setValue, getValues } = methods
-
 
     const getDefaultCaptain = () => {
         let defaultCaptain = 'players.0'
@@ -107,47 +116,74 @@ export default function PlayerForm({ players }) {
 
     const captainGroup = getRootProps()
 
+    interface TransactionResult {
+        player: IPlayer;
+        created: boolean;
+    }
+
+    const upsertPlayer = (ref, player): Promise<TransactionResult> => {
+        return new Promise((resolve, reject) => {
+            // Existing Player!
+            if (player.id && player.id !== '') {
+                const playerWithId = { ...player }
+                delete player.id
+                ref.collection('players').doc(playerWithId.id).update({
+                    ...player
+                }).then(() => {
+                    resolve({
+                        player: playerWithId,
+                        created: false
+                    })
+                })
+            } else {
+                delete player.id
+                ref.collection('players').add({
+                    ...player
+                }).then((result) => {
+                    result.get().then(data => {
+                        resolve({
+                            player: {
+                                ...data.data(),
+                                id: data.id
+                            },
+                            created: true
+                        })
+                    })
+                })
+            }
+        })
+    }
     const onSubmit = data => {
+        console.log('ON SUBMIT')
         if (isValid && dirtyFields.players) {
             const { players } = data
             const validPlayers = players
                 .map((p, i) => ({ ...p, index: i }))
                 .filter((player) => player.email !== '')
                 .filter((player) => typeof dirtyFields?.players[player.index] !== 'undefined')
-
+            console.log('VALID PLAYERS: ', validPlayers)
             const playersCollection = Teams.getPlayersCollection(team.id)
-            validPlayers.forEach((player) => {
-                console.log('valid: ', player)
-                if (player.id && player.id !== '') {
-                    console.log('EXISTING OBJECT', player)
-                } else {
-                    console.log('NEW PLAYER: ', player)
-                }
-                if (player.id && player.id !== '') {
-                    const { id } = player
-                    delete player.id
-                    playersCollection.collection('players').doc(id).update({
-                        ...player
-                    }).then(() => {
+
+            Promise.all<TransactionResult>(validPlayers.map(player => upsertPlayer(playersCollection, player))).then((result: TransactionResult[]) => {
+                result.forEach((updated) => {
+                    if (updated.created) {
                         toast({
-                            title: `Updated Player ${player.index + 1}`,
-                            duration: 1000,
-                            status: 'info',
-                            position: 'top-right'
-                        })
-                    })
-                } else {
-                    playersCollection.collection('players').add({
-                        ...player
-                    }).then((result) => {
-                        toast({
-                            title: `Added Player ${player.index + 1}`,
+                            title: `Added Player ${updated.player.index + 1}`,
                             duration: 1000,
                             status: 'success',
                             position: 'top-right'
                         })
-                    })
-                }
+                    } else {
+                        toast({
+                            title: `Updated Player ${updated.player.index + 1}`,
+                            duration: 1000,
+                            status: 'info',
+                            position: 'top-right'
+                        })
+                    }
+                })
+                const updatedPlayers = result.map(p => p.player)
+                callback(updatedPlayers)
             })
         }
     }
@@ -155,7 +191,7 @@ export default function PlayerForm({ players }) {
     return (
         <div>
             <FormProvider {...methods}>
-                <form onSubmit={methods.handleSubmit(onSubmit)}>
+                <form onSubmit={methods.handleSubmit(onSubmit)} noValidate={true}>
                     <div className='player-wrapper flex flex-col max-w-7xl mx-auto items-center' {...captainGroup}>
                         <div className='text-right max-w-3xl w-full'>
                             <div className='space-x-4'>

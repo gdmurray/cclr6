@@ -7,4 +7,6 @@ export const getTeamByUserID = userId => {
     return db.collection('teams')
 }
 
+export const FieldValue = firebase.firestore.FieldValue
+
 export default db

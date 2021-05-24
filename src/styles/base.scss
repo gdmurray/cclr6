@@ -1,5 +1,7 @@
 @import "navigation";
 @import "teams";
+@import "rulebook";
+@import "posts";
 
 .page-content {
   @apply py-2 px-6 lg:px-16;
@@ -50,6 +52,10 @@
       background-position: 200% center;
     }
   }
+}
+
+.text-line {
+  @apply flex flex-row items-center;
 }
 
 .text-main {
@@ -123,4 +129,20 @@
   .chakra-form-control {
     margin-bottom: 0.5em !important;
   }
+}
+
+.chakra-form__label {
+  @extend .text-alt;
+}
+
+.chakra-breadcrumb__list-item > a {
+  @apply transition-colors duration-200
+}
+
+.chakra-breadcrumb__list-item > span {
+  cursor: default;
+}
+
+.chakra-breadcrumb__list-item > a:hover {
+  @apply underline text-red-500
 }

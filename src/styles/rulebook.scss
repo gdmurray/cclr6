@@ -1,0 +1,62 @@
+.rulebook {
+  .table-of-contents {
+    @apply flex flex-col justify-center -space-y-0.5 mb-12;
+
+    .table-title {
+      @extend .text-main;
+      @apply text-xl font-semibold;
+    }
+
+    .table-section {
+      @extend .text-main;
+      @apply text-base font-semibold hover:text-primary;
+    }
+
+
+    .table-content {
+      @apply flex flex-wrap;
+    }
+
+    .table-block {
+      @apply flex flex-col w-72;
+      & > a {
+        @apply -mb-1;
+      }
+    }
+
+    .table-subsections {
+      @apply flex flex-col -space-y-1;
+      & > a {
+        @extend .text-main;
+        @apply text-sm font-medium ml-6 hover:text-primary;
+      }
+    }
+  }
+
+  @apply mb-24;
+  .title {
+    @extend .page-title;
+    @extend .text-main;
+    @apply mb-4;
+  }
+
+  .section {
+    @extend .text-main;
+    @apply font-bold text-3xl tracking-tight mt-6;
+  }
+
+  .subsection {
+    @extend .text-main;
+    @apply font-bold text-2xl tracking-tighter ml-2 mt-4 mb-1;
+  }
+
+  .text {
+    @extend .text-alt;
+    @apply font-medium text-base tracking-tight ml-4;
+  }
+
+  .text-indent {
+    @extend .text;
+    @apply ml-8;
+  }
+}

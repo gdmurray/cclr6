@@ -1,5 +1,12 @@
 import { Tournament } from '@lib/models/tournament'
 
+
+// TODO: Create a Season Object, which links all tournaments together, we would save ID to our database.
+// Season {
+//     qualifiers: {
+//         one: id,
+//     }
+// }
 export const data: Tournament[] = [
     {
         name: 'CCL: Season 1',

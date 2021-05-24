@@ -1,19 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FormControl, FormLabel, FormHelperText, FormControlOptions } from '@chakra-ui/form-control'
-import { Input, Divider, FormErrorMessage } from '@chakra-ui/react'
+import { Input, Divider, FormErrorMessage, InputGroup, InputRightElement, IconButton } from '@chakra-ui/react'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { FaTwitch, FaTwitter } from 'react-icons/fa'
+import { FaEye, FaEyeSlash, FaTwitch, FaTwitter } from 'react-icons/fa'
 import firebaseClient from '@lib/firebase'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import useRedirect from '@components/Layout/useRedirect'
 
+require('yup-password')(yup)
+
 const schema = yup.object().shape({
     email: yup.string().email().required('Email Address is Required'),
-    password: yup.string().min(8).required('Please Enter a Password'),
-    passwordConfirmation: yup.string().min(8).oneOf([yup.ref('password')], 'Passwords Must Match').required()
+    password: yup.string()
+        .required('Please Enter a Password')
+        .min(8, 'Password Must be at least 8 characters long')
+        .minUppercase(1, 'Password Must Contain at Least 1 Uppercase Letter')
+        .minNumbers(1, 'Password Must Contain at Least 1 Number'),
+    passwordConfirmation: yup.string().oneOf([yup.ref('password')], 'Passwords Must Match').required()
 })
 
 interface RegisterFormInputs {
@@ -22,11 +28,18 @@ interface RegisterFormInputs {
     passwordConfirmation: string;
 }
 
+interface ShowPassword {
+    password: boolean;
+    passwordConfirmation: boolean
+}
 
 export default function RegisterForm() {
     const router = useRouter()
     const { redirect, getNext } = useRedirect()
-
+    const [showPassword, setShowPassword] = useState<ShowPassword>({
+        password: false,
+        passwordConfirmation: false
+    })
     const { register, handleSubmit, setError, formState: { errors, touchedFields } } = useForm<RegisterFormInputs>({
         mode: 'onBlur',
         resolver: yupResolver(schema)
@@ -48,25 +61,22 @@ export default function RegisterForm() {
         }
 
     }
+
+    const togglePassword = (e, name: keyof ShowPassword) => {
+        e.preventDefault()
+        setShowPassword({
+            ...showPassword,
+            [name]: !showPassword[name]
+        })
+    }
     return (
         <div className='px-8'>
             <div
-                className='px-12 py-8 sm:px-16 md:px-20 flex flex-col justify-center w-full mx-auto max-w-xl border rounded-md bordered'>
+                className='px-10 py-8 sm:px-16 md:px-20 flex flex-col justify-center w-full mx-auto max-w-xl border rounded-md bordered'>
                 <div
                     className='w-full text-center mb-4 font-bold text-2xl dark:text-gray-200 text-gray-900 mb-6'>
                     Register Your CCL Account
                 </div>
-                <div className='space-y-3 mb-4 flex flex-col md:flex-row items-center space-x-2 md:space-y-0'>
-                    <button
-                        className='social-button bg-twitter hover:bg-twitter-darker text-gray-50'>
-                        <FaTwitter className='mr-2' />Twitter Sign Up
-                    </button>
-                    <button
-                        className='social-button bg-twitch hover:bg-twitch-darker text-gray-50'>
-                        <FaTwitch className='mr-2' />Twitch Sign Up
-                    </button>
-                </div>
-                <Divider className='my-4' />
                 <form className='w-full max-w-xl mb-8' onSubmit={handleSubmit(onSubmit)}>
                     <FormControl
                         id='email'
@@ -83,7 +93,19 @@ export default function RegisterForm() {
                         isRequired
                     >
                         <FormLabel>Password</FormLabel>
-                        <Input type='password' name='password' placeholder='Password' {...register('password')} />
+                        <InputGroup>
+                            <Input type={showPassword.password ? 'text' : 'password'}
+                                   name='password'
+                                   placeholder='Password'
+                                   {...register('password')} />
+                            <InputRightElement
+                                children={<IconButton onClick={(e) => togglePassword(e, 'password')} variant='outline'
+                                                      type='button'
+                                                      size='xs'
+                                                      aria-label={'Show'}
+                                                      icon={showPassword.password ? <FaEyeSlash /> : <FaEye />} />} />
+                        </InputGroup>
+
                         <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
                     </FormControl>
                     <FormControl
@@ -92,8 +114,20 @@ export default function RegisterForm() {
                         isRequired
                     >
                         <FormLabel>Confirm Password</FormLabel>
-                        <Input type='password' name='passwordConfirmation' placeholder='Confirm Password'
-                               {...register('passwordConfirmation')} />
+                        <InputGroup>
+                            <Input type={showPassword.passwordConfirmation ? 'text' : 'password'}
+                                   name='passwordConfirmation'
+                                   placeholder='Confirm Password'
+                                   {...register('passwordConfirmation')} />
+                            <InputRightElement
+                                children={<IconButton onClick={(e) => togglePassword(e, 'passwordConfirmation')}
+                                                      variant='outline'
+                                                      type='button'
+                                                      size='xs'
+                                                      aria-label={'Show'}
+                                                      icon={showPassword.passwordConfirmation ? <FaEyeSlash /> :
+                                                          <FaEye />} />} />
+                        </InputGroup>
                         <FormErrorMessage>{errors?.passwordConfirmation?.message}</FormErrorMessage>
                     </FormControl>
                     <div className='px-0 sm:px-6 md:px-12 mt-12 mb-4'>

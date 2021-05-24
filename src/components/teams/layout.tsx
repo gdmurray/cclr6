@@ -29,7 +29,7 @@ const teamTabs = [
 const TeamLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
     const [tabIndex, setTabIndex] = useState<number>(0)
     const { user, loading: authLoading } = useAuth()
-    const { team, loading: teamLoading } = useTeam({ user })
+    const { team, loading: teamLoading, setTeam } = useTeam({ user })
 
     const { pathname, events, push } = useRouter()
     const { navigate, isLoading } = useSuspenseNavigation()
@@ -83,8 +83,8 @@ const TeamLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
                 {loading && (
                     <Loader text='Loading Team Information' />
                 )}
-                {!loading && (
-                    <TeamProvider team={team} user={user}>
+                {!loading && user && team && (
+                    <TeamProvider team={team} user={user} setTeam={setTeam}>
                         <div className='p-2 py-4'>{props.children}</div>
                     </TeamProvider>
                 )}

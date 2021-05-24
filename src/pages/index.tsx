@@ -1,7 +1,6 @@
 import React from 'react'
 import DashboardButton from '@components/DashboardButton'
-import { features } from '@lib/features'
-import { Badge, Flex, Image, useColorMode } from '@chakra-ui/react'
+import { Flex, Image, useColorMode } from '@chakra-ui/react'
 import Home from './home'
 import ReactPlayer from 'react-player'
 

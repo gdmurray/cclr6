@@ -6,6 +6,7 @@ import { TeamContext } from '@components/teams/teamContext'
 import { Teams } from '@lib/models/team'
 import { basePlayers, IPlayer } from '@lib/models/player'
 import Loader from '@components/Loader'
+import { InvitationProvider } from '@components/teams/invitationContext'
 
 const url = '/team/players'
 
@@ -22,8 +23,24 @@ type State = {
 
 type Action =
     | { type: 'loading', }
+    | { type: 'update', players: IPlayer[] }
     | { type: 'success', players: any[] }
     | { type: 'failure', error?: string }
+
+function mergePlayers(players, updated) {
+    const indexMap = updated.reduce((acc: Record<number, IPlayer>, doc) => {
+        acc[doc.index] = doc
+        return acc
+    }, {})
+
+    for (let i = 0; i < players.length; i += 1) {
+        if (i in indexMap) {
+            players[i] = { ...players[i], ...indexMap[i] }
+        }
+    }
+    return players
+}
+
 
 function playerReducer(state: State, action: Action): State {
     switch (action.type) {
@@ -32,6 +49,13 @@ function playerReducer(state: State, action: Action): State {
                 ...state,
                 loading: true
             }
+
+        case 'update':
+            return {
+                ...state,
+                players: [...mergePlayers(state.players, action.players)]
+            }
+
         case 'success':
             return {
                 loading: false,
@@ -56,7 +80,7 @@ function Players(): JSX.Element {
         dispatch({ type: 'loading' })
         Teams.getPlayers(team.id).then((result) => {
             const indexMap = result.docs.reduce((acc: Record<number, IPlayer>, doc) => {
-                const data = { id: doc.id, ...doc.data() } as IPlayer
+                const data = { ...doc.data(), id: doc.id } as IPlayer
                 acc[data.index] = data
                 return acc
             }, {})
@@ -69,6 +93,7 @@ function Players(): JSX.Element {
                 }
                 return elem
             })
+            console.log('Players: ', players)
             dispatch({ type: 'success', players })
         })
     }, [])
@@ -79,9 +104,21 @@ function Players(): JSX.Element {
             </div>
         )
     }
+
+    const playerCallback = (players) => {
+        dispatch({ type: 'update', players })
+        fetch('/api/team/players/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'applicaton/json'
+            }
+        })
+    }
     const { players } = state
     return (
-        <PlayerForm players={players} />
+        <InvitationProvider team={team}>
+            <PlayerForm players={players} callback={playerCallback} />
+        </InvitationProvider>
     )
 }
 

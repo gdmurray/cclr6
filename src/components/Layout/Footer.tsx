@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { FaDiscord, FaYoutube, FaTwitch, FaTwitter } from 'react-icons/fa'
 import config from '@lib/config'
 import { useRouter } from 'next/router'
@@ -85,6 +85,37 @@ const FooterData: FooterData[] = [
     }
 ]
 
+const ToornamentLogo = () => {
+
+    return <div className='mt-6'>
+        <div className='px-5 text-xs font-semibold text-alt-2 -mb-1 antialiased'>Powered By</div>
+        <a href='https://www.toornament.com'
+           target='_blank'
+           rel='noopener'
+        >
+            <img alt='toornament' className='mx-auto logo-dark cursor-pointer' src={'/images/toornament_logo_white.png'}
+                 width='150' />
+            <img alt='toornament' className='mx-auto logo-light cursor-pointer'
+                 src={'/images/toornament_logo_black.png'} width='150' />
+        </a>
+
+        <style jsx>{`
+          @media (prefers-color-scheme: light) {
+            .logo-dark {
+              display: none;
+            }
+          }
+
+          @media (prefers-color-scheme: dark) {
+            .logo-light {
+              display: none;
+            }
+          }
+        `}
+        </style>
+    </div>
+}
+
 
 export default function Footer(): JSX.Element {
     const { push } = useRouter()
@@ -99,12 +130,13 @@ export default function Footer(): JSX.Element {
                         <img alt='leaf-logo' width='120'
                              className='logo-light mx-auto'
                              src={'/images/ccl-logo-redblack.svg'} />
+                        <ToornamentLogo />
                     </>
                 </div>
                 <div className='flex-grow flex flex-col items-center sm:flex-row justify-around'>
                     {FooterData.map((footerColumn) => {
                         return (
-                            <div key={footerColumn.name} className="mt-2">
+                            <div key={footerColumn.name} className='mt-2'>
                                 <div
                                     className='text-main pl-4 font-bold text-lg uppercase tracking-wider mb-2'>{footerColumn.name}</div>
                                 <div>

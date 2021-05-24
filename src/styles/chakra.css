@@ -1,7 +1,22 @@
 .chakra-form__label {
     margin-bottom: 0.1em !important;
-    @apply text-base !important;
-    @apply dark:text-gray-100;
+    @apply text-sm !important;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #E7E5E4 inset !important;
+        color: white !important;
+    }
+}
+
+
+.chakra-form__error-message {
+    @apply font-medium;
 }
 
 .chakra-input {

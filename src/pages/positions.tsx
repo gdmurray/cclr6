@@ -15,7 +15,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     const positions = await getAvailablePositions()
     return {
         props: {
-            positions
+            positions: positions.filter(position => position.active)
         },
         revalidate: 120
     }

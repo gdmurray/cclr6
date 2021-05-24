@@ -91,12 +91,6 @@ function useFirebaseAuth() {
             )
         },
         login: () => {
-            // if (await isPrivateMode()) {
-            //     console.log('We gotta do some bullshit')
-            //     return Promise.resolve()
-            // }
-            console.log('Login')
-            //
             return firebase
                 .auth()
                 .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
@@ -106,8 +100,6 @@ function useFirebaseAuth() {
     const handleUser = async (rawUser) => {
         if (rawUser) {
             const user = await formatUser(rawUser)
-            // const { token, ...userWithoutToken } = user
-            // createUser(user.uid, userWithoutToken)
             setUser(user)
             setLoading(false)
             return user
@@ -130,6 +122,9 @@ function useFirebaseAuth() {
                 if (redirect) {
                     Router.push(redirect)
                 }
+            }).catch((err) => {
+                setLoading(false)
+                throw err
             })
     }
 
@@ -144,7 +139,8 @@ function useFirebaseAuth() {
     }
 
     useEffect(() => {
-        return firebase.auth().onIdTokenChanged(async (user) => {
+        const unlisten = firebase.auth().onIdTokenChanged(async (user) => {
+            console.log(new Date().toISOString(), 'ID TOKEN CHANGED')
             if (!user) {
                 handleUser(null)
                 nookies.set(undefined, 'token', '', { path: '/' })
@@ -154,6 +150,10 @@ function useFirebaseAuth() {
                 nookies.set(undefined, 'token', token, { path: '/' })
             }
         })
+        return () => {
+            console.log('unlisten')
+            unlisten()
+        }
     }, [])
 
 
@@ -189,19 +189,13 @@ function useFirebaseAuth() {
     }
 }
 
-
-// const getStripeRole = async () => {
-//   await firebase.auth().currentUser.getIdToken(true);
-//   const decodedToken = await firebase.auth().currentUser.getIdTokenResult();
-//   return decodedToken.claims.stripeRole || 'free';
-// };
-
 const formatProviders = (providerData) => {
     return providerData.reduce((acc, curr) => {
         acc[curr.providerId] = curr
         return acc
     }, {})
 }
+
 const formatUser = async (user) => {
     const decodedToken = await user.getIdTokenResult(/*forceRefresh*/ true)
     const { token, expirationTime } = decodedToken
@@ -214,7 +208,6 @@ const formatUser = async (user) => {
         photoUrl: user.photoURL,
         token,
         expirationTime
-        // stripeRole: await getStripeRole(),
     }
 }
 
