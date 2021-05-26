@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import firebaseAdmin, { FieldValue, adminFireStore } from '@lib/firebase-admin'
+import firebaseAdmin, { FieldValue, adminFireStore } from '@lib/firebase/admin'
 
 
 export default async function(req: NextApiRequest, res: NextApiResponse) {

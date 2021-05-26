@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { FaDiscord, FaYoutube, FaTwitch, FaTwitter } from 'react-icons/fa'
-import config from '@lib/config'
+import config from '@lib/platform/config'
 import { useRouter } from 'next/router'
 import { Link } from '@chakra-ui/react'
 
@@ -59,6 +59,10 @@ const FooterData: FooterData[] = [
             {
                 name: 'Positions',
                 link: '/positions'
+            },
+            {
+                name: 'Announcements',
+                link: '/posts'
             }
         ]
     },
@@ -133,7 +137,7 @@ export default function Footer(): JSX.Element {
                         <ToornamentLogo />
                     </>
                 </div>
-                <div className='flex-grow flex flex-col items-center sm:flex-row justify-around'>
+                <div className='flex-grow flex items-center sm:items-start flex-col sm:flex-row justify-around'>
                     {FooterData.map((footerColumn) => {
                         return (
                             <div key={footerColumn.name} className='mt-2'>

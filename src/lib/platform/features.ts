@@ -1,4 +1,4 @@
-import { isLocal } from '@lib/env'
+import { isLocal } from '@lib/platform/env'
 
 interface IFeatures {
     registration: boolean;
@@ -11,7 +11,7 @@ export const defaultFeatures = {
     registration: true,
     login: true,
     profile: true,
-    invite: true
+    invite: false
 }
 
 const getFeatures = (): IFeatures => {

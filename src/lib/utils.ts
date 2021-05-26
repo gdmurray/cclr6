@@ -12,3 +12,8 @@ export function findWithAttr(array: any[], attr: string, value: any): number[] {
 
     return idx
 }
+
+export const countryMapping = {
+    'CA': 'CA',
+    'USA': 'US'
+}

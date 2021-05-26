@@ -1,6 +1,6 @@
-import firebaseAdmin from './firebase-admin'
+import firebaseAdmin from './firebase/admin'
 import nookies from 'nookies'
-import { Features, features, featureUrls } from '@lib/features'
+import { Features, features, featureUrls } from '@lib/platform/features'
 import Router from 'next/router'
 
 export enum AuthAction {

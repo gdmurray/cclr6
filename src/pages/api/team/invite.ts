@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import db from '@lib/firestore'
-import { defaultLocals, getEmail } from '@lib/mail'
+import db from '@lib/firebase/firestore'
+import { defaultLocals, getEmail } from '@lib/platform/mail'
 import * as path from 'path'
 
 

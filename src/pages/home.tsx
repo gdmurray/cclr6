@@ -1,7 +1,7 @@
 import React from 'react'
 import DashboardButton from '../components/DashboardButton'
 import { Badge, useColorMode } from '@chakra-ui/react'
-import { features } from '@lib/features'
+import { features } from '@lib/platform/features'
 
 
 const Home = () => {

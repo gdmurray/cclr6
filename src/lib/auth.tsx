@@ -1,7 +1,7 @@
 //Ref https://docs.react2025.com/firebase/use-auth
-import React, { useState, useEffect, useContext, createContext } from 'react'
+import React, { useState, useEffect, useContext, createContext, useCallback } from 'react'
 import Router from 'next/router'
-import firebase, { twitterProvider, UserInfo } from './firebase'
+import firebase, { analytics, twitterProvider, UserInfo } from './firebase/firebase'
 import nookies from 'nookies'
 
 require('firebase/auth')
@@ -45,6 +45,7 @@ export const useAuth = () => {
 export interface User {
     displayName: string | null;
     email: string;
+    emailVerified: boolean;
     expirationTime: string;
     photoUrl: string | null;
     providerData: UserInfo[];
@@ -68,6 +69,15 @@ function useFirebaseAuth() {
 
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
+
+    const onUserChangedEvent = useCallback(() => {
+        if (!loading && user && user.uid) {
+            console.log('Setting user id')
+            analytics().setUserId(user.uid)
+        }
+    }, [user?.uid, loading])
+
+    useEffect(onUserChangedEvent, [user?.uid, loading])
 
     const Twitter = {
         link: () => {
@@ -140,7 +150,7 @@ function useFirebaseAuth() {
 
     useEffect(() => {
         const unlisten = firebase.auth().onIdTokenChanged(async (user) => {
-            console.log(new Date().toISOString(), 'ID TOKEN CHANGED')
+            // console.log(new Date().toISOString(), 'ID TOKEN CHANGED')
             if (!user) {
                 handleUser(null)
                 nookies.set(undefined, 'token', '', { path: '/' })
@@ -151,7 +161,6 @@ function useFirebaseAuth() {
             }
         })
         return () => {
-            console.log('unlisten')
             unlisten()
         }
     }, [])
@@ -202,6 +211,7 @@ const formatUser = async (user) => {
     return {
         uid: user.uid,
         email: user.email,
+        emailVerified: user.emailVerified,
         displayName: user.displayName,
         providerData: user.providerData,
         providers: formatProviders(user.providerData),

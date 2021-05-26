@@ -9,6 +9,7 @@ export interface Season {
     id: string;
     active: boolean;
     name: string;
+    toornamentId: string;
     start_date: string;
     end_date: string;
     qualifiers: Partial<Tournament>[]
@@ -18,6 +19,7 @@ export interface Season {
 export const SeasonOne: Season = {
     id: '1',
     active: true,
+    toornamentId: '4585711997166354432',
     start_date: '2021-07-01',
     end_date: '2021-09-01',
     name: 'Canada Contenders Series: Season 1',
@@ -27,7 +29,8 @@ export const SeasonOne: Season = {
             id: '4586031971897286656'
         },
         {
-            id: '2'
+            // id: '2'
+            id: '4656151368065269760'
         },
         {
             id: '3'

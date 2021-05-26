@@ -15,7 +15,7 @@ import {
 import { FaBars, FaChevronDown, FaChevronLeft, FaTimes } from 'react-icons/fa'
 import { useSuspenseNavigation } from './useSuspenseNavigation'
 import useTeam from '@lib/useTeam'
-import { features } from '@lib/features'
+import { features } from '@lib/platform/features'
 
 
 interface INavItem extends NavItem {

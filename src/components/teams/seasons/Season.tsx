@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { FaCalendarAlt, FaRegCreditCard, FaTimes, FaTrophy } from 'react-icons/fa'
-import dayjs from 'dayjs'
 import { Button, useToast } from '@chakra-ui/react'
 import { SeasonClient } from '@lib/models/season'
 import { TeamContext } from '@components/teams/teamContext'
@@ -10,6 +9,10 @@ import useEligibility from '@components/teams/seasons/Eligibility'
 import { CreateTournamentClient } from '@lib/models/tournament'
 import Loader from '@components/Loader'
 import PaymentForm from '@components/teams/Payment'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+import dayjs from 'dayjs'
+
+dayjs.extend(LocalizedFormat)
 
 
 export default function SeasonComponent({ season }): JSX.Element {
@@ -43,20 +46,20 @@ export default function SeasonComponent({ season }): JSX.Element {
     }, [])
 
     const { eligibility, eligibilityChecklist, loading } = useEligibility({ team, user, season })
-
     return (
         <div className='bordered border rounded-xl'>
             <div className='flex flex-col w-full p-4 h-full z-10 relative'>
                 <div className='flex-1 flex flex-row justify-between'>
                     <div>
                         <div className='text-main font-heavy text-2xl md:text-3xl font-bold'>
-                            {season.name}
+                            <a target='_blank' rel='noopener' className='hover:underline transition-all duration-150'
+                               href={`https://www.toornament.com/en_US/tournaments/${season.toornamentId}/information`}>{season.name}</a>
                         </div>
                         <div className='mt-1'>
-                            <div className='font-semibold text-alt text-sm'>Date</div>
-                            <div className='flex flex-row items-center text-alt-2 font-medium text-sm'>
-                                This is where the description would go
-                                {/*<FaCalendarAlt />&nbsp;{dayjs(tournament.scheduled_date_start).format('LL')}&nbsp;&nbsp;-&nbsp;&nbsp;{dayjs(tournament.scheduled_date_end).format('LL')}*/}
+                            <div
+                                className='font-semibold text-alt text-sm'>
+                                Date:&nbsp;{dayjs(season.start_date).format('LL')}
+                                &nbsp;-&nbsp;{dayjs(season.end_date).format('LL')}
                             </div>
                         </div>
                     </div>
@@ -98,9 +101,28 @@ export default function SeasonComponent({ season }): JSX.Element {
 
 function Qualifier({ qualifier, eligibility }): JSX.Element {
     const teamContext = useContext(TeamContext)
+    const [participants, setParticipants] = useState<[]>([])
     const { team, user } = teamContext
     const teamClient = CreateTeamClient(team)
     const tournamentClient = CreateTournamentClient(qualifier)
+
+    useEffect(() => {
+        if (qualifier.id) {
+            if (qualifier.id.length > 1) {
+                fetch(`/api/toornament/${qualifier.id}/participants`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    response.json().then(res => {
+                        setParticipants(res.participants)
+                    })
+                })
+            }
+        }
+    }, [qualifier])
+
     const [status, setStatus] = useState<{
         message: string,
         disabled: boolean,
@@ -216,6 +238,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
             return 'text-error'
         }
     }
+
     return (
         <div key={qualifier.id}
              className='flex flex-col space-y-1 md:space-y-0 md:flex-row flex-row items-center justify-between p-2 border-b last:border-b-0'>
@@ -223,7 +246,9 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                 <div
                     className='text-line font-medium text-lg tracking-tight'>
                     <FaTrophy />&nbsp;{qualifier.id.length > 1 ?
-                    <a target='_blank' rel='noopener' className="hover:underline transition-all duration-150" href={`https://www.toornament.com/en_US/tournaments/${qualifier.id}/information`}>{qualifier.name}</a> : qualifier.name}
+                    <a target='_blank' rel='noopener' className='hover:underline transition-all duration-150'
+                       href={`https://www.toornament.com/en_US/tournaments/${qualifier.id}/information`}>{qualifier.name}</a> : qualifier.name}
+                    <span className='ml-2 text-alt-2 text-sm font-medium'>{participants.length}/16</span>
                 </div>
                 <div style={{ width: '110px' }} className='text-line justify-between font-medium tracking-tight'>
                     <FaCalendarAlt />&nbsp;{qualifier.scheduled_date_start}
@@ -240,5 +265,3 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
         </div>
     )
 }
-
-//isDisabled={!canTeamRegister()}

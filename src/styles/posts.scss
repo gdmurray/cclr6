@@ -7,7 +7,7 @@
     @apply text-alt-2 text-sm font-medium;
   }
 
-  @extend .text-alt;
+  @extend .text-main;
   @apply text-base font-medium tracking-tight;
   p > a {
     @apply font-medium transition-colors duration-150;

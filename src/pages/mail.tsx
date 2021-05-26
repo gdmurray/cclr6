@@ -1,6 +1,6 @@
 import Email from 'email-templates'
 import * as path from 'path'
-import { defaultLocals, getEmail, transporter } from '@lib/mail'
+import { defaultLocals, getEmail, transporter } from '@lib/platform/mail'
 
 export function getServerSideProps() {
     // const email = getEmail()

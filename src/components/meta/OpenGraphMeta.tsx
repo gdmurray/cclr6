@@ -1,4 +1,4 @@
-import config from '../../lib/config'
+import config from '@lib/platform/config'
 
 type Props = {
     url: string;

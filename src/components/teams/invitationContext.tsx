@@ -1,6 +1,6 @@
 import { Invitation } from '@lib/models/invitations'
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import db from '@lib/firestore'
+import db from '@lib/firebase/firestore'
 import { ITeam } from '@lib/models/team'
 import { TeamContext } from '@components/teams/teamContext'
 import { useToast } from '@chakra-ui/react'

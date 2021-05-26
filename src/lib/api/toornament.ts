@@ -1,5 +1,5 @@
 import { Tournament } from '@lib/models/tournament'
-import { adminDb } from '@lib/firebase-admin'
+import { adminDb } from '@lib/firebase/admin'
 import dayjs from 'dayjs'
 
 const tournaments = [
@@ -139,7 +139,7 @@ export class ToornamentClient {
     private auth: OAuth2Result
     public authURL = 'https://api.toornament.com/oauth/v2/token'
     public url = 'https://api.toornament.com/organizer/v2'
-    public scope = 'organizer:view organizer:participant'
+    public scope = 'organizer:view organizer:participant organizer:registration'
 
 
     constructor() {
@@ -194,8 +194,8 @@ export class ToornamentClient {
         const result = await adminDb.ref('toornament').get()
         if (result.exists()) {
             const credentials = result.val()
-            const { expires_on, access_token } = credentials
-            if (dayjs() >= dayjs(expires_on)) {
+            const { expires_on, access_token, scope } = credentials
+            if (dayjs() >= dayjs(expires_on) || this.scope !== scope) {
                 console.log('Credentials Expired')
                 const refresh = await this.refreshCredentials()
                 await this.setCredentials(refresh)
@@ -249,4 +249,34 @@ export class ToornamentClient {
         const { id: toornamentId } = data
         return Promise.resolve(toornamentId)
     }
+
+    async getParticipants(id: string): Promise<string> {
+        await this.init()
+        const response = await fetch(this.url + `/tournaments/${id}/participants`, {
+            method: 'GET',
+            headers: {
+                ...this.headers(),
+                'Range': 'participants=0-49',
+                'Content-Type': 'application/json'
+            }
+        })
+        const data = await response.json()
+        return Promise.resolve(data)
+    }
+
+    async updateParticipant(id: string, participant_id: string, body: any): Promise<boolean> {
+        await this.init()
+        const response = await fetch(this.url + `/tournaments/${id}/participants/${participant_id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(body),
+            headers: {
+                ...this.headers(),
+                'Content-Type': 'application/json'
+            }
+        })
+        const data = await response.json()
+        console.log('DATA: ', data)
+        return Promise.resolve(true)
+    }
+
 }

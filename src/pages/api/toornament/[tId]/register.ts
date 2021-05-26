@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { adminFireStore } from '@lib/firebase-admin'
+import { adminFireStore } from '@lib/firebase/admin'
 import authenticate from '@lib/api/authenticate'
 import { CreateTeamClient, Teams } from '@lib/models/team'
 import { ToornamentClient } from '@lib/api/toornament'
 import { IPlayer } from '@lib/models/player'
+import { countryMapping } from '@lib/utils'
 
 export default async function(req: NextApiRequest, res: NextApiResponse) {
     const user = await authenticate(req, res)
@@ -35,9 +36,13 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
             custom_user_identifier: team.id,
             checked_in: true,
             lineup: playerData.map((player) => ({
-                name: player.uplay || player.email,
+                name: player.uplay,
                 custom_user_identifier: player.id,
-                email: player.email
+                email: player.email,
+                custom_fields: {
+                    country: countryMapping[player.country],
+                    uplay: player.uplay
+                }
             }))
         }
         const participantId = await toornamentClient.registerTeam(toornamentId as string, body)

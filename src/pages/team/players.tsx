@@ -3,10 +3,13 @@ import TeamLayout from '@components/teams/layout'
 import PlayerForm from '@components/teams/players/Form'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { TeamContext } from '@components/teams/teamContext'
-import { Teams } from '@lib/models/team'
+import { CreateTeamClient, Teams } from '@lib/models/team'
 import { basePlayers, IPlayer } from '@lib/models/player'
 import Loader from '@components/Loader'
 import { InvitationProvider } from '@components/teams/invitationContext'
+import { ToornamentClient } from '@lib/api/toornament'
+import { adminFireStore } from '@lib/firebase/admin'
+import { useToast } from '@chakra-ui/react'
 
 const url = '/team/players'
 
@@ -41,6 +44,32 @@ function mergePlayers(players, updated) {
     return players
 }
 
+export type LockState = {
+    locked: boolean;
+    loading: boolean;
+    message: string;
+}
+
+type LockAction =
+    | { type: 'loading' }
+    | { type: 'update', locked: boolean, message: string }
+
+function lockReducer(state: LockState, action: LockAction): LockState {
+    switch (action.type) {
+        case 'loading':
+            return {
+                ...state,
+                loading: true
+            }
+        case 'update':
+            return {
+                loading: false,
+                locked: action.locked,
+                message: action.message
+            }
+    }
+}
+
 
 function playerReducer(state: State, action: Action): State {
     switch (action.type) {
@@ -73,9 +102,25 @@ function playerReducer(state: State, action: Action): State {
 
 function Players(): JSX.Element {
     const teamContext = useContext(TeamContext)
+    const toast = useToast({ duration: 1000, position: 'top-right' })
     const { team, user } = teamContext
     const [state, dispatch] = useReducer(playerReducer, { loading: true, players: [] })
-
+    const [lockState, lockDispatch] = useReducer(lockReducer, { loading: true, locked: true, message: '' })
+    useEffect(() => {
+        lockDispatch({ type: 'loading' })
+        fetch('/api/team/players/locked', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            console.log(response)
+            response.json().then(res => {
+                const { status, message } = res
+                lockDispatch({ type: 'update', locked: status === 'locked', message })
+            })
+        })
+    }, [])
     useEffect(() => {
         dispatch({ type: 'loading' })
         Teams.getPlayers(team.id).then((result) => {
@@ -93,31 +138,39 @@ function Players(): JSX.Element {
                 }
                 return elem
             })
-            console.log('Players: ', players)
             dispatch({ type: 'success', players })
         })
     }, [])
 
-    if (state.loading) {
+    if (state.loading || lockState.loading) {
         return (<div>
                 <Loader text='Loading Players' />
             </div>
         )
     }
 
-    const playerCallback = (players) => {
-        dispatch({ type: 'update', players })
+    const playerCallback = (updatedPlayers, players) => {
+        dispatch({ type: 'update', players: updatedPlayers })
+
         fetch('/api/team/players/update', {
             method: 'POST',
+            body: JSON.stringify(players),
             headers: {
                 'Content-Type': 'applicaton/json'
+            }
+        }).then(res => {
+            if (res.ok) {
+                toast({
+                    status: 'success',
+                    title: 'Updated Tournament Registration'
+                })
             }
         })
     }
     const { players } = state
     return (
         <InvitationProvider team={team}>
-            <PlayerForm players={players} callback={playerCallback} />
+            <PlayerForm lockState={lockState} players={players} callback={playerCallback} />
         </InvitationProvider>
     )
 }

@@ -1,7 +1,7 @@
-import db from '@lib/firestore'
+import db from '@lib/firebase/firestore'
 import { CaptureOrderResponseBody } from '@paypal/paypal-js/types/apis/orders'
 import { IPlayer } from '@lib/models/player'
-import { Firestore, storage } from '@lib/firebase'
+import { Firestore, storage } from '@lib/firebase/firebase'
 import { Tournament } from '@lib/models/tournament'
 
 export interface ITeam {
@@ -14,6 +14,7 @@ export interface ITeam {
 }
 
 export interface IRegistration {
+    participant_id: string;
     tournament_id: string;
     status: 'REGISTERED';
     registered: any;
@@ -36,7 +37,7 @@ interface TeamClient {
 
     registerForTournament(tournamentId: string, participantId: string): Promise<boolean>;
 
-    getRegistrations(): Promise<IRegistration[]>
+    getRegistrations(): Promise<IRegistration[]>;
 }
 
 // FirebaseFirestore.Firestore

@@ -1,5 +1,5 @@
 import React from 'react'
-import RegisterForm from '@components/auth/registerForm'
+import RegisterForm from '@components/auth/RegisterForm'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 
 export const getServerSideProps = withAuthSSR({
@@ -8,7 +8,7 @@ export const getServerSideProps = withAuthSSR({
 
 const Register = () => {
     return (
-        <div className="py-2">
+        <div className='py-2'>
             <RegisterForm />
         </div>
     )
