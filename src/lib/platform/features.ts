@@ -15,8 +15,8 @@ export const defaultFeatures = {
 }
 
 const getFeatures = (): IFeatures => {
-    const DISABLED_FEATURES = process.env.DISABLED_FEATURES || (isLocal() ? '' : 'login,registration,invite,profile')
-    console.log(DISABLED_FEATURES)
+    const DISABLED_FEATURES = process.env.DISABLED_FEATURES || (isLocal() ? '' : 'invite')
+    // console.log(DISABLED_FEATURES)
     if (DISABLED_FEATURES) {
         try {
             const featureList = DISABLED_FEATURES.split(',').map((feature) => feature.trim())
