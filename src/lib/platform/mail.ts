@@ -5,8 +5,8 @@ import * as aws from 'aws-sdk'
 import config from './config'
 
 aws.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_ACCESS_KEY_SECRET,
+    accessKeyId: process.env.SES_ACCESS_KEY_ID,
+    secretAccessKey: process.env.SES_ACCESS_KEY_SECRET,
     region: 'us-east-1'
 })
 
