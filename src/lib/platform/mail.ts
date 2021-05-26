@@ -51,7 +51,7 @@ export const defaultLocals = {
 }
 
 export const sendMail = (emailAddress, template, variables) => {
-    fetch('http://localhost:5001/ccl-content/us-central1/sendEmail', {
+    fetch('https://us-central1-ccl-content.cloudfunctions.net/sendEmail', {
         method: 'POST',
         body: JSON.stringify({
             template,

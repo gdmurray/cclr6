@@ -21,7 +21,7 @@ function getDecrypted(): string {
         return decrypted.toString()
     }
 
-    return decrypt(hash, functions.config().admin.secret)
+    return decrypt(hash, functions.config().admin.key)
 }
 
 const serviceAccount = JSON.parse(getDecrypted())
