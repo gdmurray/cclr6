@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import db from '@lib/firestore'
-import { defaultLocals, getEmail } from '@lib/mail'
-import * as path from 'path'
+import db from '@lib/firebase/firestore'
+import { defaultLocals, sendMail } from '@lib/platform/mail'
 
 
 export function getHostName(): string {
@@ -40,17 +39,9 @@ export default async function(req: NextApiRequest, res: NextApiResponse): Promis
     const hashed = buffer.toString('base64')
     const cta_url = `${getHostName()}/invitation/${encodeURI(hashed)}`
 
-    const email = getEmail()
-    email.send({
-        template: path.resolve('src/email/invite'),
-        message: {
-            to: user_email
-        },
-        locals: {
-            ...defaultLocals,
-            team_name,
-            cta_url
-        }
+    sendMail(user_email, 'invite', {
+        team_name,
+        cta_url
     })
 
     res.status(200).json({ id: invitation.id })

@@ -3,6 +3,7 @@ import DashboardButton from '@components/DashboardButton'
 import { Flex, Image, useColorMode } from '@chakra-ui/react'
 import Home from './home'
 import ReactPlayer from 'react-player'
+import { features } from '@lib/platform/features'
 
 const Index = (): JSX.Element => {
     const { colorMode } = useColorMode()
@@ -25,7 +26,8 @@ const Index = (): JSX.Element => {
                         label={'Register Team'}
                         href='/team/register'
                         className={'dark:bg-white dark:hover:bg-gray-50 dark:active:bg-gray-100 dark:text-gray-900 bg-gray-900 text-gray-50 font-heavy'}>
-                        Register&nbsp;<span className="font-medium tracking-tight text-base text-primary" >(Coming Soon)</span>
+                        Register&nbsp;{!features.registration && (
+                        <span className='font-medium tracking-tight text-base text-primary'>(Coming Soon)</span>)}
                     </DashboardButton>
                 </div>
             </div>
@@ -64,17 +66,17 @@ const Index = (): JSX.Element => {
                         </div>
                     </div>
                 </div>
-                <div id='how-it-works' className="mt-24">
+                <div id='how-it-works' className='mt-24'>
                     <div className='mb-6'>
                         <div className='hero-title'>
                             How it works
                         </div>
                     </div>
-                    <div className="mb-24">
+                    <div className='mb-24'>
                         <Flex className='player-wrapper'
-                              h={{ base: "auto", sm: 504, md: 648 }}
+                              h={{ base: 'auto', sm: 504, md: 648 }}
                         >
-                            <Flex w={{ base: "auto", sm: 896, md: 1152 }} className='mx-auto'>
+                            <Flex w={{ base: 'auto', sm: 896, md: 1152 }} className='mx-auto'>
                                 <ReactPlayer
                                     controls
                                     width='100%'
@@ -85,7 +87,7 @@ const Index = (): JSX.Element => {
                                 }} />
                             </Flex>
                         </Flex>
-                        <div className="page-title-sm text-center py-6">Get Ready Canada!</div>
+                        <div className='page-title-sm text-center py-6'>Get Ready Canada!</div>
                     </div>
                 </div>
             </div>

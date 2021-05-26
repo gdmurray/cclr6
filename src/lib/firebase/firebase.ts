@@ -27,5 +27,5 @@ twitterProvider.setCustomParameters({
     oauth_callback: encodeURI('http://localhost:3001/callback')
 })
 export type Firestore = firebase.firestore.Firestore;
-export { twitterProvider }
+export { twitterProvider, analytics }
 export default firebase

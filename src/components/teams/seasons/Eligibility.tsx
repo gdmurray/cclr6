@@ -33,6 +33,10 @@ let baseConditions = {
     paymentSatisfied: {
         satisfied: true,
         message: 'Team has not paid yet'
+    },
+    teamQualified: {
+        satisfied: true,
+        message: 'Team has Qualified!'
     }
 }
 
@@ -50,6 +54,7 @@ interface IEligibility {
     playerCount: RegistrationCondition;
     playerCountry: RegistrationCondition;
     paymentSatisfied: RegistrationCondition;
+    teamQualified: RegistrationCondition;
 }
 
 function useEligibility({ team, user, season }) {
@@ -118,6 +123,14 @@ function useEligibility({ team, user, season }) {
                 }
             }
 
+            const hasQualified = await teamClient.hasQualified()
+            if (hasQualified) {
+                checks = not('teamQualified')
+                if (checks.reason === '-') {
+                    checks.reason = baseConditions.teamQualified.message
+                }
+            }
+
             setEligibility(checks)
             setLoading(false)
         }
@@ -129,32 +142,40 @@ function useEligibility({ team, user, season }) {
     const getEligibilityDetails = (): JSX.Element => {
         return (
             <>
-                <div aria-label='status-registration' className='registration-detail'>
-                    Registration is Open <FaCheck className='ml-1 text-success' />
-                </div>
-                {eligibility.playerCountry.satisfied ?
-                    (<div className='registration-detail' aria-label='status-team'>
-                        Team is 3/5 Canadian <FaCheck className='ml-1 text-success' />
-                    </div>)
-                    :
-                    (<div className='registration-detail cursor-pointer hover:underline'
-                          aria-label='status-team'
-                          onClick={() => push('/team/players')}>
-                        Team is not 3/5 Canadian <FaBan className='ml-1 text-error' />
-                    </div>)
-                }
-                {eligibility.paymentSatisfied.satisfied ?
-                    (<div className='registration-detail' aria-label='status-payment'>
-                        Payment was Made <FaCheck className='ml-1 text-success' />
-                    </div>) :
-                    (
-                        <div className='registration-detail cursor-pointer hover:underline'
-                             aria-label='status-payment'
-                             onClick={() => push('/team/payments')}>
-                            Payment Not Made <FaBan className='ml-1 text-error' />
+                {!eligibility.teamQualified.satisfied ? (
+                    <div className='registration-detail' aria-label='status-qualifications'>
+                        Team Qualified! <FaCheck className='ml-1 text-success' />
+                    </div>
+                ) : (
+                    <>
+                        <div aria-label='status-registration' className='registration-detail'>
+                            Registration is Open <FaCheck className='ml-1 text-success' />
                         </div>
-                    )
-                }
+                        {eligibility.playerCountry.satisfied ?
+                            (<div className='registration-detail' aria-label='status-team'>
+                                Team is 3/5 Canadian <FaCheck className='ml-1 text-success' />
+                            </div>)
+                            :
+                            (<div className='registration-detail cursor-pointer hover:underline'
+                                  aria-label='status-team'
+                                  onClick={() => push('/team/players')}>
+                                Team is not 3/5 Canadian <FaBan className='ml-1 text-error' />
+                            </div>)
+                        }
+                        {eligibility.paymentSatisfied.satisfied ?
+                            (<div className='registration-detail' aria-label='status-payment'>
+                                Payment was Made <FaCheck className='ml-1 text-success' />
+                            </div>) :
+                            (
+                                <div className='registration-detail cursor-pointer hover:underline'
+                                     aria-label='status-payment'
+                                     onClick={() => push('/team/payments')}>
+                                    Payment Not Made <FaBan className='ml-1 text-error' />
+                                </div>
+                            )
+                        }
+                    </>
+                )}
             </>
         )
     }

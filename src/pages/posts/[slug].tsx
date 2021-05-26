@@ -62,12 +62,13 @@ export default function PostPage(props: PostProps): JSX.Element {
 export async function getStaticProps({ params }) {
     const data = await getPost(params.slug)
 
-    function getSEO(data) {
-        type SEO = { title: string; image?: string; }
+    function getSEO(data: CMSPost) {
+        type SEO = { url: string; title: string; image?: string; }
         if (data) {
             let seo: SEO = {
                 title: data.title,
-                image: null
+                image: null,
+                url: `/posts/${data.slug}`
             }
             if (data.metadata.cover_image.imgix_url) {
                 seo.image = data.metadata.cover_image.imgix_url

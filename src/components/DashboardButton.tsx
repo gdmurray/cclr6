@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Spinner } from '@chakra-ui/react'
 import { useSuspenseNavigation } from './Layout/useSuspenseNavigation'
-import { Features, features } from '@lib/features'
+import { Features, features } from '@lib/platform/features'
 
 interface IDashboardButton {
     label: string;

@@ -32,7 +32,7 @@ function Payments(): JSX.Element {
     return (
         <>
             {payments.length === 0 && (
-                <EmptyState icon={<FaRegCreditCard />} text={'No Payments Found'} />
+                <EmptyState icon={<FaRegCreditCard />} text={'Payment History Coming Soon!'} subtext={"Soon™"} />
             )}
         </>
     )

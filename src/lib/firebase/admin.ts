@@ -1,6 +1,6 @@
 import './firebase'
 import * as firebaseAdmin from 'firebase-admin'
-import decrypted from './secret/firebase-account'
+import decrypted from '../secret/firebase-account'
 
 
 if (!firebaseAdmin.apps.length) {

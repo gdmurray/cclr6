@@ -17,9 +17,11 @@ import Head from 'next/head'
 import BasicMeta from '../components/meta/BasicMeta'
 import TwitterCardMeta from '../components/meta/TwitterCardMeta'
 import OpenGraphMeta from '../components/meta/OpenGraphMeta'
-import config from '../lib/config'
+import config from '@lib/platform/config'
 import { LoadingProvider } from '@components/Layout/useSuspenseNavigation'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
+import { useRouter } from 'next/router'
+import useAnalytics from '@lib/firebase/useAnalytics'
 
 interface SEOProps {
     title?: string;
@@ -39,6 +41,7 @@ type CCLAppProps = AppProps & {
 }
 
 export default function App({ Component, pageProps }: CCLAppProps) {
+    useAnalytics()
     const SEO = pageProps.SEO || Component.SEO
     const layout = Component.layout ?? ((p): JSX.Element => <>{p}</>)
     const paypalOptions = {

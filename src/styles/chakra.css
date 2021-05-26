@@ -14,10 +14,11 @@
     }
 }
 
-
+.chakra-form__helper-text,
 .chakra-form__error-message {
     @apply font-medium;
 }
+
 
 .chakra-input {
     @apply dark:bg-gray-800 dark:border-gray-600 !important;

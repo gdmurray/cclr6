@@ -1,12 +1,12 @@
 import * as nodemailer from 'nodemailer'
+// @ts-ignore
 import Email from 'email-templates'
 import * as path from 'path'
 import * as aws from 'aws-sdk'
-import config from './config'
 
 aws.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_ACCESS_KEY_SECRET,
+    accessKeyId: process.env.SES_ACCESS_KEY_ID,
+    secretAccessKey: process.env.SES_ACCESS_KEY_SECRET,
     region: 'us-east-1'
 })
 
@@ -20,7 +20,7 @@ export const transporter = nodemailer.createTransport({
 })
 
 const env = process.env.NODE_ENV || 'development'
-export const getEmail = (from: string = 'noreply@cclr6.com'): typeof Email => {
+export const getEmail = (from: string = 'noreply@cclr6.com') => {
     return new Email(
         {
             juice: true,
@@ -39,13 +39,4 @@ export const getEmail = (from: string = 'noreply@cclr6.com'): typeof Email => {
             subjectPrefix: env === 'production' ? 'CCLR6: ' : 'DEVCCL: '
         }
     )
-}
-
-export const defaultLocals = {
-    website: config.base_url,
-    twitter: config.socials.twitter,
-    twitch: config.socials.twitch,
-    discord: config.socials.discord,
-    contact_email: config.contact_email,
-    year: new Date().getFullYear()
 }

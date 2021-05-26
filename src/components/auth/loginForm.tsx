@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { FaTwitch, FaTwitter } from 'react-icons/fa'
-import { Divider, FormErrorMessage, Input } from '@chakra-ui/react'
+import { Button, Divider, FormErrorMessage, Input } from '@chakra-ui/react'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import Link from 'next/link'
 import * as yup from 'yup'
@@ -13,8 +13,8 @@ import useRedirect from '../Layout/useRedirect'
 
 
 const schema = yup.object().shape({
-    email: yup.string().email().required('Email Address is Required'),
-    password: yup.string().required('Password is Required')
+    email: yup.string().email().required('Email address is required'),
+    password: yup.string().required('Password is required')
 })
 
 interface LoginFormInputs {
@@ -24,7 +24,8 @@ interface LoginFormInputs {
 
 const LoginForm = (): JSX.Element => {
     const { redirect, getNext } = useRedirect()
-    const { register, handleSubmit, setError, formState: { errors } } = useForm<LoginFormInputs>({
+    const { push } = useRouter()
+    const { register, handleSubmit, setError, formState: { errors }, getValues } = useForm<LoginFormInputs>({
         mode: 'onSubmit',
         resolver: yupResolver(schema)
     })
@@ -35,7 +36,6 @@ const LoginForm = (): JSX.Element => {
     const onSubmit = data => {
         const { email, password } = data
         signinWithEmail(email, password, redirect).catch(err => {
-            console.log("ERROR: ", err);
             const { code, message } = err
             if (code === 'auth/wrong-password') {
                 setError('password', {
@@ -54,6 +54,15 @@ const LoginForm = (): JSX.Element => {
         return (
             <Loader text={'Logging You In'} />
         )
+    }
+
+    const forgotPassword = () => {
+        const { email } = getValues()
+        if (email) {
+            push({ pathname: '/auth/password_reset', query: { email } })
+        } else {
+            push('/auth/password_reset')
+        }
     }
 
     return (
@@ -85,14 +94,15 @@ const LoginForm = (): JSX.Element => {
                     <Input type='password' name='password' placeholder='Password' {...register('password')} />
                     <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
                 </FormControl>
-                <div className='px-0 sm:px-6 md:px-12 mt-12 mb-4'>
-                    <button
-                        className='social-button dark:bg-white dark:hover:bg-gray-100 text-gray-800 transition-all'
+                <div className='px-0 sm:px-6 md:px-12 mt-6 mb-4'>
+                    <Button
+                        width='full'
                         type='submit'>
                         Sign In
-                    </button>
+                    </Button>
                     <div
-                        className='mt-2 block text-right text-sm tracking-tight font-semibold text-primary hover:text-red-500 transition-all duration-150'>
+                        onClick={forgotPassword}
+                        className='cursor-pointer mt-2 block text-right text-sm tracking-tight font-semibold text-primary hover:text-red-500 transition-all duration-150'>
                         <div>Forgot Password</div>
                     </div>
                 </div>

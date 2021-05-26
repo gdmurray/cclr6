@@ -15,7 +15,7 @@ export default function CountryRadio(props) {
                 cursor='pointer'
                 borderWidth='2px'
                 borderRadius='md'
-                boxShadow='md'
+                boxShadow='sm'
                 _checked={{
                     borderWidth: '2px',
                     borderColor: '#e50a25',

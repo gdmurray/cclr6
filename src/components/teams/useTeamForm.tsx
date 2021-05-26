@@ -6,7 +6,7 @@ import { ITeam, uploadLogoToStorage } from '@lib/models/team'
 
 
 const schema = yup.object().shape({
-    name: yup.string().min(3).max(32, 'Name cannot be longer than 32 characters').required('Team Name is Required'),
+    name: yup.string().min(3, 'Name must be at least 3 characters').max(32, 'Name cannot be longer than 32 characters').required('Team Name is Required'),
     contact: yup.string().email().notRequired(),
     logo: yup.string().nullable()
 })

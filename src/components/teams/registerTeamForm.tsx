@@ -63,7 +63,7 @@ export default function RegisterTeamForm(): JSX.Element {
         })
     }
 
-    const {logo} = getValues();
+    const { logo } = getValues()
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-row justify-between'>
@@ -122,7 +122,7 @@ export default function RegisterTeamForm(): JSX.Element {
             </div>
             <div className='flex justify-end px-8'>
                 <div className='text-right'>
-                    <Button type='submit' isLoading={isSubmitting}>
+                    <Button colorScheme='green' type='submit' isLoading={isSubmitting}>
                         Complete Registration&nbsp;&nbsp;<FaArrowRight className='text-xs' />
                     </Button>
                     <div className='mt-2 text-alt-2 font-normal text-sm tracking-tight text-center'>

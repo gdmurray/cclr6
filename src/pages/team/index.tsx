@@ -40,6 +40,23 @@ function Team(): JSX.Element {
                     title: `Team Updated`,
                     status: 'success'
                 })
+                fetch('/api/team/update', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        ...team,
+                        ...values
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then((res) => {
+                    if (res.ok) {
+                        toast({
+                            title: 'Registration Information Updated',
+                            status: 'success'
+                        })
+                    }
+                })
             })
         }
 
@@ -59,7 +76,7 @@ function Team(): JSX.Element {
                                 {canEdit() && logo && (<span style={{
                                     marginLeft: '-15px'
                                 }} onClick={handleLogoClear}
-                                                                         className='hover:text-primary float-right cursor-pointer text-main transition-colors duration-150'><FaTimes /></span>)}
+                                                             className='hover:text-primary float-right cursor-pointer text-main transition-colors duration-150'><FaTimes /></span>)}
                                 <Image
                                     className='cursor-pointer mx-auto'
                                     onClick={canEdit() ? handleLogoClick : undefined}

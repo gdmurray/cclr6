@@ -2,7 +2,7 @@ import React from 'react'
 import { AuthAction, Referral, withAuthSSR } from '@lib/withSSRAuth'
 import { Invitation as IInvitation } from '@lib/models/invitations'
 import dayjs from 'dayjs'
-import db, { FieldValue } from '@lib/firestore'
+import db, { FieldValue } from '@lib/firebase/firestore'
 
 import EmptyState from '@components/EmptyState'
 import { FaExclamationTriangle, FaRegCalendarTimes } from 'react-icons/fa'

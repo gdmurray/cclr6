@@ -1,4 +1,4 @@
-import { isLocal } from '@lib/env'
+import { isLocal } from '@lib/platform/env'
 
 interface IFeatures {
     registration: boolean;
@@ -11,12 +11,13 @@ export const defaultFeatures = {
     registration: true,
     login: true,
     profile: true,
-    invite: true
+    invite: false
 }
 
 const getFeatures = (): IFeatures => {
-    // const DISABLED_FEATURES = process.env.DISABLED_FEATURES
-    const DISABLED_FEATURES = isLocal() ? '' : 'login,registration,invite,profile'
+    // const DISABLED_FEATURES = process.env.DISABLED_FEATURES || (isLocal() ? '' : 'invite')
+    const DISABLED_FEATURES = 'invite'
+    // console.log(DISABLED_FEATURES)
     if (DISABLED_FEATURES) {
         try {
             const featureList = DISABLED_FEATURES.split(',').map((feature) => feature.trim())

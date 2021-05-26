@@ -1,0 +1,147 @@
+:root {
+    --text-main: #0F172A;
+    --text-alt: #334155;
+    --text-alt-2: #475569;
+    --text-faded: #94A3B8;
+    /*--text-main: #1C1917;*/
+    /*--text-alt: #44403C;*/
+    /*--text-alt-2: #57534E;*/
+    /*--text-faded: #A8A29E;*/
+
+    --text-primary: #e50a25;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0;
+    padding: 0;
+}
+
+table {
+    width: 100% !important;
+}
+
+#main {
+    width: 100% !important;
+    height: 100% !important;
+    border: 0 !important;
+    border-spacing: 0px !important;
+}
+
+#main > tbody > tr > td {
+    padding: 0 15px;
+}
+
+#footer {
+    color: #FFFFFF;
+}
+
+#footer a {
+    text-decoration: none;
+}
+
+#footer a.link-button {
+    background: #FFFFFF;
+    padding: 0.5em;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 25px;
+}
+
+#footer a.link-button svg {
+    padding: 0px 2px;
+    position: relative;
+}
+
+#logo > div {
+    font-size: 24px;
+    color: #FFFFFF;
+    font-family: "Barlow Condensed", sans-serif !important;
+    font-weight: 500;
+}
+
+#logo {
+    padding: 30px 0;
+}
+
+#bg {
+    /*background: linear-gradient(-180deg, #334155 0%, #1E293B 100%) 0% 0% / cover;*/
+    background: linear-gradient(-180deg, #1E293B 0%, #0F172A 100%) 0% 0% / cover;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.subtitle {
+    font-weight: 500;
+    font-size: 18px;
+    color: #475569;
+}
+
+.subtitle.focus {
+    font-weight: 700;
+}
+
+td.divider {
+    background: #94A3B8;
+}
+
+#content {
+    color: #334155;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+}
+
+.cta-button {
+    display: block;
+    padding: 15px 25px;
+    background-color: #e50a25;
+    color: #FFFFFF;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-top: 15px;
+    font-weight: 600;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    border: 1px solid #e50a25;
+    cursor: pointer;
+}
+
+.cta-button:hover {
+    background: #FFFFFF;
+    color: #e50a25;
+}
+
+#content .content {
+    padding-left: 40px;
+    padding-right: 40px;
+    max-width: 400px;
+}
+
+#footer-links a {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#footer .signature {
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+}
+
+
+.body, .darkmode .darkmode td {
+    background: linear-gradient(-180deg, #1E293B 0%, #0F172A 100%) 0% 0% / cover;
+}
+
+/*.body, .darkmode #content {*/
+/*    -webkit-text-fill-color: #FFFFFF;*/
+/*}*/

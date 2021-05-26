@@ -1,4 +1,8 @@
 .post-content {
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
   .post-title {
     @apply text-main text-2xl font-semibold;
   }
@@ -7,7 +11,7 @@
     @apply text-alt-2 text-sm font-medium;
   }
 
-  @extend .text-alt;
+  @extend .text-main;
   @apply text-base font-medium tracking-tight;
   p > a {
     @apply font-medium transition-colors duration-150;

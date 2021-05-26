@@ -9,31 +9,31 @@ export interface Season {
     id: string;
     active: boolean;
     name: string;
+    toornamentId: string;
     start_date: string;
     end_date: string;
     qualifiers: Partial<Tournament>[]
 }
 
-
 export const SeasonOne: Season = {
     id: '1',
     active: true,
+    toornamentId: '4585711997166354432',
     start_date: '2021-07-01',
     end_date: '2021-09-01',
     name: 'Canada Contenders Series: Season 1',
     qualifiers: [
         {
-            // id: '1'
-            id: '4586031971897286656'
+            id: process.env.FIREBASE_PROJECT_ID === 'ccl-content' ? '4586031971897286656' : '4657867830957891584'
         },
         {
-            id: '2'
+            id: process.env.FIREBASE_PROJECT_ID === 'ccl-content' ? '4656151368065269760' : '4657870642085552128'
         },
         {
-            id: '3'
+            id: '4656235654717947904'
         },
         {
-            id: '4'
+            id: '4656251121246019584'
         }
     ]
 }
