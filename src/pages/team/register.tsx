@@ -13,7 +13,7 @@ export const getServerSideProps = withAuthSSR({
 })(async ({ user }) => {
     return {
         props: {
-            verified: user.email_verified
+            verified: true
         }
     }
 })

@@ -56,14 +56,14 @@ const LoginForm = (): JSX.Element => {
         )
     }
 
-    const forgotPassword = () => {
-        const { email } = getValues()
-        if (email) {
-            push({ pathname: '/auth/password_reset', query: { email } })
-        } else {
-            push('/auth/password_reset')
-        }
-    }
+    // const forgotPassword = () => {
+    //     const { email } = getValues()
+    //     if (email) {
+    //         push({ pathname: '/auth/password_reset', query: { email } })
+    //     } else {
+    //         push('/auth/password_reset')
+    //     }
+    // }
 
     return (
         <>
@@ -100,11 +100,11 @@ const LoginForm = (): JSX.Element => {
                         type='submit'>
                         Sign In
                     </Button>
-                    <div
-                        onClick={forgotPassword}
-                        className='cursor-pointer mt-2 block text-right text-sm tracking-tight font-semibold text-primary hover:text-red-500 transition-all duration-150'>
-                        <div>Forgot Password</div>
-                    </div>
+                    {/*<div*/}
+                    {/*    onClick={forgotPassword}*/}
+                    {/*    className='cursor-pointer mt-2 block text-right text-sm tracking-tight font-semibold text-primary hover:text-red-500 transition-all duration-150'>*/}
+                    {/*    <div>Forgot Password</div>*/}
+                    {/*</div>*/}
                 </div>
             </form>
             <div className='font-medium text-sm tracking-tight text-center dark:text-gray-300 '>Don't have an

@@ -39,10 +39,10 @@ export default async function(req: NextApiRequest, res: NextApiResponse): Promis
     const hashed = buffer.toString('base64')
     const cta_url = `${getHostName()}/invitation/${encodeURI(hashed)}`
 
-    sendMail(user_email, 'invite', {
-        team_name,
-        cta_url
-    })
+    // sendMail(user_email, 'invite', {
+    //     team_name,
+    //     cta_url
+    // })
 
     res.status(200).json({ id: invitation.id })
 }
