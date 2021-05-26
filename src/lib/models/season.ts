@@ -15,7 +15,6 @@ export interface Season {
     qualifiers: Partial<Tournament>[]
 }
 
-
 export const SeasonOne: Season = {
     id: '1',
     active: true,
@@ -25,18 +24,16 @@ export const SeasonOne: Season = {
     name: 'Canada Contenders Series: Season 1',
     qualifiers: [
         {
-            // id: '1'
-            id: '4586031971897286656'
+            id: process.env.FIREBASE_PROJECT_ID === 'ccl-content' ? '4586031971897286656' : '4657867830957891584'
         },
         {
-            // id: '2'
-            id: '4656151368065269760'
+            id: process.env.FIREBASE_PROJECT_ID === 'ccl-content' ? '4656151368065269760' : '4657870642085552128'
         },
         {
-            id: '3'
+            id: '4656235654717947904'
         },
         {
-            id: '4'
+            id: '4656251121246019584'
         }
     ]
 }

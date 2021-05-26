@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { FaCalendarAlt, FaRegCreditCard, FaTimes, FaTrophy } from 'react-icons/fa'
+import { FaCalendarAlt, FaRegCreditCard, FaTimes, FaTrophy, FaUsers } from 'react-icons/fa'
 import { Button, useToast } from '@chakra-ui/react'
 import { SeasonClient } from '@lib/models/season'
 import { TeamContext } from '@components/teams/teamContext'
@@ -141,55 +141,73 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
     const getRegistrationStatus = (): void => {
         if (eligibility) {
             if (!eligibility.eligible) {
-                setStatus({
-                    disabled: true,
-                    message: eligibility.reason,
-                    button: 'Register',
-                    status: 'default'
-                })
+                if (!eligibility.teamQualified.satisfied) {
+                    setStatus({
+                        disabled: true,
+                        message: eligibility.reason,
+                        button: 'Qualified',
+                        status: 'success'
+                    })
+                } else {
+                    setStatus({
+                        disabled: true,
+                        message: eligibility.reason,
+                        button: 'Register',
+                        status: 'default'
+                    })
+                }
                 return
             }
 
-            if (!tournamentClient.isRegistrationOpen()) {
-                if (tournamentClient.hasRegistrationClosed()) {
-                    setStatus({
-                        disabled: true,
-                        message: `Registration Closed ${dayjs(qualifier.registration_closing_datetime).format('LLL')}`,
-                        button: 'Closed',
-                        status: 'error'
-                    })
-                    return
-                }
-                if (!tournamentClient.hasRegistrationStarted()) {
-                    setStatus({
-                        disabled: true,
-                        message: (`Registration Opens ${dayjs(qualifier.registration_opening_datetime).format('LLL')}`),
-                        button: 'Register',
-                        status: 'default'
-                    })
-                    return
-                }
-            }
-
-            teamClient.hasTeamRegistered(qualifier.id).then(registered => {
-                if (registered) {
-                    setStatus({
-                        disabled: true,
-                        message: `Registered on ${dayjs((registered as IRegistration).registered).format('LLL')}`,
-                        button: 'Registered',
-                        status: 'success'
-                    })
-                    return
+            teamClient.hasQualified().then(qualified => {
+                if (qualified) {
+                    console.log(qualified)
                 } else {
-                    setStatus({
-                        disabled: false,
-                        message: 'Open for Registration!',
-                        button: 'Register',
-                        status: 'default'
+                    teamClient.hasTeamRegistered(qualifier.id).then(registered => {
+                        console.log('REGED: ', qualifier.id, registered)
+                        if (registered) {
+                            console.log('Team had registered?')
+                            setStatus({
+                                disabled: true,
+                                message: `Registered on ${dayjs((registered as IRegistration).registered).format('LLL')}`,
+                                button: 'Registered',
+                                status: 'success'
+                            })
+                            return
+                        } else {
+                            if (!tournamentClient.isRegistrationOpen()) {
+                                if (tournamentClient.hasRegistrationClosed()) {
+                                    setStatus({
+                                        disabled: true,
+                                        message: `Registration Closed ${dayjs(qualifier.registration_closing_datetime).format('MMMM D [at] h:mm A')}`,
+                                        button: 'Closed',
+                                        status: 'error'
+                                    })
+                                    return
+                                }
+                                if (!tournamentClient.hasRegistrationStarted()) {
+                                    setStatus({
+                                        disabled: true,
+                                        message: (`Registration Opens ${dayjs(qualifier.registration_opening_datetime).format('MMMM D [at] h:mm A')}`),
+                                        button: 'Register',
+                                        status: 'default'
+                                    })
+                                    return
+                                }
+                            } else {
+                                setStatus({
+                                    disabled: false,
+                                    message: 'Open for Registration!',
+                                    button: 'Register',
+                                    status: 'default'
+                                })
+                                return
+                            }
+                        }
                     })
-                    return
                 }
             })
+
 
         }
     }
@@ -248,9 +266,11 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                     <FaTrophy />&nbsp;{qualifier.id.length > 1 ?
                     <a target='_blank' rel='noopener' className='hover:underline transition-all duration-150'
                        href={`https://www.toornament.com/en_US/tournaments/${qualifier.id}/information`}>{qualifier.name}</a> : qualifier.name}
-                    <span className='ml-2 text-alt-2 text-sm font-medium'>{participants.length}/16</span>
+                    <span
+                        className='mx-2 text-alt-2 text-sm font-medium flex flex-row items-center'><FaUsers />&nbsp;{participants.length}/16</span>
                 </div>
-                <div style={{ width: '110px' }} className='text-line justify-between font-medium tracking-tight'>
+                <div style={{ width: '110px' }}
+                     className='text-line justify-between font-medium tracking-tight whitespace-nowrap'>
                     <FaCalendarAlt />&nbsp;{qualifier.scheduled_date_start}
                 </div>
             </div>

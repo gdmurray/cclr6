@@ -3,6 +3,7 @@ import { CaptureOrderResponseBody } from '@paypal/paypal-js/types/apis/orders'
 import { IPlayer } from '@lib/models/player'
 import { Firestore, storage } from '@lib/firebase/firebase'
 import { Tournament } from '@lib/models/tournament'
+import { SeasonOne } from '@lib/models/season'
 
 export interface ITeam {
     id?: string;
@@ -37,7 +38,11 @@ interface TeamClient {
 
     registerForTournament(tournamentId: string, participantId: string): Promise<boolean>;
 
+    getRegistration(tournamentId: string): Promise<IRegistration>;
+
     getRegistrations(): Promise<IRegistration[]>;
+
+    hasQualified(): Promise<boolean>;
 }
 
 // FirebaseFirestore.Firestore
@@ -111,23 +116,30 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
             return Promise.resolve(false)
 
         },
-        hasTeamRegistered: async (tournamentId): Promise<boolean | IRegistration> => {
-            const registration = await database.collection('teams')
-                .doc(team.id)
-                .collection('registrations')
-                .where('tournament_id', '==', tournamentId)
-                .get()
-            if (registration.empty) {
-                return Promise.resolve(false)
-            }
-            if (registration.size === 1) {
-                const data = registration.docs[0].data()
-                if (data.status === 'REGISTERED') {
-                    return Promise.resolve(data as IRegistration)
+        async hasTeamRegistered(tournamentId): Promise<boolean | IRegistration> {
+            const registration = await this.getRegistration(tournamentId)
+            if (registration) {
+                if (registration.status === 'REGISTERED') {
+                    return Promise.resolve(registration)
                 }
-
             }
             return Promise.resolve(false)
+            // const registration = await database.collection('teams')
+            //     .doc(team.id)
+            //     .collection('registrations')
+            //     .where('tournament_id', '==', tournamentId)
+            //     .get()
+            // if (registration.empty) {
+            //     return Promise.resolve(false)
+            // }
+            // if (registration.size === 1) {
+            //     const data = registration.docs[0].data()
+            //     if (data.status === 'REGISTERED') {
+            //         return Promise.resolve(data as IRegistration)
+            //     }
+            //
+            // }
+            // return Promise.resolve(false)
         },
         registerForTournament: async (tournamentId, participantId): Promise<boolean> => {
             const registration = await database.collection('teams')
@@ -146,6 +158,20 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
         canUserRegister: (uid): boolean => {
             return (team.owner === uid)
         },
+        getRegistration: async (tournamentId): Promise<IRegistration | null> => {
+            const registration = await database.collection('teams')
+                .doc(team.id)
+                .collection('registrations')
+                .where('tournament_id', '==', tournamentId)
+                .get()
+            if (registration.empty) {
+                return Promise.resolve(null)
+            }
+            if (registration.size === 1) {
+                const data = registration.docs[0].data()
+                return Promise.resolve(data)
+            }
+        },
         getRegistrations: async (): Promise<IRegistration[]> => {
             const registrations = await database
                 .collection('teams')
@@ -153,6 +179,21 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
                 .collection('registrations')
                 .get()
             return Promise.resolve(registrations.docs.map((reg) => ({ id: reg.id, ...reg.data() })))
+        },
+        async hasQualified(): Promise<boolean> {
+            const season = SeasonOne
+            const registrations = []
+            for (let i = 0; i < season.qualifiers.length; i += 1) {
+                const registration = await this.getRegistration(season.qualifiers[i].id)
+                if (registration) {
+                    registrations.push(registration)
+                }
+            }
+            const qualified = registrations.filter((reg) => reg.status === 'QUALIFIED')
+            if (qualified.length > 0) {
+                return Promise.resolve(true)
+            }
+            return Promise.resolve(false)
         }
     }
 }

@@ -1,4 +1,8 @@
 .post-content {
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
   .post-title {
     @apply text-main text-2xl font-semibold;
   }

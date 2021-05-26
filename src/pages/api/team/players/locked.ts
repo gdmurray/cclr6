@@ -11,13 +11,17 @@ export default async function locked(req: NextApiRequest, res: NextApiResponse) 
         const user = await authenticate(req, res)
         const team = await Teams.getTeamByUserID(user.uid)
         const activeRegistrations = await getTeamRegistrations(team)
+        console.log(activeRegistrations)
         let response = {}
         if (activeRegistrations.length > 0) {
             const [active] = activeRegistrations
-            if (dayjs(active.tournament.registration_closing_datetime).diff(dayjs(), 'minutes') < 30) {
+            // if current date is less than or equal to end date
+            console.log(dayjs().toDate(), dayjs(active.tournament.scheduled_date_end).toDate())
+            if (dayjs(active.tournament.registration_closing_datetime).diff(dayjs(), 'minutes') < 30
+                && dayjs().toDate() < dayjs(active.tournament.scheduled_date_end).toDate()) {
                 response = {
                     status: 'locked',
-                    message: 'Roster window closed during qualifier'
+                    message: `Roster changes locked during ${active.tournament.name}`
                 }
             }
         } else {
