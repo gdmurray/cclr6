@@ -15,7 +15,8 @@ export const defaultFeatures = {
 }
 
 const getFeatures = (): IFeatures => {
-    const DISABLED_FEATURES = process.env.DISABLED_FEATURES || (isLocal() ? '' : 'invite')
+    // const DISABLED_FEATURES = process.env.DISABLED_FEATURES || (isLocal() ? '' : 'invite')
+    const DISABLED_FEATURES = 'invite'
     // console.log(DISABLED_FEATURES)
     if (DISABLED_FEATURES) {
         try {

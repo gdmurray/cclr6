@@ -1,0 +1,20 @@
+extends ../transactional
+
+block icon
+    img(src="assets/trophy.svg" alt="trophy" width=80)
+
+block title
+    span.title Your Registration
+
+block subtitle
+    span.subtitle You've been registered for
+    br
+    span.subtitle.focus #{event_name}
+
+block subcontent
+    tr
+        td(align="left")
+            p If you would like to view this in Toornament, please click the button below.
+    tr
+        td(align="center")
+            a.cta-button(href=`${cta_url}`) View Tournament

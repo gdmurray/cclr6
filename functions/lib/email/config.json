@@ -1,0 +1,42 @@
+{
+    "base_url": "https://www.CCLR6.com",
+    "contact_email": "support@cclr6.com",
+    "site_title": "Canadian Contender League R6",
+    "site_description": "The Newest Chapter in Canadian R6",
+    "site_keywords": [
+        {
+            "keyword": "Rainbow 6: Siege"
+        },
+        {
+            "keyword": "Ubisoft"
+        },
+        {
+            "keyword": "Competitive"
+        },
+        {
+            "keyword": "Esports"
+        },
+        {
+            "keyword": "League"
+        },
+        {
+            "keyword": "CCLR6"
+        },
+        {
+            "keyword": "Canada Contenders League"
+        },
+        {
+            "keyword": "Canadian"
+        },
+        {
+            "keyword": "Contender"
+        }
+    ],
+    "twitter_account": "@CCLR6S",
+    "socials": {
+        "discord": "https://discord.gg/b5aVApctyb",
+        "twitter": "https://twitter.com/cclr6s",
+        "twitch": "https://www.twitch.tv/cclr6s",
+        "youtube": "https://www.youtube.com/channel/UC5ujFuaAWmmmwMsN2fOfWuQ"
+    }
+}

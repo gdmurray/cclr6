@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import firebaseAdmin from '@lib/firebase/admin'
-import { defaultLocals, getEmail } from '@lib/platform/mail'
-import * as path from 'path'
+import { sendMail } from '@lib/platform/mail'
 import { getHostName } from '../team/invite'
 
 
@@ -13,16 +12,8 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
                 url: `${getHostName()}`
             })
             if (link) {
-                const email = getEmail()
-                email.send({
-                    template: path.resolve('src/email/verify'),
-                    message: {
-                        to: emailAddress
-                    },
-                    locals: {
-                        ...defaultLocals,
-                        cta_url: link
-                    }
+                sendMail(emailAddress, 'verify', {
+                    cta_url: link
                 })
                 res.status(200).end()
             }

@@ -9,7 +9,6 @@ interface PostsProps {
 }
 
 export default function Posts({ posts }: PostsProps): JSX.Element {
-    console.log(posts)
     return (
         <div className='page-content'>
             <Breadcrumb fontWeight='medium' fontSize='sm' className='text-main'>
@@ -33,7 +32,6 @@ export default function Posts({ posts }: PostsProps): JSX.Element {
 
 export async function getStaticProps() {
     const data = await getAllPostsForHome()
-    console.log('DATA: ', data)
     return {
         props: {
             posts: data || []
