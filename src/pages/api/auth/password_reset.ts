@@ -14,7 +14,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
             })
             if (link) {
                 console.log('sending...')
-                await sendMail(emailAddress, 'forgot_password', {
+                await sendMail(req, emailAddress, 'forgot_password', {
                     cta_url: link
                 })
                 res.status(200).end()

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { FaCalendarAlt, FaRegCreditCard, FaTimes, FaTrophy, FaUsers } from 'react-icons/fa'
-import { Button, useToast } from '@chakra-ui/react'
+import { Button, Tooltip, useToast } from '@chakra-ui/react'
 import { SeasonClient } from '@lib/models/season'
 import { TeamContext } from '@components/teams/teamContext'
 import { CreateTeamClient, IRegistration } from '@lib/models/team'
@@ -65,8 +65,10 @@ export default function SeasonComponent({ season }): JSX.Element {
                     </div>
                     <div className='flex flex-col'>
                         {!teamPaid && (
-                            <Button colorScheme={isPurchasing ? 'red' : 'green'}
-                                    onClick={handlePaymentClick}>{getButtonContent()}</Button>
+                            <Tooltip label='Pass grants you access to all Qualifiers' hasArrow>
+                                <Button colorScheme={isPurchasing ? 'red' : 'green'}
+                                        onClick={handlePaymentClick}>{getButtonContent()}</Button>
+                            </Tooltip>
                         )}
                         {eligibilityChecklist()}
                     </div>
