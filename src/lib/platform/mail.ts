@@ -50,7 +50,7 @@ export const defaultLocals = {
     year: new Date().getFullYear()
 }
 
-export const sendMail = async (emailAddress, template, variables) => {
+export const sendMail = async (emailAddress, template, variables): Promise<void> => {
     fetch('https://us-central1-ccl-content.cloudfunctions.net/sendEmail', {
         method: 'POST',
         body: JSON.stringify({
@@ -65,4 +65,6 @@ export const sendMail = async (emailAddress, template, variables) => {
             'Content-Type': 'application/json'
         }
     })
+    console.log('SENT MAIL')
+    return Promise.resolve()
 }

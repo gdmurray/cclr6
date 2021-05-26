@@ -3,10 +3,11 @@ import * as nodemailer from 'nodemailer'
 import Email from 'email-templates'
 import * as path from 'path'
 import * as aws from 'aws-sdk'
+import * as functions from 'firebase-functions'
 
 aws.config.update({
-    accessKeyId: process.env.SES_ACCESS_KEY_ID,
-    secretAccessKey: process.env.SES_ACCESS_KEY_SECRET,
+    accessKeyId: functions.config().aws.id,
+    secretAccessKey:functions.config().aws.secret,
     region: 'us-east-1'
 })
 
@@ -19,7 +20,7 @@ export const transporter = nodemailer.createTransport({
     SES: { ses, aws }
 })
 
-const env = process.env.NODE_ENV || 'development'
+const env = 'production'
 export const getEmail = (from: string = 'noreply@cclr6.com') => {
     return new Email(
         {
