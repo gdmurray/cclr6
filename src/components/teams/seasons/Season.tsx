@@ -150,6 +150,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                         button: 'Qualified',
                         status: 'success'
                     })
+                    return
                 } else {
                     setStatus({
                         disabled: true,
@@ -157,8 +158,8 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                         button: 'Register',
                         status: 'default'
                     })
+                    return
                 }
-                return
             }
 
             teamClient.hasQualified().then(qualified => {
@@ -166,9 +167,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                     console.log(qualified)
                 } else {
                     teamClient.hasTeamRegistered(qualifier.id).then(registered => {
-                        console.log('REGED: ', qualifier.id, registered)
                         if (registered) {
-                            console.log('Team had registered?')
                             setStatus({
                                 disabled: true,
                                 message: `Registered on ${dayjs((registered as IRegistration).registered).format('LLL')}`,
@@ -209,6 +208,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                     })
                 }
             })
+            console.log('nothing hit')
 
 
         }

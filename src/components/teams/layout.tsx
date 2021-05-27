@@ -83,6 +83,11 @@ const TeamLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
                 {loading && (
                     <Loader text='Loading Team Information' />
                 )}
+                {!loading && user && !team && (
+                    <div>
+                        Error Loading Team Information, do you belong to a team?
+                    </div>
+                )}
                 {!loading && user && team && (
                     <TeamProvider team={team} user={user} setTeam={setTeam}>
                         <div className='p-2 py-4'>{props.children}</div>

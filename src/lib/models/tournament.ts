@@ -55,10 +55,6 @@ export function CreateTournamentClient(tournament: Tournament): TournamentClient
                 return false
             }
 
-            if (!tournament.registration_enabled) {
-                return false
-
-            }
             return (this.hasRegistrationStarted() && !this.hasRegistrationClosed())
         },
 
