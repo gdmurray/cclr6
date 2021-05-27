@@ -72,7 +72,6 @@ function useFirebaseAuth() {
 
     const onUserChangedEvent = useCallback(() => {
         if (!loading && user && user.uid) {
-            console.log('Setting user id')
             analytics().setUserId(user.uid)
         }
     }, [user?.uid, loading])
@@ -149,52 +148,38 @@ function useFirebaseAuth() {
     }
 
     useEffect(() => {
-        const unlisten = firebase.auth().onIdTokenChanged(async (user) => {
-            // console.log(new Date().toISOString(), 'ID TOKEN CHANGED')
-            if (!user) {
+        return firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                const token = await user.getIdToken()
+                nookies.set(undefined, 'token', token, { path: '/' })
+                await handleUser(user)
+            } else {
                 handleUser(null)
                 nookies.set(undefined, 'token', '', { path: '/' })
-            } else {
-                const token = await user.getIdToken()
-                handleUser(user)
-                nookies.set(undefined, 'token', token, { path: '/' })
             }
         })
-        return () => {
-            unlisten()
-        }
     }, [])
 
 
     // force refresh the token every 10 minutes
+    const FORCE_REFRESH_MINUTES = 10
     useEffect(() => {
         const handle = setInterval(async () => {
             const user = firebase.auth().currentUser
             if (user) await user.getIdToken(true)
-        }, 10 * 60 * 1000)
+        }, FORCE_REFRESH_MINUTES * 60 * 1000)
 
         // clean up setInterval
         return () => clearInterval(handle)
     }, [])
 
-    const getFreshToken = async () => {
-        console.log('getFreshToken called', new Date())
-        const currentUser = firebase.auth().currentUser
-        if (currentUser) {
-            const token = await currentUser.getIdToken(false)
-            return `${token}`
-        } else {
-            return ''
-        }
-    }
 
     return {
         user,
         loading,
         Twitter,
         signinWithEmail,
-        signOut,
-        getFreshToken
+        signOut
     }
 }
 
