@@ -13,6 +13,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
                 url: `${getHostName()}/login`
             })
             if (link) {
+                console.log('SENDING FORGOT PASSWORD')
                 await sendMail(req, emailAddress, 'forgot_password', {
                     cta_url: link
                 })

@@ -49,9 +49,9 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
             }
             const participantId = await toornamentClient.registerTeam(toornamentId as string, body)
             await teamClient.registerForTournament(toornamentId as string, participantId)
-            await sendMail(req, team.contact_email, 'registration', {
-                cta_url: `https://www.toornament.com/en_US/tournaments/${toornamentId}/information`
-            })
+            // await sendMail(req, team.contact_email, 'registration', {
+            //     cta_url: `https://www.toornament.com/en_US/tournaments/${toornamentId}/information`
+            // })
             res.status(200).json({ status: 'success', message: 'registered' })
         } else {
             res.status(400).json({ status: 'failure', message: 'already registered' })

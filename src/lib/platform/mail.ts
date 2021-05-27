@@ -14,6 +14,7 @@ export const defaultLocals = {
 }
 
 export const sendMail = async (req, emailAddress, template, variables): Promise<void> => {
+    console.log("ATTEMPTING TO SEND")
     try {
         const projectId = 'ccl-content'
         const queue = 'send-email'
@@ -41,7 +42,7 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
         const task = { httpRequest: httpReq }
 
         const request = { parent, task }
-
+        console.log("CREATING TASK")
         await client.createTask(request)
         return Promise.resolve()
     } catch (e) {
