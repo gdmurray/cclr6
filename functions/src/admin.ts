@@ -12,7 +12,7 @@ interface Hash {
     content: string;
 }
 
-const accounts: { FIREBASE: Hash, GOOGLE: Hash } = {
+export const accounts: { FIREBASE: Hash, GOOGLE: Hash } = {
     FIREBASE: {
         iv: functions.config().admin.iv,
         secret: functions.config().admin.key,
@@ -26,7 +26,7 @@ const accounts: { FIREBASE: Hash, GOOGLE: Hash } = {
 
 }
 
-function getDecrypted(hash: Hash): string {
+export function getDecrypted(hash: Hash): string {
     const decrypt = (hash: Hash, secret: string): string => {
 
         const decipher = crypto.createDecipheriv(algorithm, secret, Buffer.from(hash.iv, 'hex'))
