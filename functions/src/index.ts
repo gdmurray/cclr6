@@ -1,55 +1,47 @@
 import * as functions from 'firebase-functions'
-import { decodeAuthToken, validateHeader } from './utils'
-import { dispatchGCloudTask, sendMail, verifyCloudTaskRequest } from './tasks'
+import { sendMail, verifyCloudTaskRequest } from './tasks'
 
-const templates = [
-    'forgot_password',
-    'invite',
-    'registration',
-    'verify'
-]
-
-const cors = require('cors')({ origin: true })
-
-const anonymousTemplates = ['forgot_password']
+// const cors = require('cors')({ origin: true })
+//
+// const anonymousTemplates = ['forgot_password']
 
 
-export const triggerEmail = functions.https.onRequest(async (req, res) => {
-    cors(req, res, async () => {
-        if (req.method === 'POST') {
-            try {
-                const { template } = req.body
-                if (templates.indexOf(template) !== -1) {
-                    if (anonymousTemplates.indexOf(template) === -1) {
-                        const authToken = validateHeader(req)
-                        if (!authToken) {
-                            res.status(403).send('Not authorized. Missing auth Token')
-                            return
-                        }
-
-                        const uid = await decodeAuthToken(authToken)
-                        if (uid === undefined) {
-                            res.status(403).send('Invalid or expired token.')
-                            return
-                        }
-                    }
-                    const request = req.body
-                    await dispatchGCloudTask(request)
-                    res.status(200).send({ result: 'Email Sent' })
-                } else {
-                    res.status(404).send({ result: 'No Template with that name found' })
-                }
-
-            } catch (error) {
-                functions.logger.error('Error: ', error)
-                res.status(500).send({ result: 'Error occured during email' })
-            }
-        } else {
-            res.status(405).end()
-        }
-
-    })
-})
+// export const triggerEmail = functions.https.onRequest(async (req, res) => {
+//     cors(req, res, async () => {
+//         if (req.method === 'POST') {
+//             try {
+//                 const { template } = req.body
+//                 if (templates.indexOf(template) !== -1) {
+//                     if (anonymousTemplates.indexOf(template) === -1) {
+//                         const authToken = validateHeader(req)
+//                         if (!authToken) {
+//                             res.status(403).send('Not authorized. Missing auth Token')
+//                             return
+//                         }
+//
+//                         const uid = await decodeAuthToken(authToken)
+//                         if (uid === undefined) {
+//                             res.status(403).send('Invalid or expired token.')
+//                             return
+//                         }
+//                     }
+//                     const request = req.body
+//                     await dispatchGCloudTask(request)
+//                     res.status(200).send({ result: 'Email Sent' })
+//                 } else {
+//                     res.status(404).send({ result: 'No Template with that name found' })
+//                 }
+//
+//             } catch (error) {
+//                 functions.logger.error('Error: ', error)
+//                 res.status(500).send({ result: 'Error occured during email' })
+//             }
+//         } else {
+//             res.status(405).end()
+//         }
+//
+//     })
+// })
 
 
 // const cors = require('cors')({ origin: true })

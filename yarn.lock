@@ -2740,6 +2740,13 @@
     stream-events "^1.0.1"
     xdg-basedir "^4.0.0"
 
+"@google-cloud/tasks@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@google-cloud/tasks/-/tasks-2.3.2.tgz#e48990d3e078ab5be8955414daeaf897ce590c60"
+  integrity sha512-pO+SFnvY/mn8criCauJrk88aLS57V9Mt78uST4TXN79DgESufyICUFNncOhcd4jxQybCG4UTtDQILBJoYua5uQ==
+  dependencies:
+    google-gax "^2.12.0"
+
 "@grpc/grpc-js@^1.0.0", "@grpc/grpc-js@~1.2.0":
   version "1.2.12"
   resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.2.12.tgz#0153f27512acf69184bb52c0a1035ca91d6c14b0"

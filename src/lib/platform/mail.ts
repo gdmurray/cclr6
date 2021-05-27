@@ -1,5 +1,8 @@
 import config from './config'
+import decrypted from '@lib/secret/google-account'
 import { isLocal } from '@lib/platform/env'
+import * as cloudTasks from '@google-cloud/tasks'
+
 
 export const defaultLocals = {
     website: config.base_url,
@@ -11,22 +14,40 @@ export const defaultLocals = {
 }
 
 export const sendMail = async (req, emailAddress, template, variables): Promise<void> => {
-    const response = await fetch(isLocal() ? 'http://localhost:5001/ccl-content/us-central1/triggerEmail' : 'https://us-central1-ccl-content.cloudfunctions.net/triggerEmail', {
-        method: 'POST',
-        body: JSON.stringify({
-            template,
-            emailAddress,
-            variables: {
-                ...defaultLocals,
-                ...variables
+    try {
+        const projectId = 'ccl-content'
+        const queue = 'send-email'
+        const location = 'us-central1'
+        const url = 'https://us-central1-ccl-content.cloudfunctions.net/sendEmail'
+        const serviceAccountEmail = decrypted.client_email
+
+        const client = new cloudTasks.CloudTasksClient()
+        const parent = client.queuePath(projectId, location, queue)
+
+        const httpReq = {
+            httpMethod: cloudTasks.protos.google.cloud.tasks.v2.HttpMethod.POST,
+            url: url,
+            body: Buffer.from(JSON.stringify({
+                template,
+                emailAddress,
+                variables: { ...defaultLocals, ...variables }
+            })).toString('base64'),
+            oidcToken: { serviceAccountEmail },
+            headers: {
+                'Content-Type': 'application/json'
             }
-        }),
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${req.cookies.token}`
         }
-    })
-    const data = await response.json()
-    return Promise.resolve()
+
+        const task = { httpRequest: httpReq }
+
+        const request = { parent, task }
+
+        await client.createTask(request)
+        return Promise.resolve()
+    } catch (e) {
+        console.log('?', e)
+        return Promise.resolve()
+    }
+
 }
 
