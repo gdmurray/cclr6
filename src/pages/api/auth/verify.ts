@@ -12,9 +12,9 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
                 url: `${getHostName()}`
             })
             if (link) {
-                // sendMail(emailAddress, 'verify', {
-                //     cta_url: link
-                // })
+                await sendMail(req, emailAddress, 'verify', {
+                    cta_url: link
+                })
                 res.status(200).end()
             }
         } catch (err) {
