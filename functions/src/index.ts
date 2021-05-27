@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions'
 // import * as path from 'path'
 import admin from './admin'
+import { decodeAuthToken, validateHeader } from './utils'
 
 const templates = [
     'forgot_password',
@@ -9,61 +10,88 @@ const templates = [
     'verify'
 ]
 
-// const noAuthTemplates = ['forgot_password']
-export const sendEmail = functions.https.onRequest(async (req, res) => {
-    if (process.env.FUNCTIONS_EMULATOR) {
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001')
-    } else {
-        res.setHeader('Access-Control-Allow-Origin', 'https://cclr6.com')
-    }
-    if (req.method === 'OPTIONS') {
-        res.setHeader('Access-Control-Allow-Methods', 'POST')
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-        res.setHeader('Access-Control-Max-Age', '3600')
-    } else if (req.method === 'POST') {
-        const { template } = req.body
-        if (templates.indexOf(template) !== -1) {
-            const authToken = req.headers.authorization?.replace('Bearer ', '')
-            if (authToken) {
-                const user = await admin.auth().verifyIdToken(authToken)
-                res.status(200).json({ message: { user } })
+const cors = require('cors')({ origin: true })
+
+export const triggerEmail = functions.https.onRequest(async (req, res) => {
+    cors(req, res, async () => {
+        try {
+            const authToken = validateHeader(req)
+            if (!authToken) {
+                res.status(403).send('Not authorized. Missing auth Token')
             }
-            // if (noAuthTemplates.indexOf(template) === -1) {
-            //     console.log('Template needs auth')
-            //     const authToken = cookies.token
-            //     console.log(authToken)
-            //     const user = await firebaseAdmin.auth().verifyIdToken(authToken)
-            //     if (user) {
-            //         console.log('Valid User: ', user)
-            //     } else {
-            //         res.status(403).end()
-            //     }
-            // } else {
-            //     console.log('template doesnt need auth')
-            // }
-        } else {
-            res.status(400).json({ status: 'failed', 'message': 'Not a valid template' })
+
+            const uid = await decodeAuthToken(authToken)
+            if (uid === undefined) {
+                res.status(403).send('Invalid or expired token.')
+                return
+            }
+
+            res.status(200).send({ result: 'Email Sent' })
+        } catch (error) {
+            console.log(`Error occured during account update: ${error}`)
+            res.status(500).send({ result: 'Error occured during email' })
         }
+    })
+})
 
-        // const { template, variables, emailAddress } = req.body
-        // try {
-        //     const email = getEmail()
-        //     email.send({
-        //         template: path.resolve(`src/email/${template}`),
-        //         message: {
-        //             to: emailAddress
-        //         },
-        //         locals: variables
-        //     })
-        // } catch (err) {
-        //     res.status(500).json({ message: err.message })
-        // }
+// const cors = require('cors')({ origin: true })
 
-        res.status(200).json({ message: 'Sent' })
-    } else {
-        res.status(405).end()
+// const noAuthTemplates = ['forgot_password']
+exports.sendEmail = functions.https.onRequest(async (req, res) => {
+    try {
+        if (req.method === 'POST') {
+            const { template } = req.body
+            if (templates.indexOf(template) !== -1) {
+                const authToken = req.headers.authorization?.replace('Bearer ', '')
+                if (authToken) {
+                    const user = await admin.auth().verifyIdToken(authToken)
+                    res.statusCode = 200
+                    res.json({ message: user })
+                }
+                // if (noAuthTemplates.indexOf(template) === -1) {
+                //     console.log('Template needs auth')
+                //     const authToken = cookies.token
+                //     console.log(authToken)
+                //     const user = await firebaseAdmin.auth().verifyIdToken(authToken)
+                //     if (user) {
+                //         console.log('Valid User: ', user)
+                //     } else {
+                //         res.status(403).end()
+                //     }
+                // } else {
+                //     console.log('template doesnt need auth')
+                // }
+            } else {
+                res.statusCode = 400
+                res.json({ message: 'invalid template' })
+            }
+
+            // const { template, variables, emailAddress } = req.body
+            // try {
+            //     const email = getEmail()
+            //     email.send({
+            //         template: path.resolve(`src/email/${template}`),
+            //         message: {
+            //             to: emailAddress
+            //         },
+            //         locals: variables
+            //     })
+            // } catch (err) {
+            //     res.status(500).json({ message: err.message })
+            // }
+            res.statusCode = 200
+            res.json({ message: 'sent' })
+        } else {
+            res.status(405).end()
+        }
+    } catch (e) {
+        console.log('man how did i get here')
+        console.log(e)
+        res.statusCode = 500
+        res.json({ e })
     }
 
+    // })
 })
 
 // https://firebase.google.com/docs/functions/typescript

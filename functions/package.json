@@ -14,6 +14,8 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@google-cloud/tasks": "^2.3.2",
+    "@types/cors": "^2.8.10",
     "aws-sdk": "^2.914.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",

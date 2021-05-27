@@ -58,7 +58,7 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
     console.log(received === og)
     const user = await admin.auth().verifyIdToken(req.cookies.token)
     console.log('USER: ', user)
-    fetch(isLocal() ? 'http://localhost:5001/ccl-content/us-central1/sendEmail' : 'https://us-central1-ccl-content.cloudfunctions.net/sendEmail', {
+    const response = await fetch(isLocal() ? 'http://localhost:5001/ccl-content/us-central1/triggerEmail' : 'https://us-central1-ccl-content.cloudfunctions.net/sendEmail', {
         method: 'POST',
         body: JSON.stringify({
             template,
@@ -73,7 +73,8 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
             'Authorization': `Bearer ${req.cookies.token}`
         }
     })
-    console.log('SENT MAIL')
+    const data = await response.json()
+    console.log('SENT MAIL: ', data)
     return Promise.resolve()
 }
 
