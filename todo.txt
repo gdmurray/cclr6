@@ -1,1 +1,0 @@
-# TODO: Enforce min 200x200 and square image for team logo, figure out how to upload logo to TOORNAMENT
