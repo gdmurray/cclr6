@@ -58,7 +58,7 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
     console.log(received === og)
     const user = await admin.auth().verifyIdToken(req.cookies.token)
     console.log('USER: ', user)
-    const response = await fetch(isLocal() ? 'http://localhost:5001/ccl-content/us-central1/triggerEmail' : 'https://us-central1-ccl-content.cloudfunctions.net/sendEmail', {
+    const response = await fetch(isLocal() ? 'http://localhost:5001/ccl-content/us-central1/triggerEmail' : 'https://us-central1-ccl-content.cloudfunctions.net/triggerEmail', {
         method: 'POST',
         body: JSON.stringify({
             template,

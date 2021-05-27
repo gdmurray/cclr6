@@ -1,4 +1,4 @@
-import * as cloudTasks from '@google-cloud/tasks'
+// import * as cloudTasks from '@google-cloud/tasks'
 
 export function getProjectId(): string {
     return 'ccl-content'
