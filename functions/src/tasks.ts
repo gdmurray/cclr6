@@ -20,7 +20,8 @@ export async function dispatchGCloudTask(
         const queue = 'send-email'
         const location = 'us-central1'
         const url = 'https://us-central1-ccl-content.cloudfunctions.net/sendEmail'
-        const serviceAccount = JSON.parse(getDecrypted(accounts.GOOGLE))
+        const decrypted = getDecrypted(accounts.GOOGLE)
+        const serviceAccount = JSON.parse(decrypted)
         const serviceAccountEmail = serviceAccount.client_email
 
         const client = new cloudTasks.CloudTasksClient()
@@ -46,6 +47,7 @@ export async function dispatchGCloudTask(
 
         return Promise.resolve()
     } catch (error) {
+        functions.logger.error('TASK FAILED: ', error)
         // re-throw error to caller
         return Promise.reject(new Error('Task dispatch failed.'))
     }
@@ -89,6 +91,7 @@ interface EmailBody {
 
 export async function sendMail({ template, emailAddress, variables }: EmailBody) {
     try {
+        functions.logger.info('Preparing to send email')
         const email = getEmail()
         await email.send({
             template: path.resolve(`src/email/${template}`),
@@ -97,6 +100,7 @@ export async function sendMail({ template, emailAddress, variables }: EmailBody)
             },
             locals: variables
         })
+        functions.logger.info('Sent Email')
     } catch (err) {
         throw new Error(err)
     }

@@ -60,7 +60,7 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
             emailAddress,
             variables: {
                 ...defaultLocals,
-                variables
+                ...variables
             }
         }),
         headers: {

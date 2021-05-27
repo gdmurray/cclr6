@@ -41,7 +41,7 @@ export const triggerEmail = functions.https.onRequest(async (req, res) => {
                 }
 
             } catch (error) {
-                console.log(`Error occured during account update: ${error}`)
+                functions.logger.error('Error: ', error)
                 res.status(500).send({ result: 'Error occured during email' })
             }
         } else {
@@ -64,7 +64,6 @@ export const sendEmail = functions.https.onRequest(async (req, res) => {
         res.status(500).json({ result: error })
     }
 })
-
 // https://firebase.google.com/docs/functions/typescript
 
 // import { google } from 'googleapis'
