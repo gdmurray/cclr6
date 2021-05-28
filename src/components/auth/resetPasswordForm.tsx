@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import { Button, FormErrorMessage, Input } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import { useRouter } from 'next/router'
 import EmptyState from '@components/EmptyState'
 import { FaEnvelope } from 'react-icons/fa'
@@ -16,9 +16,46 @@ interface ResetPasswordFormInputs {
     email: string;
 }
 
+type State = {
+    loading: boolean;
+    sent: boolean;
+    error?: string;
+}
+
+type Action =
+    | { type: 'loading' }
+    | { type: 'success' }
+    | { type: 'error', error: string }
+
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case 'loading':
+            return {
+                ...state,
+                loading: true
+            }
+        case 'error':
+            return {
+                ...state,
+                loading: false,
+                error: action.error
+            }
+        case 'success':
+            return {
+                loading: false,
+                sent: true,
+                error: undefined
+            }
+    }
+}
+
 const ResetPasswordForm = (): JSX.Element => {
     const { query } = useRouter()
-    const [emailSent, setEmailSent] = useState<boolean>(false)
+    const [state, dispatch] = useReducer(reducer, {
+        loading: false,
+        sent: false,
+        error: undefined
+    })
     const { email } = query
     const {
         register,
@@ -38,6 +75,7 @@ const ResetPasswordForm = (): JSX.Element => {
     }, [])
 
     const onSubmit = data => {
+        dispatch({ type: 'loading' })
         const { email } = data
         fetch('/api/auth/password_reset', {
             method: 'POST',
@@ -55,15 +93,16 @@ const ResetPasswordForm = (): JSX.Element => {
                     })
                 })
             } else {
-                setEmailSent(true)
+                dispatch({ type: 'success' })
             }
         })
     }
 
-    if (emailSent) {
+    if (state.sent) {
         return (
             <div>
-                <EmptyState icon={<FaEnvelope />} text={'Password Reset Email Sent!'} subtext={"Please check your email folder shortly, if it does not appear, be sure to check the Spam folder"} />
+                <EmptyState icon={<FaEnvelope />} text={'Password Reset Email Sent!'}
+                            subtext={'Please check your email folder shortly, if it does not appear, be sure to check the Spam folder'} />
             </div>
         )
     }

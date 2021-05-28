@@ -14,7 +14,7 @@ export const defaultLocals = {
 }
 
 export const sendMail = async (req, emailAddress, template, variables): Promise<void> => {
-    console.log("ATTEMPTING TO SEND")
+    console.log('QUEUING MAIL')
     try {
         const projectId = 'ccl-content'
         const queue = 'send-email'
@@ -22,7 +22,13 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
         const url = 'https://us-central1-ccl-content.cloudfunctions.net/sendEmail'
         const serviceAccountEmail = decrypted.client_email
 
-        const client = new cloudTasks.CloudTasksClient()
+        const client = new cloudTasks.CloudTasksClient({
+            credentials: {
+                client_email: decrypted.client_email,
+                private_key: decrypted.private_key,
+            }
+        })
+
         const parent = client.queuePath(projectId, location, queue)
 
         const httpReq = {
@@ -42,11 +48,14 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
         const task = { httpRequest: httpReq }
 
         const request = { parent, task }
-        console.log("CREATING TASK")
+        console.log('CREATING TASK')
         await client.createTask(request)
+        console.log("TASK SENT")
         return Promise.resolve()
     } catch (e) {
-        console.log('?', e)
+        console.log('ERROR', e)
+        console.log(error.code)
+        console.log(error.message)
         return Promise.resolve()
     }
 

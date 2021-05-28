@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
-import { FaTwitch, FaTwitter } from 'react-icons/fa'
-import { Button, Divider, FormErrorMessage, Input } from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
+import { FaEye, FaEyeSlash, FaTwitch, FaTwitter } from 'react-icons/fa'
+import { Button, Divider, FormErrorMessage, IconButton, Input, InputGroup, InputRightElement } from '@chakra-ui/react'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import Link from 'next/link'
 import * as yup from 'yup'
@@ -24,6 +24,7 @@ interface LoginFormInputs {
 
 const LoginForm = (): JSX.Element => {
     const { redirect, getNext } = useRedirect()
+    const [showPassword, setShowPassword] = useState<boolean>(false)
     const { push } = useRouter()
     const { register, handleSubmit, setError, formState: { errors }, getValues } = useForm<LoginFormInputs>({
         mode: 'onSubmit',
@@ -65,6 +66,11 @@ const LoginForm = (): JSX.Element => {
         }
     }
 
+    const toggleShowPassword = (e) => {
+        e.preventDefault()
+        setShowPassword(!showPassword)
+    }
+
     return (
         <>
             <div className='space-y-3 mb-4 flex flex-col md:flex-row items-center md:space-x-2 md:space-y-0'>
@@ -91,7 +97,18 @@ const LoginForm = (): JSX.Element => {
                     isInvalid={!!errors?.password?.message}
                 >
                     <FormLabel>Password</FormLabel>
-                    <Input type='password' name='password' placeholder='Password' {...register('password')} />
+                    <InputGroup>
+                        <Input type={showPassword ? 'text' : 'password'} name='password'
+                               placeholder='Password' {...register('password')} />
+                        <InputRightElement
+                            children={<IconButton onClick={toggleShowPassword}
+                                                  variant='outline'
+                                                  type='button'
+                                                  size='xs'
+                                                  aria-label={'Show'}
+                                                  icon={showPassword ? <FaEyeSlash /> :
+                                                      <FaEye />} />} />
+                    </InputGroup>
                     <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
                 </FormControl>
                 <div className='px-0 sm:px-6 md:px-12 mt-6 mb-4'>

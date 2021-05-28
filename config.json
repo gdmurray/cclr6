@@ -1,7 +1,7 @@
 {
   "base_url": "https://www.CCLR6.com",
   "contact_email": "support@cclr6.com",
-  "site_title": "Canadian Contender League R6",
+  "site_title": "Canada Contenders League R6",
   "site_description": "The Newest Chapter in Canadian R6",
   "site_keywords": [
     {
@@ -26,10 +26,25 @@
       "keyword": "Canada Contenders League"
     },
     {
-      "keyword": "Canadian"
+      "keyword": "Canada"
     },
     {
       "keyword": "Contender"
+    },
+    {
+      "keyword": "R6"
+    },
+    {
+      "keyword": "R6S"
+    },
+    {
+      "keyword": "Rainbow 6"
+    },
+    {
+      "keyword": "CCL"
+    },
+    {
+      "keyword": "CCL Season 1"
     }
   ],
   "twitter_account": "@CCLR6S",

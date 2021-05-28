@@ -1,11 +1,11 @@
 {
-  "short_name": "",
-  "name": "",
+  "short_name": "CCLR6",
+  "name": "Canada Contenders League",
   "icons": [
     {
       "src": "icon.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "200x200"
     }
   ],
   "start_url": "/?utm_source=homescreen",
