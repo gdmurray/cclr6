@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import db from '@lib/firebase/firestore'
-import { defaultLocals, sendMail } from '@lib/platform/mail'
-
+import { adminFireStore } from '@lib/firebase/admin'
 
 export function getHostName(): string {
     if (process.env.NODE_ENV === 'development') {
@@ -20,7 +18,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse): Promis
     const now = new Date()
     now.setHours(now.getHours() + 24)
     const expires = now.toISOString()
-    const createdInvitation = await db.collection('invitations').add({
+    const createdInvitation = await adminFireStore.collection('invitations').add({
         team_id,
         team_name,
         email: user_email,
@@ -37,7 +35,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse): Promis
     const invitationURL = JSON.stringify({ id: invitationData.id, expires })
     const buffer = new Buffer(invitationURL)
     const hashed = buffer.toString('base64')
-    const cta_url = `${getHostName()}/invitation/${encodeURI(hashed)}`
+    // const cta_url = `${getHostName()}/invitation/${encodeURI(hashed)}`
 
     // sendMail(user_email, 'invite', {
     //     team_name,
