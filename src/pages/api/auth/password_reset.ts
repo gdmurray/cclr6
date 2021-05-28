@@ -12,6 +12,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
             const link = await firebaseAdmin.auth().generatePasswordResetLink(emailAddress, {
                 url: `${getHostName()}/login`
             })
+            console.log('GENERATED LINK: ', link)
             if (link) {
                 console.log('About to send mail')
                 await sendMail(req, emailAddress, 'forgot_password', {
