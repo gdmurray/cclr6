@@ -54,8 +54,8 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
         return Promise.resolve()
     } catch (e) {
         console.log('ERROR', e)
-        console.log(error.code)
-        console.log(error.message)
+        console.log(e.code)
+        console.log(e.message)
         return Promise.resolve()
     }
 
