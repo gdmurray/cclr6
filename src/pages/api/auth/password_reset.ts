@@ -22,10 +22,9 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
                 res.status(200).json({ status: 'success', message: 'Queue\'d up email' })
             }
         } catch (err) {
-            const { code } = err
-            res.status(400).json({ status: 'error', message: err.message, code: err.code })
+            const { code, message } = err
             if (code === 'auth/internal-error') {
-                res.status(400).json({ status: 'error', message: 'Email not found' })
+                res.status(400).json({ status: 'error', message, code })
             }
         }
     } else {
