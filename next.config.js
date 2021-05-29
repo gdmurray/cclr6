@@ -3,7 +3,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 module.exports = withBundleAnalyzer({
-    // target: 'experimental-serverless-trace',
+    target: 'experimental-serverless-trace',
     env: {
         FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
         FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
