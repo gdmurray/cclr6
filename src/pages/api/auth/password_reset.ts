@@ -23,6 +23,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
             }
         } catch (err) {
             const { code } = err
+            res.status(400).json({ status: 'error', message: err.message, code: err.code })
             if (code === 'auth/internal-error') {
                 res.status(400).json({ status: 'error', message: 'Email not found' })
             }
