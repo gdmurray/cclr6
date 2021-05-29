@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import firebaseAdmin from '@lib/firebase/admin'
+import { auth } from '@lib/firebase/admin'
 import { defaultLocals, sendMail } from '@lib/platform/mail'
 import { getHostName } from '../team/invite'
 
@@ -9,10 +9,10 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
         const { email: emailAddress } = req.body
         try {
             console.log('Generating password reset link')
-            // const link = await firebaseAdmin.auth().generatePasswordResetLink(emailAddress, {
-            //     url: `${getHostName()}/login`
-            // })
-            const link = 'https://cclr6.com/pain/agony/even'
+            const link = await auth.generatePasswordResetLink(emailAddress, {
+                url: `${getHostName()}/login`
+            })
+            // const link = 'https://cclr6.com/pain/agony/even'
             console.log('GENERATED LINK: ', link)
             if (link) {
                 console.log('About to send mail')
