@@ -9,9 +9,10 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
         const { email: emailAddress } = req.body
         try {
             console.log('Generating password reset link')
-            const link = await firebaseAdmin.auth().generatePasswordResetLink(emailAddress, {
-                url: `${getHostName()}/login`
-            })
+            // const link = await firebaseAdmin.auth().generatePasswordResetLink(emailAddress, {
+            //     url: `${getHostName()}/login`
+            // })
+            const link = 'https://cclr6.com/pain/agony/even'
             console.log('GENERATED LINK: ', link)
             if (link) {
                 console.log('About to send mail')
