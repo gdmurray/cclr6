@@ -1,6 +1,6 @@
 import { withAuthSSR } from '@lib/withSSRAuth'
 
-export const getStaticProps = withAuthSSR()
+// export const getStaticProps = withAuthSSR()
 
 const Admin = () => {
     return (
@@ -9,3 +9,5 @@ const Admin = () => {
         </div>
     )
 }
+
+export default Admin
