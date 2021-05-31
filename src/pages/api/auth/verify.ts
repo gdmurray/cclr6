@@ -11,7 +11,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
             // const link = await firebaseAdmin.auth().generateEmailVerificationLink(emailAddress, {
             //     url: `${getHostName()}`
             // })
-            await sendMail(req, emailAddress, 'verify', {})
+            // await sendMail(req, emailAddress, 'verify', {})
             res.status(200).json({ status: 'success', message: 'Queue\'d up email' })
         } catch (err) {
             const { code } = err
