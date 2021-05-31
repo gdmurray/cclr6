@@ -1,6 +1,7 @@
 import * as cloudTasks from '@google-cloud/tasks'
 import { getDecrypted, accounts } from './admin'
 import * as functions from 'firebase-functions'
+import * as admin from 'firebase-admin'
 import * as gAuth from 'google-auth-library'
 import * as path from 'path'
 
@@ -10,6 +11,16 @@ import { getEmail } from './email/mail'
 export function getProjectId(): string {
     return 'ccl-content'
 }
+
+const firebaseAccount = JSON.parse(getDecrypted(accounts.FIREBASE))
+
+admin.initializeApp({
+    credential: admin.credential.cert({
+        projectId: firebaseAccount.project_id,
+        clientEmail: firebaseAccount.client_email,
+        privateKey: firebaseAccount.private_key
+    })
+})
 
 export async function dispatchGCloudTask(
     payload: object
@@ -93,6 +104,33 @@ export async function sendMail({ template, emailAddress, variables }: EmailBody)
     try {
         functions.logger.info('Preparing to send email')
         const email = getEmail()
+        if (template === 'forgot_password') {
+            const link = await admin.auth().generatePasswordResetLink(emailAddress, {
+                url: `https://cclr6.com/login`
+            })
+
+            if (link) {
+                variables = {
+                    ...variables,
+                    cta_url: link
+                }
+            } else {
+                throw new Error('Could not generate link')
+            }
+        } else if (template === 'verify') {
+            const link = await admin.auth().generateEmailVerificationLink(emailAddress, {
+                url: `https://cclr6.com`
+            })
+
+            if (link) {
+                variables = {
+                    ...variables,
+                    cta_url: link
+                }
+            } else {
+                throw new Error('Could not generate link')
+            }
+        }
         await email.send({
             template: path.resolve(`src/email/${template}`),
             message: {

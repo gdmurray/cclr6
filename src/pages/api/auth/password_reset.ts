@@ -9,18 +9,15 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
         const { email: emailAddress } = req.body
         try {
             console.log('Generating password reset link')
-            const link = await auth.generatePasswordResetLink(emailAddress, {
-                url: `${getHostName()}/login`
-            })
+            // const link = await auth.generatePasswordResetLink(emailAddress, {
+            //     url: `${getHostName()}/login`
+            // })
             // const link = 'https://cclr6.com/pain/agony/even'
-            console.log('GENERATED LINK: ', link)
-            if (link) {
-                console.log('About to send mail')
-                await sendMail(req, emailAddress, 'forgot_password', {
-                    cta_url: link
-                })
-                res.status(200).json({ status: 'success', message: 'Queue\'d up email' })
-            }
+            // console.log('GENERATED LINK: ', link)
+            // if (link) {
+            console.log('About to send mail')
+            await sendMail(req, emailAddress, 'forgot_password', {})
+            res.status(200).json({ status: 'success', message: 'Queue\'d up email' })
         } catch (err) {
             const { code, message } = err
             if (code === 'auth/internal-error') {
