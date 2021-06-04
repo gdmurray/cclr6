@@ -47,6 +47,7 @@ export const featureUrls: Record<string, string[]> = {
 
 export const Features = {
     isRouteValid: (url): boolean => {
+        console.log("URL: ", url)
         const allowedFeatures = getFeatures()
         return !Object.keys(allowedFeatures).filter(
             (f) => !allowedFeatures[f]

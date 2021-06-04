@@ -10,6 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import Loader from '../Loader'
 import { useRouter } from 'next/router'
 import useRedirect from '../Layout/useRedirect'
+import useKeypress from '@components/useKeypress'
 
 
 const schema = yup.object().shape({
@@ -33,6 +34,15 @@ const LoginForm = (): JSX.Element => {
 
     const { signinWithEmail, Twitter, loading } = useAuth()
 
+    useKeypress('Enter', (e) => {
+            e.stopPropagation()
+            const { target } = e
+            if (target.nodeName === 'INPUT') {
+                e.preventDefault()
+                handleSubmit(onSubmit)()
+            }
+        }
+    )
 
     const onSubmit = data => {
         const { email, password } = data
@@ -67,7 +77,11 @@ const LoginForm = (): JSX.Element => {
     }
 
     const toggleShowPassword = (e) => {
+        // console.log('Toggle PW: ', e)
+        console.log(e.target)
+        console.log('current: ', e.currentTarget)
         e.preventDefault()
+        e.stopPropagation()
         setShowPassword(!showPassword)
     }
 

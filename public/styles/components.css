@@ -3,5 +3,5 @@
 }
 
 .navigation-item {
-    @apply transition-all duration-150 uppercase font-heavy font-semibold px-2 text-2xl  hover:text-primary cursor-pointer;
+    @apply transition-all duration-150 uppercase font-heavy font-semibold px-2 text-2xl  hover:text-primary hover:underline cursor-pointer;
 }

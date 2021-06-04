@@ -1,4 +1,5 @@
 {
+  "baseUrl": "./src",
   "compilerOptions": {
     "esModuleInterop": true,
     "module": "commonjs",

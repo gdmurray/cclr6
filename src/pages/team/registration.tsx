@@ -76,27 +76,3 @@ Registration.layout = (content: React.ReactNode): JSX.Element => {
     return <TeamLayout>{content}</TeamLayout>
 }
 export default Registration
-
-
-// <Eligibility tournament={tournament} team={team} user={user} />
-// linear-gradient(180deg, #00000065 40%, #ffffff10 100%)
-// <motion.div
-// className='max-w-lg z-0'
-// whileHover={{
-//     scale: 1.1,
-//         transition: { duration: 0.6 }
-// }}
-// style={{
-//     // boxShadow: '#00000030 -19px 0px 1em 10px inset',
-//     // boxShadow: "inset 0 0 4em 1em #000",
-//     position: 'relative',
-//         top: '-100%',
-//         cursor: 'pointer',
-//         width: '35%',
-//         height: '100%',
-//         overflow: 'hidden',
-//         background: `linear-gradient(to right, #1C191780, #44403C70, #00000090), url('${tournament.logo.original}')`,
-//         backgroundRepeat: 'repeat-x, no-repeat',
-//         backgroundSize: 'contain, cover',
-//         backgroundPosition: 'center'
-// }} />

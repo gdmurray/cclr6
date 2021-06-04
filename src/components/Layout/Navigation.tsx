@@ -70,13 +70,13 @@ const DesktopNavigationItem = ({ children, label, onClick, href, active }: INavI
             return (
                 <div onClick={() => navigate(label, href)}>
                     <div
-                        className={`${isLoading(label) ? 'primary-loading' : ''} navigation-item ${active ? 'text-primary underline' : 'text-gray-900 dark:text-gray-50'}`}>{label}</div>
+                        className={`${isLoading(label) ? 'primary-loading' : ''} navigation-item ${active ? 'text-primary' : 'text-gray-900 dark:text-gray-50'}`}>{label}</div>
                 </div>
             )
         } else {
             return (
                 <div onClick={onClick}
-                     className={`navigation-item ${active ? 'text-primary underline' : 'text-gray-900 dark:text-gray-50'}`}>{label}</div>
+                     className={`navigation-item ${active ? 'text-primary' : 'text-gray-900 dark:text-gray-50'}`}>{label}</div>
             )
         }
     } else {
@@ -195,10 +195,6 @@ const baseRoutes: NavItem[] = [
         label: 'Home',
         href: '/'
     },
-    // {
-    //     label: 'About',
-    //     href: '/about'
-    // },
     {
         label: 'Partners',
         href: '/partners'
@@ -206,6 +202,10 @@ const baseRoutes: NavItem[] = [
     {
         label: 'Watch',
         href: '/watch'
+    },
+    {
+        label: 'Blog',
+        href: '/posts'
     },
     {
         label: 'Get Involved',

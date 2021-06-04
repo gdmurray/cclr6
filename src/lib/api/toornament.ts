@@ -237,7 +237,7 @@ export class ToornamentClient {
 
     async registerTeam(id: string, body: RegisterParticipants): Promise<string> {
         await this.init()
-        const response = await fetch(this.url + `/tournaments/${id}/participants`, {
+        const response = await fetch(this.url + '/participants', {
             method: 'POST',
             headers: {
                 ...this.headers(),
@@ -250,9 +250,28 @@ export class ToornamentClient {
         return Promise.resolve(toornamentId)
     }
 
+    async unregisterTeam(id: string): Promise<boolean> {
+        await this.init()
+        const response = await fetch(this.url + `/participants/${id}`, {
+            method: 'DELETE',
+            headers: {
+                ...this.headers(),
+                'Content-Type': 'application/json'
+            }
+        })
+        console.log(response)
+        if (response.status === 204) {
+            return Promise.resolve(true)
+        } else {
+            return Promise.resolve(false)
+        }
+
+
+    }
+
     async getParticipants(id: string): Promise<string> {
         await this.init()
-        const response = await fetch(this.url + `/tournaments/${id}/participants`, {
+        const response = await fetch(this.url + `/participants?tournament_ids=${id}`, {
             method: 'GET',
             headers: {
                 ...this.headers(),
@@ -264,9 +283,9 @@ export class ToornamentClient {
         return Promise.resolve(data)
     }
 
-    async updateParticipant(id: string, participant_id: string, body: any): Promise<boolean> {
+    async updateParticipant(participant_id: string, body: any): Promise<boolean> {
         await this.init()
-        const response = await fetch(this.url + `/tournaments/${id}/participants/${participant_id}`, {
+        const response = await fetch(this.url + `/participants/${participant_id}`, {
             method: 'PATCH',
             body: JSON.stringify(body),
             headers: {

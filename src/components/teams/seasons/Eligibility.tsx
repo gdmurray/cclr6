@@ -45,7 +45,7 @@ interface RegistrationCondition {
     message: string;
 }
 
-interface IEligibility {
+export interface IEligibility {
     eligible: boolean;
     reason: string;
     registration: RegistrationCondition;

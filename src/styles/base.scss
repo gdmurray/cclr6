@@ -2,6 +2,7 @@
 @import "teams";
 @import "rulebook";
 @import "posts";
+@import "table";
 
 .page-content {
   @apply py-2 px-6 lg:px-16;
@@ -145,4 +146,18 @@
 
 .chakra-breadcrumb__list-item > a:hover {
   @apply underline text-red-500
+}
+
+.twitter-button {
+  @apply transition-colors duration-150;
+  background: #1DA1F2 !important;
+}
+
+.twitter-button:hover {
+  background: #00B6F1 !important;
+}
+
+.primary-button {
+  @apply transition-colors duration-150 hover:bg-red-600;
+  background: #e50a25 !important;
 }

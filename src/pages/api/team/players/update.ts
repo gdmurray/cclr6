@@ -36,7 +36,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
                 }
                 console.log('body: ', body)
                 const client = new ToornamentClient()
-                await client.updateParticipant(tournament_id, participant_id, body)
+                await client.updateParticipant(participant_id, body)
             }
         }
         res.status(200).end()

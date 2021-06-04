@@ -13,8 +13,8 @@ const is404 = (error) => /not found/i.test(error.message)
 export async function getAllPostsForHome() {
     const params = {
         type: 'posts',
-        props: 'slug,title,metadata,created_at,thumbnail',
-        sort: '-created_at'
+        props: 'slug,title,metadata,created_at,thumbnail,content',
+        sort: '-created_at',
     }
     const data = await bucket.getObjects(params)
     return data.objects

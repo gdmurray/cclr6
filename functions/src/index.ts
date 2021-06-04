@@ -47,8 +47,11 @@ import { sendMail, verifyCloudTaskRequest } from './tasks'
 // const cors = require('cors')({ origin: true })
 export const sendEmail = functions.https.onRequest(async (req, res) => {
     try {
-        await verifyCloudTaskRequest(req)
+        if (process.env.FUNCTIONS_EMULATOR !== 'true') {
+            await verifyCloudTaskRequest(req)
+        }
         const request = req.body
+        functions.logger.info(request)
         await sendMail(request)
         res.status(200).send({ result: 'Email Sent' })
         // await

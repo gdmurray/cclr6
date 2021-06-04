@@ -6,7 +6,7 @@ const Legal = (): JSX.Element => {
             <div className='page-title-sm'>Legal</div>
             <div className='privacy-policy mt-6 '>
                 <p className='text-center mb-2'><strong>Notice of Non-Affiliation and Disclaimer</strong></p>
-                <p className='leading-6'>&nbsp;&nbsp;&nbsp;&nbsp;We are not affiliated, associated, authorized, endorsed
+                <p className='leading-6'>&nbsp;&nbsp;&nbsp;&nbsp;We are not affiliated, associated, endorsed
                     by, or in any way officially connected
                     with
                     Ubisoft®, Tom Clancy's Rainbow Six Siege™, FACEIT, or any of their respective subsidiaries or

@@ -6,7 +6,7 @@ import * as gAuth from 'google-auth-library'
 import * as path from 'path'
 
 import { validateHeader } from './utils'
-import { getEmail } from './email/mail'
+import { getEmail } from './mail'
 
 export function getProjectId(): string {
     return 'ccl-content'
@@ -14,13 +14,16 @@ export function getProjectId(): string {
 
 const firebaseAccount = JSON.parse(getDecrypted(accounts.FIREBASE))
 
-admin.initializeApp({
-    credential: admin.credential.cert({
-        projectId: firebaseAccount.project_id,
-        clientEmail: firebaseAccount.client_email,
-        privateKey: firebaseAccount.private_key
+if (!admin.apps.length) {
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            projectId: firebaseAccount.project_id,
+            clientEmail: firebaseAccount.client_email,
+            privateKey: firebaseAccount.private_key
+        })
     })
-})
+}
+
 
 export async function dispatchGCloudTask(
     payload: object
@@ -104,7 +107,9 @@ export async function sendMail({ template, emailAddress, variables }: EmailBody)
     try {
         functions.logger.info('Preparing to send email')
         const email = getEmail()
+        functions.logger.info(email)
         if (template === 'forgot_password') {
+            functions.logger.info('Forgot Password Link Generation')
             const link = await admin.auth().generatePasswordResetLink(emailAddress, {
                 url: `https://cclr6.com/login`
             })
@@ -115,12 +120,15 @@ export async function sendMail({ template, emailAddress, variables }: EmailBody)
                     cta_url: link
                 }
             } else {
+                functions.logger.error("Could not Generate Link")
                 throw new Error('Could not generate link')
             }
         } else if (template === 'verify') {
+            functions.logger.info('Verify Link Generation')
             const link = await admin.auth().generateEmailVerificationLink(emailAddress, {
                 url: `https://cclr6.com`
             })
+            functions.logger.info("LINK", link)
 
             if (link) {
                 variables = {
@@ -128,9 +136,11 @@ export async function sendMail({ template, emailAddress, variables }: EmailBody)
                     cta_url: link
                 }
             } else {
+                functions.logger.error("Could not Generate Link")
                 throw new Error('Could not generate link')
             }
         }
+        functions.logger.info('Sending Email: ', variables)
         await email.send({
             template: path.resolve(`src/email/${template}`),
             message: {
@@ -140,6 +150,7 @@ export async function sendMail({ template, emailAddress, variables }: EmailBody)
         })
         functions.logger.info('Sent Email')
     } catch (err) {
+        functions.logger.error("ERROR? ", err)
         throw new Error(err)
     }
 }

@@ -162,7 +162,7 @@ function useFirebaseAuth() {
 
 
     // force refresh the token every 10 minutes
-    const FORCE_REFRESH_MINUTES = 10
+    const FORCE_REFRESH_MINUTES = 5
     useEffect(() => {
         const handle = setInterval(async () => {
             const user = firebase.auth().currentUser

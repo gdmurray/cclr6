@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Tab, TabList, Tabs } from '@chakra-ui/react'
 import { useAuth } from '@lib/auth'
 import useTeam from '@lib/useTeam'
 import Loader from '@components/Loader'
-import { useRouter } from 'next/router'
 import { TeamProvider } from '@components/teams/teamContext'
-import { useSuspenseNavigation } from '@components/Layout/useSuspenseNavigation'
+import useTabsNavigator from '@components/Layout/useTabsNavigator'
 
 const teamTabs = [
     {
@@ -27,43 +26,13 @@ const teamTabs = [
 ]
 
 const TeamLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
-    const [tabIndex, setTabIndex] = useState<number>(0)
     const { user, loading: authLoading } = useAuth()
     const { team, loading: teamLoading, setTeam } = useTeam({ user })
 
-    const { pathname, events, push } = useRouter()
-    const { navigate, isLoading } = useSuspenseNavigation()
+    const { tabLoading, handleTabChange, tabIndex } = useTabsNavigator({ tabs: teamTabs })
 
-    useEffect(() => {
-        const activeTab = teamTabs[tabIndex]
-        if (activeTab.path !== pathname) {
-            const tab = teamTabs.map(e => e.path).indexOf(pathname)
-            if (tab !== -1) {
-                setTabIndex(tab)
-            }
-        }
+    const loading = authLoading || teamLoading || tabLoading
 
-        const handleRouteChange = (path) => {
-            if (path !== activeTab.path) {
-                const tab = teamTabs.map(e => e.path).indexOf(path)
-                if (tab !== -1) {
-                    setTabIndex(tab)
-                }
-            }
-        }
-        events.on('routeChangeComplete', handleRouteChange)
-        return () => events.off('routeChangeComplete', handleRouteChange)
-    }, [])
-
-    const loading = authLoading || teamLoading || isLoading(teamTabs[tabIndex].label)
-
-    const handleTabChange = (index) => {
-        setTabIndex(index)
-        const tab = teamTabs[index]
-        if (pathname !== tab.path) {
-            navigate(tab.label, tab.path)
-        }
-    }
 
     return (
         <div className='page-content'>

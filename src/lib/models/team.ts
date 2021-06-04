@@ -15,6 +15,7 @@ export interface ITeam {
 }
 
 export interface IRegistration {
+    id?: string;
     participant_id: string;
     tournament_id: string;
     status: 'REGISTERED';
@@ -37,6 +38,8 @@ interface TeamClient {
     hasTeamPaid(season: string): Promise<boolean>;
 
     registerForTournament(tournamentId: string, participantId: string): Promise<boolean>;
+
+    unregisterForTournament(registrationId: string): Promise<boolean>
 
     getRegistration(tournamentId: string): Promise<IRegistration>;
 
@@ -155,6 +158,16 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
             const data = await registration.get()
             return Promise.resolve(true)
         },
+        unregisterForTournament: async (registrationID): Promise<boolean> => {
+            const registration = await database
+                .collection('teams')
+                .doc(team.id)
+                .collection('registrations')
+                .doc(registrationID)
+                .delete()
+            console.log(registration)
+            return Promise.resolve(true)
+        },
         canUserRegister: (uid): boolean => {
             return (team.owner === uid)
         },
@@ -168,7 +181,7 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
                 return Promise.resolve(null)
             }
             if (registration.size === 1) {
-                const data = registration.docs[0].data()
+                const data = { id: registration.docs[0].id, ...registration.docs[0].data() }
                 return Promise.resolve(data)
             }
         },

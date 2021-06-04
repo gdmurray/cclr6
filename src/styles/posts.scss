@@ -1,8 +1,18 @@
+.posts {
+  li {
+    @media (max-width: 1024px) {
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  }
+}
+
 .post-content {
   ul {
     padding-left: 20px;
     list-style-type: disc;
   }
+
   .post-title {
     @apply text-main text-2xl font-semibold;
   }

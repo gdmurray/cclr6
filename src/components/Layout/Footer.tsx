@@ -61,7 +61,7 @@ const FooterData: FooterData[] = [
                 link: '/positions'
             },
             {
-                name: 'Announcements',
+                name: 'Blog',
                 link: '/posts'
             }
         ]
@@ -120,12 +120,23 @@ const ToornamentLogo = () => {
     </div>
 }
 
+const UbisoftDisclaimer = (): JSX.Element => {
+    return (
+        <div style={{ fontSize: '10px' }}
+             className='text-center py-2 px-4 font-semibold text-alt-2 antialiased'>
+            Unofficial Canadian League, Not affiliated or connected with Ubisoft®, Tom Clancy's Rainbow
+            Six Siege™, FACEIT, or any of their respective
+            subsidiaries or
+            affiliates
+        </div>
+    )
+}
 
 export default function Footer(): JSX.Element {
     const { push } = useRouter()
     return (
         <footer className='font-medium bg-gray-50 border-gray-200 dark:bg-gray-900 border-t dark:border-gray-800'>
-            <div className='flex flex-col sm:flex-row max-w-6xl mx-auto p-6 py-24'>
+            <div className='flex flex-col sm:flex-row max-w-6xl mx-auto p-6 py-16'>
                 <div className='w-48 my-auto mx-auto pb-16 sm:pb-0'>
                     <>
                         <img alt='leaf-logo' width='120'
@@ -180,6 +191,7 @@ export default function Footer(): JSX.Element {
                     })}
                 </div>
             </div>
+            <UbisoftDisclaimer />
             <div className='p-4 px-12 bg-gray-100 dark:bg-gray-800'>
                 <div className='max-w-6xl mx-auto flex justify-between font-medium text-sm text-alt'>
                     <span>© 2021 Canada Contender League</span>

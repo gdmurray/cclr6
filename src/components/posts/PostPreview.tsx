@@ -1,6 +1,6 @@
 import React from 'react'
 import { CMSPost } from '@components/posts/Post'
-import { Image } from '@chakra-ui/react'
+import { Image, WrapItem } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import RelativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
@@ -10,31 +10,36 @@ dayjs.extend(RelativeTime)
 
 export interface CMSPostPreview extends CMSPost {
     thumbnail: string;
+    read_time: string;
 }
 
 export default function PostPreview(post: CMSPostPreview): JSX.Element {
-    const { title, slug, created_at, thumbnail } = post
+    const { title, slug, created_at, thumbnail, read_time } = post
     const { push } = useRouter()
-    return (
-        <motion.div
-            onClick={() => push(`/posts/${slug}`)}
-            whileHover={{
-                y: -2
-            }}
-            whileTap={{ scale: 0.98 }} className='group bordered border rounded-xl overflow-hidden cursor-pointer'
-            style={{ height: '125px' }}>
-            <div className='flex flex-row justify-between h-full'>
-                <div className='py-6 px-4 h-full flex flex-col justify-center'>
-                    <div className='group-hover:underline text-main text-xl font-semibold'>{title}</div>
-                    <div className='text-alt-2 text-sm font-medium'>{dayjs(created_at).fromNow()}</div>
-                </div>
-                <div>
-                    {thumbnail && (
-                        <Image height={125} alt='thumbnail' src={thumbnail} />
-                    )}
-                </div>
-            </div>
 
-        </motion.div>
+    return (
+        <WrapItem>
+            <motion.div
+                onClick={() => push(`/posts/${slug}`)}
+                style={{ borderTop: '6px solid #e50a25' }}
+                whileHover={{
+                    y: -2
+                }}
+                whileTap={{ scale: 0.98 }}
+                className='group cursor-pointer bordered border rounded-md max-w-lg overflow-hidden'>
+                <div>
+                    <Image src={thumbnail} />
+                </div>
+                <div className='pb-2 pt-1 px-4'>
+                    <div className='pt-2 pb-4'>
+                        <div className='group-hover:underline text-main text-2xl font-semibold'>{title}</div>
+                    </div>
+                    <div className='flex flex-row justify-between'>
+                        <div className='text-alt-2 text-sm font-medium'>{dayjs(created_at).fromNow()}</div>
+                        <div className='text-alt-2 text-sm font-medium'>{read_time}</div>
+                    </div>
+                </div>
+            </motion.div>
+        </WrapItem>
     )
 }

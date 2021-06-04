@@ -17,3 +17,13 @@ export const countryMapping = {
     'CA': 'CA',
     'USA': 'US'
 }
+
+export const getQueryKeyMap = (docs: any[]): { id: Record<any, any> } => {
+    return docs.reduce((acc, doc) => {
+        acc[doc.id] = {
+            id: doc.id,
+            ...doc.data()
+        }
+        return acc
+    }, {})
+}

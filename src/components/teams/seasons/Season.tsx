@@ -1,12 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { FaCalendarAlt, FaRegCreditCard, FaTimes, FaTrophy, FaUsers } from 'react-icons/fa'
-import { Button, Tooltip, useToast } from '@chakra-ui/react'
+import {
+    Button,
+    Tooltip,
+    useDisclosure,
+    useToast,
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogCloseButton,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogOverlay
+} from '@chakra-ui/react'
 import { SeasonClient } from '@lib/models/season'
 import { TeamContext } from '@components/teams/teamContext'
 import { CreateTeamClient, IRegistration } from '@lib/models/team'
 import { useRouter } from 'next/router'
-import useEligibility from '@components/teams/seasons/Eligibility'
-import { CreateTournamentClient } from '@lib/models/tournament'
+import useEligibility, { IEligibility } from '@components/teams/seasons/Eligibility'
+import { CreateTournamentClient, Tournament } from '@lib/models/tournament'
 import Loader from '@components/Loader'
 import PaymentForm from '@components/teams/Payment'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
@@ -101,7 +113,7 @@ export default function SeasonComponent({ season }): JSX.Element {
     )
 }
 
-function Qualifier({ qualifier, eligibility }): JSX.Element {
+function Qualifier({ qualifier, eligibility }: { qualifier: Tournament, eligibility: IEligibility }): JSX.Element {
     const teamContext = useContext(TeamContext)
     const [participants, setParticipants] = useState<[]>([])
     const { team, user } = teamContext
@@ -142,6 +154,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
 
     const getRegistrationStatus = (): void => {
         if (eligibility) {
+            console.log(eligibility)
             if (!eligibility.eligible) {
                 if (!eligibility.teamQualified.satisfied) {
                     setStatus({
@@ -170,7 +183,7 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                         if (registered) {
                             setStatus({
                                 disabled: true,
-                                message: `Registered on ${dayjs((registered as IRegistration).registered).format('LLL')}`,
+                                message: `Registered on ${dayjs((registered as IRegistration).registered).format('MMMM D')}`,
                                 button: 'Registered',
                                 status: 'success'
                             })
@@ -185,16 +198,24 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                                         status: 'error'
                                     })
                                     return
-                                }
-                                if (!tournamentClient.hasRegistrationStarted()) {
+                                } else if (!tournamentClient.hasRegistrationStarted()) {
                                     setStatus({
                                         disabled: true,
-                                        message: (`Registration Opens ${dayjs(qualifier.registration_opening_datetime).format('MMMM D [at] h:mm A')}`),
+                                        message: `Registration Opens ${dayjs(qualifier.registration_opening_datetime).format('MMMM D [at] h:mm A')}`,
                                         button: 'Register',
                                         status: 'default'
                                     })
                                     return
+                                } else {
+                                    setStatus({
+                                        disabled: true,
+                                        message: `The event has concluded, stay tuned for the next qualifier`,
+                                        button: 'Event Over',
+                                        status: 'default'
+                                    })
+                                    return
                                 }
+
                             } else {
                                 setStatus({
                                     disabled: false,
@@ -208,9 +229,6 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
                     })
                 }
             })
-            console.log('nothing hit')
-
-
         }
     }
 
@@ -259,31 +277,120 @@ function Qualifier({ qualifier, eligibility }): JSX.Element {
         }
     }
 
+    const canUnregister = (): boolean => {
+        return (dayjs(qualifier.registration_closing_datetime).diff(dayjs(), 'minutes') > 30 && status.button === 'Registered')
+    }
+
+    const [isHovering, setIsHovering] = useState<boolean>(false)
+
+    const handleHover = (e: React.MouseEvent<HTMLButtonElement>): void => {
+        const { type } = e
+        if (type === 'mouseenter') {
+            if (!isHovering) {
+                setIsHovering(true)
+            }
+        } else if (type === 'mouseleave') {
+            if (isHovering) {
+                setIsHovering(false)
+            }
+        }
+    }
+
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [isUnregistering, setIsUnregistering] = useState<boolean>(false)
+    const cancelRef = React.useRef<HTMLButtonElement>()
+
+    const unregister = () => {
+        setIsUnregistering(true)
+        fetch(`/api/toornament/${qualifier.id}/unregister`, {
+            method: 'POST',
+            body: JSON.stringify({
+                team_id: team.id
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(result => {
+            if (result.ok) {
+                setIsUnregistering(false)
+                onClose()
+                toast({
+                    status: 'info',
+                    title: `Unregistered for ${qualifier.name}`,
+                    onCloseComplete: () => {
+                        router.reload()
+                    }
+                })
+            } else {
+                console.log('failed')
+                setIsUnregistering(false)
+                onClose()
+                toast({
+                    status: 'error',
+                    title: 'There was an error unregistering'
+                })
+            }
+        })
+        // onClose()
+    }
     return (
-        <div key={qualifier.id}
-             className='flex flex-col space-y-1 md:space-y-0 md:flex-row flex-row items-center justify-between p-2 border-b last:border-b-0'>
-            <div className='text-line w-full justify-between'>
-                <div
-                    className='text-line font-medium text-lg tracking-tight'>
-                    <FaTrophy />&nbsp;{qualifier.id.length > 1 ?
-                    <a target='_blank' rel='noopener' className='hover:underline transition-all duration-150'
-                       href={`https://www.toornament.com/en_US/tournaments/${qualifier.id}/information`}>{qualifier.name}</a> : qualifier.name}
-                    <span
-                        className='mx-2 text-alt-2 text-sm font-medium flex flex-row items-center'><FaUsers />&nbsp;{participants.length}/16</span>
+        <>
+            <AlertDialog
+                motionPreset='slideInBottom'
+                isOpen={isOpen}
+                onClose={onClose}
+                leastDestructiveRef={cancelRef}
+                isCentered>
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>Confirm Unregister</AlertDialogHeader>
+                        <AlertDialogCloseButton />
+                        <AlertDialogBody className='text-main font-normal'>
+                            Are you sure you want to unregister for <b>{qualifier.name}</b>,&nbsp;
+                            taking place on <b>{dayjs(qualifier.scheduled_date_start).format('LL')}</b>
+                        </AlertDialogBody>
+                        <AlertDialogFooter>
+                            <Button ref={cancelRef} onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button isLoading={isUnregistering} colorScheme='red' ml={3} onClick={unregister}>
+                                Unregister
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
+            <div key={qualifier.id}
+                 className='flex flex-col space-y-1 md:space-y-0 md:flex-row flex-row items-center justify-between p-2 border-b last:border-b-0'>
+                <div className='text-line w-full justify-between'>
+                    <div
+                        className='text-line font-medium text-lg tracking-tight'>
+                        <FaTrophy />&nbsp;{qualifier.id.length > 1 ?
+                        <a target='_blank' rel='noopener' className='hover:underline transition-all duration-150'
+                           href={`https://www.toornament.com/en_US/tournaments/${qualifier.id}/information`}>{qualifier.name}</a> : qualifier.name}
+                        <span
+                            className='mx-2 text-alt-2 text-sm font-medium flex flex-row items-center'><FaUsers />&nbsp;{participants.length}/16</span>
+                    </div>
+                    <div style={{ width: '110px' }}
+                         className='text-line justify-between font-medium tracking-tight whitespace-nowrap'>
+                        <FaCalendarAlt />&nbsp;{qualifier.scheduled_date_start}
+                    </div>
                 </div>
-                <div style={{ width: '110px' }}
-                     className='text-line justify-between font-medium tracking-tight whitespace-nowrap'>
-                    <FaCalendarAlt />&nbsp;{qualifier.scheduled_date_start}
+                <div className='flex w-full justify-between md:justify-end space-x-2'>
+                    <div
+                        className={`text-xs font-semibold tracking-tight text-line ${getStatusColor(status.status)}`}>
+                        {status.message}
+                    </div>
+                    {!canUnregister() && (<Button isDisabled={status.disabled} size='md'
+                                                  onClick={() => handleRegister(qualifier)}> {status.button}</Button>)}
+                    {canUnregister() && (
+                        <Button onClick={onOpen}
+                                onMouseEnter={handleHover}
+                                onMouseLeave={handleHover}
+                                size='md'>{isHovering ? 'Unregister?' : 'Registered'}</Button>)}
+
                 </div>
             </div>
-            <div className='flex w-full justify-between md:justify-end space-x-2'>
-                <div
-                    className={`text-xs font-semibold tracking-tight text-line ${getStatusColor(status.status)}`}>
-                    {status.message}
-                </div>
-                <Button isDisabled={status.disabled} size='md'
-                        onClick={() => handleRegister(qualifier)}> {status.button}</Button>
-            </div>
-        </div>
+        </>
     )
 }

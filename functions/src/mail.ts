@@ -5,9 +5,12 @@ import * as path from 'path'
 import * as aws from 'aws-sdk'
 import * as functions from 'firebase-functions'
 
+const base64ToS3 = require('nodemailer-base64-to-s3')
+
+
 aws.config.update({
     accessKeyId: functions.config().aws.id,
-    secretAccessKey:functions.config().aws.secret,
+    secretAccessKey: functions.config().aws.secret,
     region: 'us-east-1'
 })
 
@@ -20,7 +23,16 @@ export const transporter = nodemailer.createTransport({
     SES: { ses, aws }
 })
 
-const env = 'production'
+transporter.use('compile', base64ToS3({
+    aws: {
+        accessKeyId: functions.config().aws.id,
+        secretAccessKey: functions.config().aws.secret,
+        params: {
+            Bucket: 'cclr6'
+        }
+    }
+}))
+
 export const getEmail = (from: string = 'noreply@cclr6.com') => {
     return new Email(
         {
@@ -35,9 +47,10 @@ export const getEmail = (from: string = 'noreply@cclr6.com') => {
             message: {
                 from
             },
-            send: true,
+            // preview: process.env.FUNCTION_EMULATOR === 'true',
+            send: true, // process.env.FUNCTIONS_EMULATOR !== 'true',
             transport: transporter,
-            subjectPrefix: env === 'production' ? 'CCLR6: ' : 'DEVCCL: '
+            subjectPrefix: process.env.FUNCTIONS_EMULATOR !== 'production' ? 'CCLR6: ' : 'DEVCCL: '
         }
     )
 }

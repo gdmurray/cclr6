@@ -1,0 +1,1 @@
+declare module "nodemailer-base64-to-s3"

@@ -1,6 +1,6 @@
 import React from 'react'
 import { getAllPostsWithSlug, getPost } from '@lib/api/cms'
-import { GetStaticPathsResult } from 'next'
+import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react'
 import Post, { CMSPost } from '@components/posts/Post'
 import { useRouter } from 'next/router'
@@ -59,7 +59,7 @@ export default function PostPage(props: PostProps): JSX.Element {
     )
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({ params }): Promise<GetStaticPropsResult<{ post: CMSPost }>> {
     const data = await getPost(params.slug)
 
     function getSEO(data: CMSPost) {
@@ -84,11 +84,12 @@ export async function getStaticProps({ params }) {
                 ...data.post
             },
             ...(getSEO(data.post))
-        }
+        },
+        revalidate: 3600
     }
 }
 
-export async function getStaticPaths() {
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
     const allPosts = (await getAllPostsWithSlug()) || []
     return {
         paths: allPosts.map((post) => `/posts/${post.slug}`),

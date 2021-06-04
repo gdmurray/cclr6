@@ -36,6 +36,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
                 name: team.name,
                 email: team.contact_email,
                 custom_user_identifier: team.id,
+                tournament_id: toornamentId,
                 checked_in: true,
                 lineup: playerData.map((player) => ({
                     name: player.uplay,

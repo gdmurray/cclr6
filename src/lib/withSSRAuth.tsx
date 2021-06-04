@@ -1,4 +1,4 @@
-import firebaseAdmin from './firebase/admin'
+import firebaseAdmin, { adminFireStore } from './firebase/admin'
 import nookies from 'nookies'
 import { Features, features, featureUrls } from '@lib/platform/features'
 import Router from 'next/router'
@@ -21,6 +21,7 @@ export const withAuthSSR = (
     {
         whenAuthed = AuthAction.RENDER,
         whenUnauthed = AuthAction.RENDER,
+        whenNotAdmin = AuthAction.RENDER,
         appPageURL = AppPageURL,
         authPageURL = AuthPageURL,
         referral = null
@@ -57,7 +58,7 @@ export const withAuthSSR = (
         }
         return destination
     }
-    // is unauthed
+    // is unauthed -> Login Redir
     if (!AuthUser && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
         return {
             redirect: {
@@ -67,6 +68,7 @@ export const withAuthSSR = (
         }
     }
 
+    // is unauthed -> app Redir
     if (!AuthUser && whenUnauthed === AuthAction.REDIRECT_TO_APP) {
         return {
             redirect: {
@@ -76,6 +78,7 @@ export const withAuthSSR = (
         }
     }
 
+    // is authed -> app redir
     if (AuthUser && whenAuthed === AuthAction.REDIRECT_TO_APP) {
         return {
             redirect: {
@@ -85,6 +88,7 @@ export const withAuthSSR = (
         }
     }
 
+    // is authed -> login redir? when would this happen
     if (AuthUser && whenAuthed === AuthAction.REDIRECT_TO_LOGIN) {
         return {
             redirect: {
@@ -93,6 +97,31 @@ export const withAuthSSR = (
             }
         }
     }
+
+    if (whenNotAdmin !== AuthAction.RENDER) {
+        if (!AuthUser) {
+            console.log('Not logged in')
+            return {
+                redirect: {
+                    destination: constructUrl(authPageURL),
+                    permanent: false
+                }
+            }
+        }
+        const isAdmin = await adminFireStore
+            .collection('admins')
+            .where('user', '==', AuthUser.uid)
+            .get()
+        if (isAdmin.empty) {
+            return {
+                redirect: {
+                    destination: constructUrl(appPageURL),
+                    permanent: false
+                }
+            }
+        }
+    }
+
     let returnData = { props: { user: AuthUser } }
 
     if (getServerSidePropsFunc && typeof getServerSidePropsFunc === 'function') {

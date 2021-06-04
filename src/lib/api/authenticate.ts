@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import firebaseAdmin from '@lib/firebase/admin'
+import firebaseAdmin, { adminFireStore } from '@lib/firebase/admin'
 
 export default async function authenticate(req: NextApiRequest, res: NextApiResponse) {
     const authToken = req.cookies.token
@@ -8,5 +8,17 @@ export default async function authenticate(req: NextApiRequest, res: NextApiResp
         return user
     } else {
         res.status(403).end()
+    }
+}
+
+export async function isAdmin(user: firebaseAdmin.auth.DecodedIdToken, res: NextApiResponse) {
+    const adminQuery = await adminFireStore
+        .collection('admins')
+        .where('user', '==', user.uid)
+        .get()
+    if (adminQuery.empty) {
+        res.status(403).end()
+    } else {
+        return true
     }
 }
