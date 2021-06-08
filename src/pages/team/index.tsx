@@ -62,10 +62,7 @@ function Team(): JSX.Element {
 
     }
 
-
-    // console.log(getValues())
     const { logo } = getValues()
-    console.log('LOGO: ', logo)
     if (team) {
         return (
             <div>

@@ -26,7 +26,7 @@ const Index = (): JSX.Element => {
                         label={'Register Team'}
                         href='/team/register'
                         className={'dark:bg-white dark:hover:bg-gray-50 dark:active:bg-gray-100 dark:text-gray-900 bg-gray-900 text-gray-50 font-heavy'}>
-                        Register&nbsp;{!features.registration && (
+                        Register Team&nbsp;{!features.registration && (
                         <span className='font-medium tracking-tight text-base text-primary'>(Coming Soon)</span>)}
                     </DashboardButton>
                 </div>

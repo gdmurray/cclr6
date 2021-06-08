@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import { useAuth } from '@lib/auth'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
     Button,
     Collapse,
@@ -216,6 +216,21 @@ const baseRoutes: NavItem[] = [
 export default function Navigation() {
     const { user, signOut } = useAuth()
     const { team } = useTeam({ user })
+    const [isAdmin, setIsAdmin] = useState<boolean>(false)
+
+    useEffect(() => {
+        fetch('/api/admin/verify', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((result) => {
+            if (result.ok) {
+                setIsAdmin(true)
+            }
+        })
+    }, [])
+
 
     const getRoutes = (): NavItem[] => {
         if (!features.login) {
@@ -228,18 +243,16 @@ export default function Navigation() {
             }]
 
         } else {
-            if (team) {
-                return [...baseRoutes, {
+            return [
+                ...baseRoutes, {
                     label: 'Profile',
                     children: [
                         {
                             label: 'Profile',
                             href: '/profile'
                         },
-                        {
-                            label: 'Team',
-                            href: '/team'
-                        },
+                        ...(team ? [{ label: 'Team', href: '/team' }] : []),
+                        ...(isAdmin ? [{ label: 'Admin', href: '/admin' }] : []),
                         {
                             label: 'Sign Out',
                             onClick: () => {
@@ -247,23 +260,8 @@ export default function Navigation() {
                             }
                         }
                     ]
-                }]
-            }
-            return [...baseRoutes, {
-                label: 'Profile',
-                children: [
-                    {
-                        label: 'Profile',
-                        href: '/profile'
-                    },
-                    {
-                        label: 'Sign Out',
-                        onClick: () => {
-                            signOut()
-                        }
-                    }
-                ]
-            }]
+                }
+            ]
         }
     }
 

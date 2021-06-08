@@ -15,7 +15,7 @@ const Partners = () => {
                             <div className='py-1 text-main text-lg font-semibold text-center'>{partner.name}</div>
                             <div
                                 className='text-alt text-sm font-medium text-center max-w-xs mx-auto'>{partner.description}</div>
-                            <div className='flex flex-row space-x-2 justify-center py-1'>
+                            <div className='flex flex-row space-x-2 justify-center py-2'>
                                 {Object.keys(partner.links).map((key) => {
                                     if (partner.links[key]) {
                                         if (key === 'twitter') {

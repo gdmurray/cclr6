@@ -45,7 +45,8 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<{ posts: CM
     if (data && data.length > 0) {
         data = data.map((elem) => {
             const root = parse(elem.content)
-            const wordCount = root.structuredText.trim().split(/\s+/).length + elem.title.split(/\s+/).length
+            const wordCount = root.structuredText.trim().split(/\s+/).length +
+                elem.title.split(/\s+/).length
             const duration = dayjs.duration({ seconds: wordCount / 125 * 60 }).asMinutes()
             if (duration > 0 && duration < 0.75) {
                 return ({ ...elem, read_time: `~1 Minute Read` })

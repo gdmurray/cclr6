@@ -5,23 +5,28 @@ import useTeam from '@lib/useTeam'
 import Loader from '@components/Loader'
 import { TeamProvider } from '@components/teams/teamContext'
 import useTabsNavigator from '@components/Layout/useTabsNavigator'
+import { FaClipboardList, FaCog, FaCreditCard, FaHome, FaUser, FaUsers } from 'react-icons/fa'
 
-const teamTabs = [
+const teamTabs: { label: React.ReactNode, path: string }[] = [
     {
-        label: 'Home',
+        label: <><FaHome />&nbsp;Home</>,
         path: '/team'
     },
     {
-        label: 'Players',
+        label: <><FaUsers />&nbsp;Players</>,
         path: '/team/players'
     },
     {
-        label: 'Registration',
+        label: <><FaClipboardList />&nbsp;Registration</>,
         path: '/team/registration'
     },
     {
-        label: 'Payments',
+        label: <><FaCreditCard />&nbsp;Payments</>,
         path: '/team/payments'
+    },
+    {
+        label: <><FaCog />&nbsp;Settings</>,
+        path: '/team/settings'
     }
 ]
 

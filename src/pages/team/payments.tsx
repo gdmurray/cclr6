@@ -1,39 +1,91 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import TeamLayout from '@components/teams/layout'
 import EmptyState from '@components/EmptyState'
-import { FaRegCreditCard } from 'react-icons/fa'
+import { FaPaypal, FaRegCreditCard, FaRegEnvelope } from 'react-icons/fa'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { SeasonOne } from '@lib/models/season'
 import { ToornamentClient } from '@lib/api/toornament'
+import Table from 'rc-table'
+import { TeamContext } from '@components/teams/teamContext'
+import Loader from '@components/Loader'
 
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
     referral: '/team/payments'
-})(async ({ user }) => {
-    // async function getData() {
-    //     const season = SeasonOne
-    //     const client = new ToornamentClient()
-    //     for (let i = 0; i < 4; i += 1) {
-    //         season.qualifiers[i] = await client.getTournament(i)
-    //     }
-    //     return Promise.resolve([season])
-    // }
-    //
-    // const seasons = await getData()
-    return {
-        props: {
-            seasons: []
-        }
-    }
-})
+})({})
 
-function Payments(): JSX.Element {
-    const payments = []
+function Payments({}): JSX.Element {
+    const teamContext = useContext(TeamContext)
+    const { team, user } = teamContext
+    const [loading, setLoading] = useState<boolean>(true)
+    const [data, setData] = useState([])
+
+    useEffect(() => {
+        fetch('/api/team/payments', {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((result) => {
+            if (result.ok) {
+                result.json().then(response => {
+                    setLoading(false)
+                    setData(response.payments)
+                })
+            } else {
+                setLoading(false)
+            }
+        })
+    }, [])
+
+    const columns = [
+        {
+            title: 'Season',
+            dataIndex: 'season',
+            key: 'season'
+        },
+        {
+            title: 'Payment Type',
+            dataIndex: 'type',
+            key: 'type',
+            render: (payment_type: string) => {
+                if (payment_type === 'paypal') {
+                    return <FaPaypal />
+                } else {
+                    return <FaRegEnvelope />
+                }
+            }
+        },
+        {
+            title: 'Payment Email',
+            dataIndex: ['payment', 'payer', 'email_address']
+        },
+        {
+            title: 'Amount',
+            dataIndex: ['payment', 'purchase_units'],
+            key: 'amount',
+            render: (purchase_units) => {
+                console.log(purchase_units)
+                const [{ amount }] = purchase_units
+                return `$${amount.value} ${amount.currency_code}`
+            }
+        },
+        {
+            title: 'Status',
+            dataIndex: ['payment', 'status'],
+            key: 'status'
+        }
+    ]
+
     return (
         <>
-            {payments.length === 0 && (
-                <EmptyState icon={<FaRegCreditCard />} text={'Payment History Coming Soon!'} subtext={"Soon™"} />
+            {loading && (<Loader text='Loading Payments' />)}
+            {!loading && data.length === 0 && (
+                <EmptyState icon={<FaRegCreditCard />} text={'No Payments Found!'} />
             )}
+            {!loading && data.length > 0 && (
+                <Table className='data-table' columns={columns} data={data} rowKey={elem => elem.id} />
+            )}
+
         </>
     )
 }

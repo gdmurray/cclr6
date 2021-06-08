@@ -12,6 +12,11 @@ export interface ITeam {
     contact_email: string;
     owner: string;
     role?: string;
+    notification_settings?: {
+        registration: boolean;
+        payment: boolean;
+        qualification: boolean;
+    }
 }
 
 export interface IRegistration {
@@ -48,7 +53,6 @@ interface TeamClient {
     hasQualified(): Promise<boolean>;
 }
 
-// FirebaseFirestore.Firestore
 export function CreateTeamClient(team: ITeam, database: Firestore | any = db): TeamClient {
 
     return {
@@ -60,7 +64,7 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
             const paymentResult = await database.collection('teams')
                 .doc(team.id)
                 .collection('payments')
-                .add(data)
+                .add({ type: 'paypal', ...data })
             console.log(paymentResult.id)
             console.log(paymentResult.get().then(result => console.log(result.data())))
             return Promise.resolve()
