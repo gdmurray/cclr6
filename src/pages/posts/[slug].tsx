@@ -8,8 +8,6 @@ import EmptyState from '@components/EmptyState'
 import { FcBrokenLink } from 'react-icons/fc'
 import Loader from '@components/Loader'
 import Link from 'next/link'
-import Head from 'next/head'
-
 
 interface PostProps {
     post: CMSPost
@@ -20,13 +18,17 @@ export default function PostPage(props: PostProps): JSX.Element {
     const { post } = props
     if (!router.isFallback && !post?.slug) {
         return (
-            <div className='page-content'>
-                <Breadcrumb fontWeight='medium' fontSize='sm' className='text-main'>
+            <div className="page-content">
+                <Breadcrumb fontWeight="medium" fontSize="sm" className="text-main">
                     <BreadcrumbItem>
-                        <BreadcrumbLink as={Link} href='/'>Home</BreadcrumbLink>
+                        <BreadcrumbLink as={Link} href="/">
+                            Home
+                        </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem>
-                        <BreadcrumbLink as={Link} href='/posts'>Posts</BreadcrumbLink>
+                        <BreadcrumbLink as={Link} href="/posts">
+                            Posts
+                        </BreadcrumbLink>
                     </BreadcrumbItem>
                 </Breadcrumb>
                 <>
@@ -36,20 +38,28 @@ export default function PostPage(props: PostProps): JSX.Element {
         )
     }
     return (
-        <div className='page-content'>
+        <div className="page-content">
             {router.isFallback ? (
-                <div><Loader text='Loading...' /></div>
+                <div>
+                    <Loader text="Loading..." />
+                </div>
             ) : (
                 <>
-                    <Breadcrumb fontWeight='medium' fontSize='sm' className='text-main'>
+                    <Breadcrumb fontWeight="medium" fontSize="sm" className="text-main">
                         <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} href='/'>Home</BreadcrumbLink>
+                            <BreadcrumbLink as={Link} href="/">
+                                Home
+                            </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} href='/posts'>Posts</BreadcrumbLink>
+                            <BreadcrumbLink as={Link} href="/posts">
+                                Posts
+                            </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} href={`/post/${post?.slug}`}>{post?.title}</BreadcrumbLink>
+                            <BreadcrumbLink as={Link} href={`/post/${post?.slug}`}>
+                                {post?.title}
+                            </BreadcrumbLink>
                         </BreadcrumbItem>
                     </Breadcrumb>
                     <Post {...post} />
@@ -63,12 +73,12 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<{
     const data = await getPost(params.slug)
 
     function getSEO(data: CMSPost) {
-        type SEO = { url: string; title: string; image?: string; }
+        type SEO = { url: string; title: string; image?: string }
         if (data) {
-            let seo: SEO = {
+            const seo: SEO = {
                 title: data.title,
                 image: null,
-                url: `/posts/${data.slug}`
+                url: `/posts/${data.slug}`,
             }
             if (data.metadata.cover_image.imgix_url) {
                 seo.image = data.metadata.cover_image.imgix_url
@@ -81,11 +91,11 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<{
     return {
         props: {
             post: {
-                ...data.post
+                ...data.post,
             },
-            ...(getSEO(data.post))
+            ...getSEO(data.post),
         },
-        revalidate: 3600
+        revalidate: 3600,
     }
 }
 
@@ -93,6 +103,6 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
     const allPosts = (await getAllPostsWithSlug()) || []
     return {
         paths: allPosts.map((post) => `/posts/${post.slug}`),
-        fallback: true
+        fallback: true,
     }
 }

@@ -9,31 +9,32 @@ const url = '/team/register'
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_APP,
     appPageURL: '/register',
-    referral: url
-})(async ({ user }) => {
+    referral: url,
+})(async () => {
     return {
         props: {
-            verified: true
-        }
+            verified: true,
+        },
     }
 })
 
-const Register = ({ verified }) => {
+const Register = ({ verified }: { verified: boolean }) => {
     return (
-        <div className='page-content'>
-            <div className='page-title-sm'>
-                Team Registration Information
-            </div>
+        <div className="page-content">
+            <div className="page-title-sm">Team Registration Information</div>
             {verified ? (
-                <div className='p-6 py-12 max-w-2xl'>
+                <div className="p-6 py-12 max-w-2xl">
                     <RegisterTeamForm />
                 </div>
             ) : (
-                <div className='p-6 py-12 max-w-2xl mx-auto'>
+                <div className="p-6 py-12 max-w-2xl mx-auto">
                     <EmptyState
                         icon={<FaEnvelope />}
                         text={'Please Verify your Email First!'}
-                        subtext={'Please check your email folder shortly, if you do not see an email appear within 5 minutes, be sure to check your spam folder.'} />
+                        subtext={
+                            'Please check your email folder shortly, if you do not see an email appear within 5 minutes, be sure to check your spam folder.'
+                        }
+                    />
                 </div>
             )}
         </div>
@@ -42,8 +43,7 @@ const Register = ({ verified }) => {
 
 Register.SEO = {
     title: 'Register Team',
-    url
+    url,
 }
-
 
 export default Register

@@ -1,38 +1,35 @@
 import { motion } from 'framer-motion'
-import React, { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/router'
+import React, { useEffect, useRef } from 'react'
 import { Spinner } from '@chakra-ui/react'
 import { useSuspenseNavigation } from './Layout/useSuspenseNavigation'
-import { Features, features } from '@lib/platform/features'
+import { Features } from '@lib/platform/features'
 
 interface IDashboardButton {
-    label: string;
-    className?: string;
-    children?: React.ReactNode;
-    useLoader?: boolean;
-    href?: string;
+    label: string
+    className?: string
+    children?: React.ReactNode
+    useLoader?: boolean
+    href?: string
 
-    onClick?(): void;
+    onClick?(): void
 }
-
 
 // todo: fix unmount
 
 function useIsMounted() {
     const isMounted = useRef(false)
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     useEffect(() => {
         isMounted.current = true
-        return () => isMounted.current = false
+        return () => (isMounted.current = false)
     }, [])
 
     return isMounted
 }
 
-type MotionButtonProps =
-    | { whileTap: any; whileHover: any }
-    | { whileTap?: never; whileHover?: never }
+// type MotionButtonProps = { whileTap: any; whileHover: any } | { whileTap?: never; whileHover?: never }
 const DashboardButton = ({ label, children, className, href }: IDashboardButton): JSX.Element => {
     const { navigate, isLoading } = useSuspenseNavigation()
     const isMounted = useIsMounted()
@@ -49,24 +46,25 @@ const DashboardButton = ({ label, children, className, href }: IDashboardButton)
     // } : { whileHover: undefined, whileTap: undefined }
 
     if (isMounted) {
-        return <motion.button
-            onClick={buttonClick}
-            style={{
-                maxHeight: '44px !important'
-            }}
-            className={'items-center tracking-wide font-semibold inline-flex text-white border-0 py-2 px-4 focus:outline-none text-lg ' + className}
-
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ y: -1 }}
-        >
-            {isLoading(label) && (
-                <Spinner className='mr-2' size='xs' />
-            )}
-            {children}
-        </motion.button>
+        return (
+            <motion.button
+                onClick={buttonClick}
+                style={{
+                    maxHeight: '44px !important',
+                }}
+                className={
+                    'items-center tracking-wide font-semibold inline-flex text-white border-0 py-2 px-4 focus:outline-none text-lg ' +
+                    className
+                }
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -1 }}
+            >
+                {isLoading(label) && <Spinner className="mr-2" size="xs" />}
+                {children}
+            </motion.button>
+        )
     }
     return <></>
-
 }
 
 DashboardButton.defaultProps = {
@@ -74,7 +72,8 @@ DashboardButton.defaultProps = {
     label: '',
     children: <></>,
     onClick: () => {
-    }
+        return
+    },
 }
 
 export default DashboardButton

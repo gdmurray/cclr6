@@ -13,7 +13,7 @@ const tournaments = [
         size: 32,
         online: true,
         logo: {
-            original: '/images/backgroundtemp.jpeg'
+            original: '/images/backgroundtemp.jpeg',
         },
         location: 'Toronto',
         country: 'CA',
@@ -22,10 +22,8 @@ const tournaments = [
         registration_closing_datetime: new Date(2021, 6 - 1, 30, 9).toISOString(),
         id: '123456789',
         discipline: 'rainbowsix_siege',
-        platforms: [
-            'pc'
-        ]
-    }
+        platforms: ['pc'],
+    },
 ]
 
 const data: Tournament[] = [
@@ -46,7 +44,7 @@ const data: Tournament[] = [
         registration_closing_datetime: '2021-06-06T13:00:00.000Z',
         id: '1',
         discipline: 'rainbowsix_siege',
-        platforms: ['pc']
+        platforms: ['pc'],
     },
     {
         name: 'CCL Open Qualifier #2',
@@ -65,7 +63,7 @@ const data: Tournament[] = [
         registration_closing_datetime: '2021-06-13T13:00:00.000Z',
         id: '2',
         discipline: 'rainbowsix_siege',
-        platforms: ['pc']
+        platforms: ['pc'],
     },
     {
         name: 'CCL Open Qualifier #3',
@@ -84,7 +82,7 @@ const data: Tournament[] = [
         registration_closing_datetime: '2021-06-20T13:00:00.000Z',
         id: '3',
         discipline: 'rainbowsix_siege',
-        platforms: ['pc']
+        platforms: ['pc'],
     },
     {
         name: 'CCL Open Qualifier #4',
@@ -103,35 +101,34 @@ const data: Tournament[] = [
         registration_closing_datetime: '2021-06-27T13:00:00.000Z',
         id: '4',
         discipline: 'rainbowsix_siege',
-        platforms: ['pc']
-    }
+        platforms: ['pc'],
+    },
 ]
 
-
 interface ToornamentAPI {
-    getTournament(id: string): Promise<Tournament>;
+    getTournament(id: string): Promise<Tournament>
 
-    getTournaments(): Promise<Tournament[]>;
+    getTournaments(): Promise<Tournament[]>
 
-    registerTeam(id: string, body: RegisterParticipants): Promise<void>;
+    registerTeam(id: string, body: RegisterParticipants): Promise<void>
 }
 
 interface OAuth2Result {
-    expires_in: number;
-    access_token: string;
-    scope: string;
+    expires_in: number
+    access_token: string
+    scope: string
 }
 
 interface Participant {
-    name: string;
-    custom_user_identifier: string;
-    email: string;
+    name: string
+    custom_user_identifier: string
+    email: string
 }
 
 interface RegisterParticipants {
-    name: string;
-    email: string;
-    custom_user_identifier: string;
+    name: string
+    email: string
+    custom_user_identifier: string
     lineup: Participant[]
 }
 
@@ -141,9 +138,7 @@ export class ToornamentClient {
     public url = 'https://api.toornament.com/organizer/v2'
     public scope = 'organizer:view organizer:participant organizer:registration'
 
-
-    constructor() {
-    }
+    constructor() {}
 
     private init = async () => {
         this.auth = await this.retrieveCredentials()
@@ -152,7 +147,7 @@ export class ToornamentClient {
     private headers() {
         return {
             'X-Api-Key': process.env.TOORNAMENT_API_KEY,
-            'Authorization': `Bearer ${this.auth.access_token}`
+            Authorization: `Bearer ${this.auth.access_token}`,
         }
     }
 
@@ -165,7 +160,7 @@ export class ToornamentClient {
         await adminDb.ref('toornament').set({
             access_token: access_token,
             expires_on: expires_on,
-            scope: scope
+            scope: scope,
         })
         return Promise.resolve()
     }
@@ -177,13 +172,13 @@ export class ToornamentClient {
             grant_type: 'client_credentials',
             client_id: process.env.TOORNAMENT_CLIENT_ID,
             client_secret: process.env.TOORNAMENT_CLIENT_SECRET,
-            scope: this.scope
+            scope: this.scope,
         }
         authURL.search = new URLSearchParams(params).toString()
         const result = await fetch(authURL.toString(), {
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
         })
         const body = await result.json()
         return Promise.resolve(body)
@@ -215,8 +210,8 @@ export class ToornamentClient {
         const response = await fetch(this.url + `/tournaments?public=true${query ? `&${query}` : ''}`, {
             headers: {
                 ...this.headers(),
-                'Range': 'tournaments=0-49'
-            }
+                Range: 'tournaments=0-49',
+            },
         })
         const tournaments = await response.json()
         return Promise.resolve(tournaments)
@@ -226,7 +221,7 @@ export class ToornamentClient {
         await this.init()
         if (id.length > 1) {
             const response = await fetch(this.url + `/tournaments/${id}`, {
-                headers: this.headers()
+                headers: this.headers(),
             })
             const toornament = await response.json()
             return Promise.resolve(toornament)
@@ -241,9 +236,9 @@ export class ToornamentClient {
             method: 'POST',
             headers: {
                 ...this.headers(),
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
         })
         const data = await response.json()
         const { id: toornamentId } = data
@@ -256,8 +251,8 @@ export class ToornamentClient {
             method: 'DELETE',
             headers: {
                 ...this.headers(),
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
         })
         console.log(response)
         if (response.status === 204) {
@@ -265,8 +260,6 @@ export class ToornamentClient {
         } else {
             return Promise.resolve(false)
         }
-
-
     }
 
     async getParticipants(id: string): Promise<string> {
@@ -275,9 +268,9 @@ export class ToornamentClient {
             method: 'GET',
             headers: {
                 ...this.headers(),
-                'Range': 'participants=0-49',
-                'Content-Type': 'application/json'
-            }
+                Range: 'participants=0-49',
+                'Content-Type': 'application/json',
+            },
         })
         const data = await response.json()
         return Promise.resolve(data)
@@ -290,12 +283,11 @@ export class ToornamentClient {
             body: JSON.stringify(body),
             headers: {
                 ...this.headers(),
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
         })
         const data = await response.json()
         console.log('DATA: ', data)
         return Promise.resolve(true)
     }
-
 }

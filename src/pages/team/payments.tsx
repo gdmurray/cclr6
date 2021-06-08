@@ -1,33 +1,31 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import TeamLayout from '@components/teams/layout'
 import EmptyState from '@components/EmptyState'
 import { FaPaypal, FaRegCreditCard, FaRegEnvelope } from 'react-icons/fa'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
-import { SeasonOne } from '@lib/models/season'
-import { ToornamentClient } from '@lib/api/toornament'
 import Table from 'rc-table'
-import { TeamContext } from '@components/teams/teamContext'
+// import { TeamContext } from '@components/teams/teamContext'
 import Loader from '@components/Loader'
 
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-    referral: '/team/payments'
+    referral: '/team/payments',
 })({})
 
-function Payments({}): JSX.Element {
-    const teamContext = useContext(TeamContext)
-    const { team, user } = teamContext
+function Payments(): JSX.Element {
+    // const teamContext = useContext(TeamContext)
+    // const { team, user } = teamContext
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState([])
 
     useEffect(() => {
         fetch('/api/team/payments', {
             headers: {
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
         }).then((result) => {
             if (result.ok) {
-                result.json().then(response => {
+                result.json().then((response) => {
                     setLoading(false)
                     setData(response.payments)
                 })
@@ -41,7 +39,7 @@ function Payments({}): JSX.Element {
         {
             title: 'Season',
             dataIndex: 'season',
-            key: 'season'
+            key: 'season',
         },
         {
             title: 'Payment Type',
@@ -53,11 +51,11 @@ function Payments({}): JSX.Element {
                 } else {
                     return <FaRegEnvelope />
                 }
-            }
+            },
         },
         {
             title: 'Payment Email',
-            dataIndex: ['payment', 'payer', 'email_address']
+            dataIndex: ['payment', 'payer', 'email_address'],
         },
         {
             title: 'Amount',
@@ -67,32 +65,29 @@ function Payments({}): JSX.Element {
                 console.log(purchase_units)
                 const [{ amount }] = purchase_units
                 return `$${amount.value} ${amount.currency_code}`
-            }
+            },
         },
         {
             title: 'Status',
             dataIndex: ['payment', 'status'],
-            key: 'status'
-        }
+            key: 'status',
+        },
     ]
 
     return (
         <>
-            {loading && (<Loader text='Loading Payments' />)}
-            {!loading && data.length === 0 && (
-                <EmptyState icon={<FaRegCreditCard />} text={'No Payments Found!'} />
-            )}
+            {loading && <Loader text="Loading Payments" />}
+            {!loading && data.length === 0 && <EmptyState icon={<FaRegCreditCard />} text={'No Payments Found!'} />}
             {!loading && data.length > 0 && (
-                <Table className='data-table' columns={columns} data={data} rowKey={elem => elem.id} />
+                <Table className="data-table" columns={columns} data={data} rowKey={(elem) => elem.id} />
             )}
-
         </>
     )
 }
 
 Payments.SEO = {
     title: 'Team Payments',
-    url: '/team/payments'
+    url: '/team/payments',
 }
 
 Payments.layout = (content: React.ReactNode): JSX.Element => {

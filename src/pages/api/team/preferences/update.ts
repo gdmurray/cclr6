@@ -3,7 +3,6 @@ import authenticate from '@lib/api/authenticate'
 import { Teams } from '@lib/models/team'
 import { adminFireStore } from '@lib/firebase/admin'
 
-
 export default async function update(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         const user = await authenticate(req, res)

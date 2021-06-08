@@ -2,19 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useSuspenseNavigation } from '@components/Layout/useSuspenseNavigation'
 
-
 export interface Tab {
-    label: string | React.ReactNode;
+    label: string | React.ReactNode
     path: string
 }
 
-
 interface TabsNavigator {
-    tabLoading: boolean;
-    handleTabChange: (index: number) => void;
-    tabIndex: number;
-    isQuery: boolean;
-    pathname: string;
+    tabLoading: boolean
+    handleTabChange: (index: number) => void
+    tabIndex: number
+    isQuery: boolean
+    pathname: string
 
     navigate(key, route): void
 }
@@ -24,26 +22,25 @@ export default function useTabsNavigator({ tabs }: { tabs: Tab[] }): TabsNavigat
     const { pathname, events, query } = useRouter()
     const { navigate, isLoading } = useSuspenseNavigation()
 
-    const getPathName = (): { pathname: string, isQuery: boolean } => {
+    const getPathName = (): { pathname: string; isQuery: boolean } => {
         if (Object.keys(query).length > 0) {
             const [queryKey] = Object.keys(query)
             const filteredPathname = pathname.replace(`/[${queryKey}]`, '')
             return {
                 pathname: filteredPathname,
-                isQuery: true
+                isQuery: true,
             }
         }
         return {
             pathname,
-            isQuery: false
+            isQuery: false,
         }
     }
-
 
     useEffect(() => {
         const activeTab = tabs[tabIndex]
         if (activeTab.path !== getPathName().pathname) {
-            const tab = tabs.map(e => e.path).indexOf(getPathName().pathname)
+            const tab = tabs.map((e) => e.path).indexOf(getPathName().pathname)
             if (tab !== -1) {
                 setTabIndex(tab)
             }
@@ -51,7 +48,7 @@ export default function useTabsNavigator({ tabs }: { tabs: Tab[] }): TabsNavigat
 
         const handleRouteChange = (path) => {
             if (path !== activeTab.path) {
-                const tab = tabs.map(e => e.path).indexOf(path)
+                const tab = tabs.map((e) => e.path).indexOf(path)
                 if (tab !== -1) {
                     setTabIndex(tab)
                 }
@@ -75,6 +72,6 @@ export default function useTabsNavigator({ tabs }: { tabs: Tab[] }): TabsNavigat
         tabIndex,
         isQuery: getPathName().isQuery,
         pathname: getPathName().pathname,
-        navigate
+        navigate,
     }
 }

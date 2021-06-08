@@ -1,12 +1,5 @@
 import { Tournament } from '@lib/models/tournament'
 
-
-// TODO: Create a Season Object, which links all tournaments together, we would save ID to our database.
-// Season {
-//     qualifiers: {
-//         one: id,
-//     }
-// }
 export const data: Tournament[] = [
     {
         name: 'CCL: Season 1',
@@ -19,7 +12,7 @@ export const data: Tournament[] = [
         size: 64,
         online: true,
         logo: {
-            original: '/images/backgroundtemp.jpeg'
+            original: '/images/backgroundtemp.jpeg',
         },
         location: 'Toronto',
         country: 'CA',
@@ -28,9 +21,6 @@ export const data: Tournament[] = [
         registration_closing_datetime: new Date(2021, 5, 30, 9).toISOString(),
         id: '123456789',
         discipline: 'rainbowsix_siege',
-        platforms: [
-            'pc'
-        ]
-    }
+        platforms: ['pc'],
+    },
 ]
-

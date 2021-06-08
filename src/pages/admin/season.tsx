@@ -12,25 +12,32 @@ import { adminFireStore } from '@lib/firebase/admin'
 import {
     AlertDialog,
     AlertDialogBody,
-    AlertDialogContent, AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogHeader,
     AlertDialogOverlay,
-    Button, Code, Input,
-    Modal, ModalBody,
+    Button,
+    Code,
+    Input,
+    Modal,
+    ModalBody,
     ModalCloseButton,
-    ModalContent, ModalFooter,
+    ModalContent,
+    ModalFooter,
     ModalHeader,
     ModalOverlay,
-    useDisclosure, useToast
+    useDisclosure,
+    useToast,
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
-
+import { Tournament } from '@lib/models/tournament'
+import { IPayment } from '@lib/models/payment'
 
 dayjs.extend(LocalizedFormat)
 
 export const getServerSideProps = withAuthSSR({
-    whenNotAdmin: AuthAction.REDIRECT_TO_APP
-})(async (ctx) => {
+    whenNotAdmin: AuthAction.REDIRECT_TO_APP,
+})(async () => {
     const season = SeasonOne
     const client = new ToornamentClient()
     const qualifiers = []
@@ -40,55 +47,50 @@ export const getServerSideProps = withAuthSSR({
         qualifiers.push(qual)
     }
 
-    const allPayments = await adminFireStore
-        .collectionGroup('payments')
-        .where('season', '==', '1')
-        .get()
+    const allPayments = await adminFireStore.collectionGroup('payments').where('season', '==', '1').get()
 
     const paymentMap = allPayments.docs.reduce((acc: Record<string, any>, doc) => {
         const teamId = doc.ref.path.split('/')[1]
         acc[teamId] = {
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
         }
         return acc
     }, {})
 
-    const teams = await adminFireStore
-        .collection('teams')
-        .get()
+    const teams = await adminFireStore.collection('teams').get()
 
-    const payments = teams.docs.map((team) => (
-        {
-            id: team.id,
-            ...team.data(),
-            ...(team.id in paymentMap ? { has_paid: true, payment: { ...paymentMap[team.id] } } : {
-                has_paid: false,
-                payment: {}
-            })
-        }
-    ))
+    const payments = teams.docs.map((team) => ({
+        id: team.id,
+        ...team.data(),
+        ...(team.id in paymentMap
+            ? { has_paid: true, payment: { ...paymentMap[team.id] } }
+            : {
+                  has_paid: false,
+                  payment: {},
+              }),
+    }))
 
     return {
         props: {
             qualifiers,
-            payments
-        }
+            payments,
+        },
     }
 })
 
-const QualifierTable = ({ qualifiers }) => {
+const QualifierTable = ({ qualifiers }: { qualifiers: Tournament[] }) => {
     const { push } = useRouter()
     const columns = [
         {
             title: 'Name',
             dataIndex: 'name',
-            key: 'name'
+            key: 'name',
         },
         {
             title: 'Date',
             dataIndex: 'scheduled_date_start',
-            key: 'scheduled_date_start'
+            key: 'scheduled_date_start',
         },
         {
             title: 'Reg Open',
@@ -96,7 +98,7 @@ const QualifierTable = ({ qualifiers }) => {
             key: 'registration_opening_datetime',
             render: (val) => {
                 return <>{dayjs(val).format('LLL')}</>
-            }
+            },
         },
         {
             title: 'Reg Closed',
@@ -104,160 +106,183 @@ const QualifierTable = ({ qualifiers }) => {
             key: 'registration_closing_datetime',
             render: (val) => {
                 return <>{dayjs(val).format('LLL')}</>
-            }
+            },
         },
         {
             title: 'Players',
             dataIndex: 'size',
-            key: 'size'
+            key: 'size',
         },
         {
             title: 'Actions',
             key: 'actions',
             render: (val) => {
-                return <><FaChevronCircleRight className='cursor-pointer'
-                                               onClick={() => push(`/admin/season/${val.id}`)} /></>
-            }
-        }
+                return (
+                    <>
+                        <FaChevronCircleRight
+                            className="cursor-pointer"
+                            onClick={() => push(`/admin/season/${val.id}`)}
+                        />
+                    </>
+                )
+            },
+        },
     ]
 
     return (
         <div>
-            <h2 className='page-title-sm'>Qualifiers</h2>
-            <Table rowKey={(record) => record.id} className='data-table' columns={columns} data={qualifiers} />
+            <h2 className="page-title-sm">Qualifiers</h2>
+            <Table rowKey={(record) => record.id} className="data-table" columns={columns} data={qualifiers} />
         </div>
     )
-
 }
 
-const PaymentTable = ({ payments }) => {
+interface TeamPayment {
+    name: string
+    id: string
+    contact_email: string
+    has_paid: boolean
+    payment: IPayment
+}
+
+const PaymentCell = ({ record }: { record: TeamPayment }): JSX.Element => {
     const { reload } = useRouter()
     const toast = useToast({ variant: 'solid', duration: 2500 })
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { register, handleSubmit } = useForm()
+    const cancelRef = useRef(null)
+    const [isCodeOpen, setIsCodeOpen] = useState<boolean>(false)
+    const onSubmit = (values) => {
+        console.log(values)
+        fetch('/api/admin/payments/create', {
+            method: 'POST',
+            body: JSON.stringify({
+                team_id: record.id,
+                payment_url: values.payment_url,
+                email_address: values.email_address || record.contact_email,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((result) => {
+            if (result.ok) {
+                toast({
+                    status: 'success',
+                    title: `Registered Payment for ${record.name}`,
+                    onCloseComplete: () => {
+                        reload()
+                    },
+                })
+            }
+        })
+    }
+
+    if (!record.has_paid) {
+        return (
+            <div>
+                <Button onClick={onOpen}>Manual Payment</Button>
+                <Modal isOpen={isOpen} onClose={onClose} colorScheme="gray">
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader>Create Payment</ModalHeader>
+                        <ModalCloseButton />
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <ModalBody>
+                                <FormControl>
+                                    <FormLabel>Team Name</FormLabel>
+                                    <Input variant="" isReadOnly={true} value={record.name} />
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel>Payment Link</FormLabel>
+                                    <Input {...register('payment_url')} type="text" />
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel>Email Address</FormLabel>
+                                    <Input {...register('email_address')} type="email" />
+                                </FormControl>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button type="submit" colorScheme="blue" mr={4}>
+                                    Create
+                                </Button>
+                                <Button>Cancel</Button>
+                            </ModalFooter>
+                        </form>
+                    </ModalContent>
+                </Modal>
+            </div>
+        )
+    }
+    return (
+        <div>
+            <Button onClick={() => setIsCodeOpen(true)}>Payment</Button>
+            <AlertDialog
+                leastDestructiveRef={cancelRef}
+                isOpen={isCodeOpen}
+                onClose={() => setIsCodeOpen(false)}
+                size="lg"
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>Payment Info</AlertDialogHeader>
+                        <AlertDialogBody>
+                            <Code>
+                                <pre>{JSON.stringify(record.payment, null, '\t')}</pre>
+                            </Code>
+                        </AlertDialogBody>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
+        </div>
+    )
+}
+
+const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
     const columns = [
         {
             title: 'Name',
             dataIndex: 'name',
-            key: 'name'
+            key: 'name',
         },
         {
             title: 'Contact Email',
             dataIndex: 'contact_email',
-            key: 'contact_email'
+            key: 'contact_email',
         },
         {
             title: 'Has Paid',
             dataIndex: 'has_paid',
             key: 'has_paid',
             render: (has_paid: boolean) => {
-                return has_paid ? <FaCheck className='text-success' /> : <FaTimes className='text-error' />
-            }
+                return has_paid ? <FaCheck className="text-success" /> : <FaTimes className="text-error" />
+            },
         },
         {
             title: 'Payment',
             dataIndex: 'payment',
             key: 'payment',
-            render: (payment, record) => {
-                const { isOpen, onOpen, onClose } = useDisclosure()
-                const { register, handleSubmit } = useForm()
-                const cancelRef = useRef(null)
-                const [isCodeOpen, setIsCodeOpen] = useState<boolean>(false)
-                const onSubmit = (values) => {
-                    console.log(values)
-                    fetch('/api/admin/payments/create', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            team_id: record.id,
-                            payment_url: values.payment_url,
-                            email_address: values.email_address || record.contact_email
-                        }),
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }).then(result => {
-                        if (result.ok) {
-                            toast({
-                                status: 'success',
-                                title: `Registered Payment for ${record.name}`,
-                                onCloseComplete: () => {
-                                    reload()
-                                }
-                            })
-                        }
-                    })
-                }
-
-                if (!record.has_paid) {
-                    return (
-                        <div>
-                            <Button onClick={onOpen}>Manual Payment</Button>
-                            <Modal isOpen={isOpen} onClose={onClose} colorScheme='gray'>
-                                <ModalOverlay />
-                                <ModalContent>
-                                    <ModalHeader>Create Payment</ModalHeader>
-                                    <ModalCloseButton />
-                                    <form onSubmit={handleSubmit(onSubmit)}>
-                                        <ModalBody>
-
-                                            <FormControl>
-                                                <FormLabel>Team Name</FormLabel>
-                                                <Input variant='' isReadOnly={true} value={record.name} />
-                                            </FormControl>
-                                            <FormControl>
-                                                <FormLabel>Payment Link</FormLabel>
-                                                <Input {...register('payment_url')} type='text' />
-                                            </FormControl>
-                                            <FormControl>
-                                                <FormLabel>Email Address</FormLabel>
-                                                <Input {...register('email_address')} type='email' />
-                                            </FormControl>
-                                        </ModalBody>
-                                        <ModalFooter>
-                                            <Button type='submit' colorScheme='blue' mr={4}>
-                                                Create
-                                            </Button>
-                                            <Button>
-                                                Cancel
-                                            </Button>
-                                        </ModalFooter>
-                                    </form>
-                                </ModalContent>
-                            </Modal>
-                        </div>
-                    )
-                }
-                return (<div>
-                    <Button onClick={() => setIsCodeOpen(true)}>Payment</Button>
-                    <AlertDialog leastDestructiveRef={cancelRef} isOpen={isCodeOpen}
-                                 onClose={() => setIsCodeOpen(false)} size='lg'>
-                        <AlertDialogOverlay>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>Payment Info</AlertDialogHeader>
-                                <AlertDialogBody>
-                                    <Code>
-                                        <pre>
-                                            {JSON.stringify(record.payment, null, '\t')}
-                                        </pre>
-                                    </Code>
-                                </AlertDialogBody>
-                            </AlertDialogContent>
-                        </AlertDialogOverlay>
-                    </AlertDialog>
-                </div>)
-            }
-        }
+            render: (_payment, record) => {
+                return <PaymentCell record={record} />
+            },
+        },
     ]
 
     return (
         <div>
-            <h2 className='page-title-sm'>Payments</h2>
-            <Table className='data-table' columns={columns} data={payments} rowKey={elem => elem.id} />
+            <h2 className="page-title-sm">Payments</h2>
+            <Table className="data-table" columns={columns} data={payments} rowKey={(elem) => elem.id} />
         </div>
     )
 }
 
-const AdminSeason = ({ qualifiers, payments }) => {
+interface IAdminSeason {
+    qualifiers: Tournament[]
+    payments: TeamPayment[]
+}
+
+const AdminSeason = ({ qualifiers, payments }: IAdminSeason) => {
     return (
-        <div className='space-y-2'>
+        <div className="space-y-2">
             <QualifierTable qualifiers={qualifiers} />
             <PaymentTable payments={payments} />
         </div>

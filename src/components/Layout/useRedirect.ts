@@ -8,15 +8,14 @@ export default function useRedirect(defaultRedirect = null) {
             pathname: path,
             query: {
                 ...query,
-                ...customQuery
-            }
+                ...customQuery,
+            },
         }
     }
 
     if ('next' in query) {
-        return { redirect: (query['next']! as string), getNext }
+        return { redirect: query['next']! as string, getNext }
     }
-
 
     return { redirect: defaultRedirect ? defaultRedirect : '/', getNext }
 }

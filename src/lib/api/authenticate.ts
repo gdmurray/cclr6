@@ -12,10 +12,7 @@ export default async function authenticate(req: NextApiRequest, res: NextApiResp
 }
 
 export async function isAdmin(user: firebaseAdmin.auth.DecodedIdToken, res: NextApiResponse) {
-    const adminQuery = await adminFireStore
-        .collection('admins')
-        .where('user', '==', user.uid)
-        .get()
+    const adminQuery = await adminFireStore.collection('admins').where('user', '==', user.uid).get()
     if (adminQuery.empty) {
         res.status(403).end()
     } else {

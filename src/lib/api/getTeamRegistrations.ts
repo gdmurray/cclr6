@@ -9,16 +9,18 @@ export default async function getTeamRegistrations(team: ITeam) {
     const client = new ToornamentClient()
     const tournaments = await client.getTournaments('status=pending')
     // Filters all team registrations
-    const activeRegistrations = registrations.map((reg) => {
-        const filteredTournament = tournaments.filter((tournament) => tournament.id === reg.tournament_id)
-        if (filteredTournament.length === 1)
-            return ({
-                ...reg,
-                tournament: {
-                    ...filteredTournament[0]
+    const activeRegistrations = registrations
+        .map((reg) => {
+            const filteredTournament = tournaments.filter((tournament) => tournament.id === reg.tournament_id)
+            if (filteredTournament.length === 1)
+                return {
+                    ...reg,
+                    tournament: {
+                        ...filteredTournament[0],
+                    },
                 }
-            })
-        return undefined
-    }).filter((reg) => reg !== undefined)
+            return undefined
+        })
+        .filter((reg) => reg !== undefined)
     return activeRegistrations
 }

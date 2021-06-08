@@ -3,12 +3,12 @@ import RegisterForm from '@components/auth/RegisterForm'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 
 export const getServerSideProps = withAuthSSR({
-    whenAuthed: AuthAction.REDIRECT_TO_APP
+    whenAuthed: AuthAction.REDIRECT_TO_APP,
 })({})
 
 const Register = () => {
     return (
-        <div className='py-2'>
+        <div className="py-2">
             <RegisterForm />
         </div>
     )
@@ -16,7 +16,7 @@ const Register = () => {
 
 Register.SEO = {
     title: 'Register',
-    url: '/register'
+    url: '/register',
 }
 
 export default Register

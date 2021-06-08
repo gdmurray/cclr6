@@ -2,18 +2,17 @@ import React, { createContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
 interface LoadingContext {
-    isLoading(label): boolean;
+    isLoading(label): boolean
 
-    navigate(label, route): void;
+    navigate(label, route): void
 
     push(route): Promise<boolean>
 }
 
-
 const loadingContext = createContext<LoadingContext>({
     isLoading: null,
     navigate: null,
-    push: null
+    push: null,
 })
 
 export function LoadingProvider({ children }: React.PropsWithChildren<React.ReactNode>) {
@@ -50,14 +49,12 @@ export function useSuspenseNavigation() {
     }
 
     function isLoading(label) {
-        return (loading && (label === key))
+        return loading && label === key
     }
 
     return {
         isLoading,
         navigate,
-        push
+        push,
     }
 }
-
-
