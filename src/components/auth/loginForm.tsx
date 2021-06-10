@@ -22,9 +22,13 @@ interface LoginFormInputs {
     password: string
 }
 
-const LoginForm = (): JSX.Element => {
-    const { redirect } = useRedirect()
+interface LoginFormProps {
+    redirect: string
+}
+
+const LoginForm = ({ redirect }: LoginFormProps): JSX.Element => {
     const [showPassword, setShowPassword] = useState<boolean>(false)
+    const [formLoading, setFormLoading] = useState<boolean>(false)
     const { push } = useRouter()
     const {
         register,
@@ -37,7 +41,9 @@ const LoginForm = (): JSX.Element => {
         resolver: yupResolver(schema),
     })
 
-    const { signinWithEmail, Twitter, loading } = useAuth()
+    const { signinWithEmail, Twitter, loading: authLoading } = useAuth()
+
+    const loading = authLoading || formLoading
 
     useKeypress('Enter', (e) => {
         e.stopPropagation()
@@ -49,8 +55,10 @@ const LoginForm = (): JSX.Element => {
     })
 
     const onSubmit = (data) => {
+        setFormLoading(true)
         const { email, password } = data
         signinWithEmail(email, password, redirect).catch((err) => {
+            setFormLoading(false)
             const { code, message } = err
             if (code === 'auth/wrong-password') {
                 setError('password', {
@@ -78,9 +86,6 @@ const LoginForm = (): JSX.Element => {
     }
 
     const toggleShowPassword = (e) => {
-        // console.log('Toggle PW: ', e)
-        console.log(e.target)
-        console.log('current: ', e.currentTarget)
         e.preventDefault()
         e.stopPropagation()
         setShowPassword(!showPassword)
@@ -113,18 +118,16 @@ const LoginForm = (): JSX.Element => {
                             placeholder="Password"
                             {...register('password')}
                         />
-                        <InputRightElement
-                            children={
-                                <IconButton
-                                    onClick={toggleShowPassword}
-                                    variant="outline"
-                                    type="button"
-                                    size="xs"
-                                    aria-label={'Show'}
-                                    icon={showPassword ? <FaEyeSlash /> : <FaEye />}
-                                />
-                            }
-                        />
+                        <InputRightElement>
+                            <IconButton
+                                onClick={toggleShowPassword}
+                                variant="outline"
+                                type="button"
+                                size="xs"
+                                aria-label={'Show'}
+                                icon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                            />
+                        </InputRightElement>
                     </InputGroup>
                     <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
                 </FormControl>
@@ -141,7 +144,7 @@ const LoginForm = (): JSX.Element => {
                 </div>
             </form>
             <div className="font-medium text-sm tracking-tight text-center dark:text-gray-300 ">
-                Don't have an account yet?&nbsp;&nbsp;
+                Don&#39;t have an account yet?&nbsp;&nbsp;
                 <Link href="/register">
                     <span className="cursor-pointer font-semibold text-primary hover:text-red-500 transition-all duration-150">
                         Sign Up

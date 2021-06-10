@@ -1,5 +1,5 @@
 export function findWithAttr(array: any[], attr: string, value: any): number[] {
-    let idx = []
+    const idx = []
     try {
         for (let i = 0; i < array.length; i += 1) {
             if (array[i][attr] === value) {
@@ -14,16 +14,22 @@ export function findWithAttr(array: any[], attr: string, value: any): number[] {
 }
 
 export const countryMapping = {
-    'CA': 'CA',
-    'USA': 'US'
+    CA: 'CA',
+    USA: 'US',
 }
 
 export const getQueryKeyMap = (docs: any[]): { id: Record<any, any> } => {
     return docs.reduce((acc, doc) => {
         acc[doc.id] = {
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
         }
         return acc
     }, {})
+}
+
+export function getExpires(hours: number): string {
+    const now = new Date()
+    now.setHours(now.getHours() + hours)
+    return now.toISOString()
 }

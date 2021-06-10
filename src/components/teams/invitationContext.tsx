@@ -60,7 +60,7 @@ function useTeamInvitations({ team }) {
 
     const getInvitation = (email): Invitation | null => {
         if (!loading) {
-            const invitationsWithEmail = invitations.filter((elem) => elem.email === email)
+            const invitationsWithEmail = invitations.filter((elem) => elem.email_address === email)
             if (invitationsWithEmail.length > 0) {
                 if (invitationsWithEmail.length === 1) {
                     return invitationsWithEmail[0]

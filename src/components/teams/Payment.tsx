@@ -44,8 +44,18 @@ export default function PaymentForm({ season, team, setProgress }: IPaymentForm)
             .capture()
             .then(async (details) => {
                 await teamClient.purchasePass(season.id, details)
-                setProgress(false)
-                setCompleted(true)
+                fetch('/api/team/purchase', {
+                    method: 'POST',
+                    body: JSON.stringify({ team_id: team.id, season: season.id, details: details }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then(() => {})
+                    .finally(() => {
+                        setProgress(false)
+                        setCompleted(true)
+                    })
             })
             .catch((err) => {
                 setPaypalError(`Error Processing Payment: ${err.message}`)

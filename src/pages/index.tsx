@@ -1,9 +1,8 @@
 import React from 'react'
 import DashboardButton from '@components/DashboardButton'
-import { Flex, Image, useColorMode } from '@chakra-ui/react'
-import Home from './home'
+import { Flex, Image } from '@chakra-ui/react'
+// import Home from './home'
 import ReactPlayer from 'react-player'
-import { features } from '@lib/platform/features'
 
 const Index = (): JSX.Element => {
     return (
@@ -30,9 +29,6 @@ const Index = (): JSX.Element => {
                         }
                     >
                         Register Team&nbsp;
-                        {!features.registration && (
-                            <span className="font-medium tracking-tight text-base text-primary">(Coming Soon)</span>
-                        )}
                     </DashboardButton>
                 </div>
             </div>

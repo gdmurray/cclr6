@@ -1,7 +1,7 @@
 extends ../transactional
 
 block icon
-    img(src="assets/trophy.svg" alt="trophy" width=80)
+    img(src="assets/trophy.png" alt="trophy" width=80)
 
 block title
     span.title Your Registration
@@ -9,12 +9,12 @@ block title
 block subtitle
     span.subtitle You've been registered for
     br
-    span.subtitle.focus #{event_name}
+    span.attention #{event_name}
 
 block subcontent
     tr
         td(align="left")
-            p If you would like to view this in Toornament, please click the button below.
+            p If you would like to view this event in Toornament, please click the button below.
     tr
         td(align="center")
             a.cta-button(href=`${cta_url}`) View Tournament

@@ -3,6 +3,7 @@ import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import RegisterTeamForm from '@components/teams/registerTeamForm'
 import EmptyState from '@components/EmptyState'
 import { FaEnvelope } from 'react-icons/fa'
+import { adminFireStore } from '@lib/firebase/admin'
 
 const url = '/team/register'
 
@@ -10,7 +11,17 @@ export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_APP,
     appPageURL: '/register',
     referral: url,
-})(async () => {
+})(async ({ user }) => {
+    const userTeams = await adminFireStore.collection('teams').where('owner', '==', user.uid).get()
+    if (userTeams.size > 0) {
+        // const [userTeam] = userTeams.docs
+        return {
+            redirect: {
+                destination: '/team',
+                permanent: false,
+            },
+        }
+    }
     return {
         props: {
             verified: true,

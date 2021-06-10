@@ -28,6 +28,7 @@ export const withAuthSSR =
     (getServerSidePropsFunc) =>
     async (ctx) => {
         const { resolvedUrl } = ctx
+        console.log('resolved: ', resolvedUrl)
         if (!Features.isRouteValid(resolvedUrl)) {
             return {
                 redirect: {
@@ -53,6 +54,7 @@ export const withAuthSSR =
         }
         const constructUrl = (destination: string): string => {
             if (referral) {
+                console.log('encoded: ', encodeURIComponent(referral))
                 return `${destination}?next=${encodeURIComponent(referral)}`
             }
             return destination

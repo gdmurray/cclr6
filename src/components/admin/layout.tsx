@@ -17,6 +17,10 @@ const tabs = [
         label: 'Season',
         path: '/admin/season',
     },
+    {
+        label: 'Email Test',
+        path: '/admin/test',
+    },
 ]
 
 const AdminLayout = (props: React.PropsWithChildren<React.ReactNode>) => {

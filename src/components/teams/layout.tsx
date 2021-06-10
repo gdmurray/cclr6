@@ -1,11 +1,12 @@
-import React from 'react'
-import { Tab, TabList, Tabs } from '@chakra-ui/react'
+import React, { useEffect } from 'react'
+import { Tab, TabList, Tabs, useToast } from '@chakra-ui/react'
 import { useAuth } from '@lib/auth'
 import useTeam from '@lib/useTeam'
 import Loader from '@components/Loader'
 import { TeamProvider } from '@components/teams/teamContext'
 import useTabsNavigator from '@components/Layout/useTabsNavigator'
 import { FaClipboardList, FaCog, FaCreditCard, FaHome, FaUser, FaUsers } from 'react-icons/fa'
+import useRedirect from '@components/Layout/useRedirect'
 
 const teamTabs: { label: React.ReactNode; path: string }[] = [
     {
@@ -56,6 +57,7 @@ const teamTabs: { label: React.ReactNode; path: string }[] = [
 ]
 
 const TeamLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
+    const toast = useToast({ status: 'warning', position: 'top-right', variant: 'solid' })
     const { user, loading: authLoading } = useAuth()
     const { team, loading: teamLoading, setTeam } = useTeam({ user })
 
@@ -63,6 +65,18 @@ const TeamLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
 
     const loading = authLoading || teamLoading || tabLoading
 
+    const { redirect, push } = useRedirect('/login')
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            console.log('Redirect', redirect)
+            push(redirect)
+        }
+        if (!authLoading && user && !team && !teamLoading) {
+            toast({ title: 'Error Loading Team Information, do you belong to a team?' })
+            push('/')
+        }
+    }, [authLoading, user, team, teamLoading])
     return (
         <div className="page-content">
             <div className="page-title-sm">Team Information</div>

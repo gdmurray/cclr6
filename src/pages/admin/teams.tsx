@@ -31,27 +31,6 @@ export const getServerSideProps = withAuthSSR({
     }
 })
 
-// const StyledTable = styled(Table)`
-//   th {
-//     font-family: var(--chakra-fonts-heading);
-//     font-weight: var(--chakra-fontWeights-bold);
-//     text-transform: uppercase;
-//     letter-spacing: var(--chakra-letterSpacings-wider);
-//     text-align: start;
-//     -webkit-padding-start: var(--chakra-space-6);
-//     padding-inline-start: var(--chakra-space-6);
-//     -webkit-padding-end: var(--chakra-space-6);
-//     padding-inline-end: var(--chakra-space-6);
-//     padding-top: var(--chakra-space-3);
-//     padding-bottom: var(--chakra-space-3);
-//     line-height: var(--chakra-lineHeights-4);
-//     font-size: var(--chakra-fontSizes-xs);
-//     color: var(--chakra-colors-gray-400);
-//     border-bottom: var(--chakra-borders-1px);
-//     border-color: var(--chakra-colors-gray-700);
-//   }
-// `
-
 function sortByKey(array, key) {
     return array.sort(function (a, b) {
         const x = a[key]
@@ -131,11 +110,21 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
             dataIndex: 'name',
             key: 'name',
         },
+        // {
+        //     title: 'id',
+        //     dataIndex: 'id',
+        //     key: 'id',
+        // },
         {
             title: 'Contact',
             dataIndex: 'contact_email',
             key: 'contact_email',
         },
+        // {
+        //     title: 'Owner Id',
+        //     dataIndex: 'owner',
+        //     key: 'owner',
+        // },
         {
             title: 'Actions',
             key: 'actions',
@@ -160,6 +149,16 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
         }
     }
 
+    const owners = data.reduce((acc: Record<string, { name: string; id: string }[]>, elem) => {
+        if (elem.owner in acc) {
+            acc[elem.owner].push({ id: elem.id, name: elem.name })
+        } else {
+            acc[elem.owner] = [{ id: elem.id, name: elem.name }]
+        }
+        return acc
+    }, {})
+
+    console.log('OWNERS', owners)
     return (
         <div>
             <Table
@@ -190,6 +189,20 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
                     },
                 }}
             />
+            <div>
+                {Object.keys(owners).map((key) => {
+                    if (owners[key].length > 1) {
+                        return (
+                            <div>
+                                <div className="font-semibold">{key}</div>
+                                <div className="font-medium">
+                                    {owners[key].map((elem) => `${elem.id}-${elem.name}`).join(', ')}
+                                </div>
+                            </div>
+                        )
+                    }
+                })}
+            </div>
         </div>
     )
 }

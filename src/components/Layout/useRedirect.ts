@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 
 export default function useRedirect(defaultRedirect = null) {
-    const { query } = useRouter()
+    const { query, push } = useRouter()
 
     function getNext(path, customQuery = {}) {
         return {
@@ -17,5 +17,5 @@ export default function useRedirect(defaultRedirect = null) {
         return { redirect: query['next']! as string, getNext }
     }
 
-    return { redirect: defaultRedirect ? defaultRedirect : '/', getNext }
+    return { redirect: defaultRedirect ? defaultRedirect : '/', getNext, push }
 }

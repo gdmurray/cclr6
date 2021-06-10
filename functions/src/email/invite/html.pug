@@ -1,7 +1,7 @@
 extends ../transactional
 
 block icon
-    img(src="assets/mail.svg" alt="mail" width=80)
+    img(src="assets/envelope.png" alt="mail" width=80)
 
 block title
     span.title Your Team Invite
@@ -9,7 +9,7 @@ block title
 block subtitle
     span.subtitle You've been invited to join:
     br
-    span.subtitle.focus #{team_name}
+    span.attention #{team_name}
 
 block subcontent
     tr

@@ -29,19 +29,25 @@ table {
     text-decoration: none;
 }
 
-#footer a.link-button {
+.footer-btn {
     background: #FFFFFF;
-    padding: 0.5em;
-    display: inline-block;
+    padding: 6px;
+    width: 35px;
+    height: 35px;
     text-align: center;
+    line-height: 38px;
+    vertical-align: middle;
     text-decoration: none;
-    border-radius: 25px;
+    border-radius: 50%;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
-#footer a.link-button img {
+img.button {
     padding: 0px 2px;
     position: relative;
 }
+
 
 #logo {
     padding: 30px 0;
@@ -63,7 +69,9 @@ table {
     color: #475569;
 }
 
-.subtitle.focus {
+.attention {
+    font-size: 18px;
+    color: #475569;
     font-weight: 700;
 }
 
@@ -74,15 +82,14 @@ td.divider {
 #content {
     color: #334155;
     border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     max-width: 600px;
 }
 
-.cta-link {
-    font-weight: 400;
-    font-size: 12px;
-    color: #475569;
-}
+/*.cta-link {*/
+/*    font-weight: 400;*/
+/*    font-size: 12px;*/
+/*    color: #475569;*/
+/*}*/
 
 .cta-button {
     display: block;
@@ -100,20 +107,10 @@ td.divider {
     cursor: pointer;
 }
 
-.cta-button:hover {
-    background: #FFFFFF;
-    color: #e50a25;
-}
-
 #content .content {
     padding-left: 40px;
     padding-right: 40px;
     max-width: 400px;
-}
-
-#footer-links a {
-    margin-left: 5px;
-    margin-right: 5px;
 }
 
 #footer .signature {
@@ -122,6 +119,17 @@ td.divider {
     color: white;
 }
 
+.disclaimer {
+    font-size: 12px;
+    font-weight: 500;
+    color: #475569;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+}
+
+#ccl-logo {
+    margin-top: 0.25em;
+}
 
 .body, .darkmode .darkmode td {
     background: linear-gradient(-180deg, #1E293B 0%, #0F172A 100%) 0% 0% / cover;

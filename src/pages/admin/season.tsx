@@ -166,6 +166,7 @@ const PaymentCell = ({ record }: { record: TeamPayment }): JSX.Element => {
             },
         }).then((result) => {
             if (result.ok) {
+                onClose()
                 toast({
                     status: 'success',
                     title: `Registered Payment for ${record.name}`,

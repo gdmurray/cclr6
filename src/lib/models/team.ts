@@ -2,75 +2,77 @@ import db from '@lib/firebase/firestore'
 import { CaptureOrderResponseBody } from '@paypal/paypal-js/types/apis/orders'
 import { IPlayer } from '@lib/models/player'
 import { Firestore, storage } from '@lib/firebase/firebase'
-import { Tournament } from '@lib/models/tournament'
 import { SeasonOne } from '@lib/models/season'
 
 export interface ITeam {
-    id?: string;
-    name: string;
-    logo: string;
-    contact_email: string;
-    owner: string;
-    role?: string;
+    id?: string
+    name: string
+    logo: string
+    contact_email: string
+    owner: string
+    role?: string
     notification_settings?: {
-        registration: boolean;
-        payment: boolean;
-        qualification: boolean;
+        registration: boolean
+        payment: boolean
+        qualification: boolean
     }
 }
 
 export interface IRegistration {
-    id?: string;
-    participant_id: string;
-    tournament_id: string;
-    status: 'REGISTERED';
-    registered: any;
+    id?: string
+    participant_id: string
+    tournament_id: string
+    status: 'REGISTERED'
+    registered: any
 }
 
 interface TeamClient {
-    hasMinimumPlayers(): Promise<boolean>;
+    hasMinimumPlayers(): Promise<boolean>
 
     hasMinimumCanadians(): Promise<boolean>
 
-    hasTeamRegistered(tournamentId: string): Promise<boolean | IRegistration>;
+    hasTeamRegistered(tournamentId: string): Promise<boolean | IRegistration>
 
-    canUserRegister(uid: string): boolean;
+    canUserRegister(uid: string): boolean
 
     purchasePass(season: string, payment: CaptureOrderResponseBody): Promise<void>
 
-    getPayments(): Promise<any[]>;
+    getPayments(): Promise<any[]>
 
-    hasTeamPaid(season: string): Promise<boolean>;
+    hasTeamPaid(season: string): Promise<boolean>
 
-    registerForTournament(tournamentId: string, participantId: string): Promise<boolean>;
+    registerForTournament(tournamentId: string, participantId: string): Promise<boolean>
 
     unregisterForTournament(registrationId: string): Promise<boolean>
 
-    getRegistration(tournamentId: string): Promise<IRegistration>;
+    getRegistration(tournamentId: string): Promise<IRegistration>
 
-    getRegistrations(): Promise<IRegistration[]>;
+    getRegistrations(): Promise<IRegistration[]>
 
-    hasQualified(): Promise<boolean>;
+    hasQualified(): Promise<boolean>
+
+    canSendNotification(notification: string): boolean
 }
 
 export function CreateTeamClient(team: ITeam, database: Firestore | any = db): TeamClient {
-
     return {
         purchasePass: async (season, payment): Promise<void> => {
             const data = {
                 season,
-                payment
+                payment,
             }
-            const paymentResult = await database.collection('teams')
+            const paymentResult = await database
+                .collection('teams')
                 .doc(team.id)
                 .collection('payments')
                 .add({ type: 'paypal', ...data })
             console.log(paymentResult.id)
-            console.log(paymentResult.get().then(result => console.log(result.data())))
+            console.log(paymentResult.get().then((result) => console.log(result.data())))
             return Promise.resolve()
         },
         hasTeamPaid: async (seasonId): Promise<boolean> => {
-            const payments = await database.collection('teams')
+            const payments = await database
+                .collection('teams')
                 .doc(team.id)
                 .collection('payments')
                 .where('season', '==', seasonId)
@@ -84,44 +86,37 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
             return Promise.resolve(false)
         },
         getPayments: async (): Promise<any[]> => {
-            const payments = await database.collection('teams')
-                .doc(team.id)
-                .collection('payments')
-                .get()
+            const payments = await database.collection('teams').doc(team.id).collection('payments').get()
             return payments.docs
         },
         hasMinimumPlayers: async (): Promise<boolean> => {
-            const players = await database.collection('teams')
-                .doc(team.id)
-                .collection('players')
-                .get()
+            const players = await database.collection('teams').doc(team.id).collection('players').get()
             if (players.size >= 5) {
                 return Promise.resolve(true)
             }
             return Promise.resolve(false)
         },
         hasMinimumCanadians: async (): Promise<boolean> => {
-            const players = await database.collection('teams')
-                .doc(team.id)
-                .collection('players')
-                .get()
+            const players = await database.collection('teams').doc(team.id).collection('players').get()
             if (players.size >= 5) {
-                const countryCounts = players.docs.reduce((acc: { CA: number, USA: number, }, doc) => {
-                    const data = doc.data() as IPlayer
-                    if (data.country === 'CA') {
-                        acc['CA'] += 1
-                    } else {
-                        acc['USA'] += 1
-                    }
-                    return acc
-                }, { CA: 0, USA: 0 })
+                const countryCounts = players.docs.reduce(
+                    (acc: { CA: number; USA: number }, doc) => {
+                        const data = doc.data() as IPlayer
+                        if (data.country === 'CA') {
+                            acc['CA'] += 1
+                        } else {
+                            acc['USA'] += 1
+                        }
+                        return acc
+                    },
+                    { CA: 0, USA: 0 }
+                )
 
                 if (countryCounts.CA >= 3) {
                     return Promise.resolve(true)
                 }
             }
             return Promise.resolve(false)
-
         },
         async hasTeamRegistered(tournamentId): Promise<boolean | IRegistration> {
             const registration = await this.getRegistration(tournamentId)
@@ -149,17 +144,14 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
             // return Promise.resolve(false)
         },
         registerForTournament: async (tournamentId, participantId): Promise<boolean> => {
-            const registration = await database.collection('teams')
-                .doc(team.id)
-                .collection('registrations')
-                .add({
-                    tournament_id: tournamentId,
-                    participant_id: participantId,
-                    status: 'REGISTERED',
-                    registered: new Date().toISOString()
-                })
+            const registration = await database.collection('teams').doc(team.id).collection('registrations').add({
+                tournament_id: tournamentId,
+                participant_id: participantId,
+                status: 'REGISTERED',
+                registered: new Date().toISOString(),
+            })
             console.log(tournamentId)
-            const data = await registration.get()
+            // const data = await registration.get()
             return Promise.resolve(true)
         },
         unregisterForTournament: async (registrationID): Promise<boolean> => {
@@ -173,10 +165,11 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
             return Promise.resolve(true)
         },
         canUserRegister: (uid): boolean => {
-            return (team.owner === uid)
+            return team.owner === uid
         },
         getRegistration: async (tournamentId): Promise<IRegistration | null> => {
-            const registration = await database.collection('teams')
+            const registration = await database
+                .collection('teams')
                 .doc(team.id)
                 .collection('registrations')
                 .where('tournament_id', '==', tournamentId)
@@ -190,11 +183,7 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
             }
         },
         getRegistrations: async (): Promise<IRegistration[]> => {
-            const registrations = await database
-                .collection('teams')
-                .doc(team.id)
-                .collection('registrations')
-                .get()
+            const registrations = await database.collection('teams').doc(team.id).collection('registrations').get()
             return Promise.resolve(registrations.docs.map((reg) => ({ id: reg.id, ...reg.data() })))
         },
         async hasQualified(): Promise<boolean> {
@@ -211,34 +200,36 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
                 return Promise.resolve(true)
             }
             return Promise.resolve(false)
-        }
+        },
+        canSendNotification(notification: string): boolean {
+            if (team.notification_settings) {
+                if (team.notification_settings[notification] !== undefined) {
+                    return team.notification_settings[notification]
+                }
+            }
+            return true
+        },
     }
 }
 
 export const Teams = {
     getTeamByUserID: async (userId: string): Promise<ITeam | null> => {
-        const teamWithOwner = await db
-            .collection('teams')
-            .where('owner', '==', userId)
-            .get()
+        const teamWithOwner = await db.collection('teams').where('owner', '==', userId).get()
         if (!teamWithOwner.empty) {
-            const team = teamWithOwner.docs[0]
+            // const team = teamWithOwner.docs[0]
             return {
                 id: teamWithOwner.docs[0].id,
                 ...teamWithOwner.docs[0].data(),
-                role: 'Owner'
+                role: 'Owner',
             } as ITeam
         }
-        const teamWithPlayer = await db
-            .collection('teams')
-            .where('players', 'array-contains', userId)
-            .get()
+        const teamWithPlayer = await db.collection('teams').where('players', 'array-contains', userId).get()
         if (!teamWithPlayer.empty) {
-            const team = teamWithPlayer.docs[0]
+            // const team = teamWithPlayer.docs[0]
             return {
                 id: teamWithPlayer.docs[0].id,
                 ...teamWithPlayer.docs[0].data(),
-                role: 'Player'
+                role: 'Player',
             } as ITeam
         }
         return null
@@ -247,7 +238,8 @@ export const Teams = {
         return db
             .collection('teams')
             .where('owner', '==', userId)
-            .get().then((result) => {
+            .get()
+            .then((result) => {
                 if (result.empty) {
                     return false
                 } else if (result.docs.length > 1) {
@@ -258,61 +250,58 @@ export const Teams = {
             })
     },
     createTeamByUserID: (userId: string) => {
-        return db
-            .collection('teams')
-            .add({
-                name: '',
-                logo: '',
-                owner: userId
-            })
+        return db.collection('teams').add({
+            name: '',
+            logo: '',
+            owner: userId,
+        })
     },
     createTeam: (data: ITeam, user) => {
         if (data.logo === undefined) {
             data.logo = null
         }
-        return db
-            .collection('teams')
-            .add({
-                owner: user.uid,
-                ...data,
-                setup_completed: false
-            })
+        return db.collection('teams').add({
+            owner: user.uid,
+            ...data,
+            setup_completed: false,
+        })
     },
     updateTeam: (id, data: Partial<ITeam>) => {
         return db
             .collection('teams')
             .doc(id)
             .update({
-                ...data
+                ...data,
             })
     },
     getPlayers: (id) => {
-        return db
-            .collection('teams')
-            .doc(id)
-            .collection('players')
-            .get()
+        return db.collection('teams').doc(id).collection('players').get()
     },
     getPlayersCollection: (id) => {
-        return db
-            .collection('teams')
-            .doc(id)
-
-    }
+        return db.collection('teams').doc(id)
+    },
 }
 
 export const uploadLogoToStorage = (logo: File, callback: (url) => void): void => {
     const logoName = `${logo.lastModified}-${logo.name}`
     const uploadTask = storage.ref(`/images/${logoName}`).put(logo)
-    uploadTask.on('state_changes', (snapshot) => {
-        console.log(snapshot)
-    }, (err) => {
-        console.log('error: ', err)
-    }, () => {
-        storage.ref('images').child(logoName).getDownloadURL()
-            .then(fireBaseUrl => {
-                callback(fireBaseUrl)
-                return fireBaseUrl
-            })
-    })
+    uploadTask.on(
+        'state_changes',
+        (snapshot) => {
+            console.log(snapshot)
+        },
+        (err) => {
+            console.log('error: ', err)
+        },
+        () => {
+            storage
+                .ref('images')
+                .child(logoName)
+                .getDownloadURL()
+                .then((fireBaseUrl) => {
+                    callback(fireBaseUrl)
+                    return fireBaseUrl
+                })
+        }
+    )
 }

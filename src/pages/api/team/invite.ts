@@ -12,7 +12,7 @@ export function getHostName(): string {
 }
 
 // todo: some goddamn validation
-export default async function(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function (req: NextApiRequest, res: NextApiResponse): Promise<void> {
     const data = req.body
     const { team_id, team_name, user_email } = data
     const now = new Date()
@@ -23,13 +23,13 @@ export default async function(req: NextApiRequest, res: NextApiResponse): Promis
         team_name,
         email: user_email,
         status: 'INVITED',
-        expires: now.toISOString()
+        expires: now.toISOString(),
     })
     const invitationData = await createdInvitation.get()
 
     const invitation = {
         id: invitationData.id,
-        ...invitationData.data()
+        ...invitationData.data(),
     }
 
     const invitationURL = JSON.stringify({ id: invitationData.id, expires })

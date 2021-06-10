@@ -1,0 +1,19 @@
+extends ../transactional
+
+block icon
+    img(src="assets/check-circle.png" alt="check" width=80)
+
+block title
+    span.title Team Transfer Successful
+
+block subtitle
+    span.subtitle
+        | Your Team&nbsp;
+        b #{team_name}
+        | has been successfully transferred to a user with the email&nbsp;
+        b #{user_email}
+
+block subcontent
+    tr
+        td(align="left")
+            p If this was not authorized by you, or you believe it was done on accident, please email us at support@cclr6.com

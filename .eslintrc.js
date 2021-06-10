@@ -20,6 +20,7 @@ module.exports = {
             version: 'detect',
         },
     },
+    // ignorePatterns: ['./functions/**/*'],
     rules: {
         'no-unused-vars': 'off',
         'react/react-in-jsx-scope': 0,

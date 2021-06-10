@@ -2,7 +2,6 @@ import './firebase'
 import * as firebaseAdmin from 'firebase-admin'
 import decrypted from '../secret/firebase-account'
 
-
 if (!firebaseAdmin.apps.length) {
     const serviceAccount = decrypted
     const firebaseAdminDB = `https://${process.env.FIREBASE_ADMIN_DATABASE}.firebaseio.com`
@@ -10,9 +9,9 @@ if (!firebaseAdmin.apps.length) {
         credential: firebaseAdmin.credential.cert({
             projectId: serviceAccount.project_id,
             clientEmail: serviceAccount.client_email,
-            privateKey: serviceAccount.private_key
+            privateKey: serviceAccount.private_key,
         }),
-        databaseURL: firebaseAdminDB
+        databaseURL: firebaseAdminDB,
     })
 }
 

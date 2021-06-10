@@ -7,11 +7,13 @@ import { IPlayer } from '@lib/models/player'
 import { countryMapping } from '@lib/utils'
 import { sendMail } from '@lib/platform/mail'
 
-export default async function(req: NextApiRequest, res: NextApiResponse) {
+export default async function (req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         const user = await authenticate(req, res)
         const { team_id } = req.body
-        const { query: { tId: toornamentId } } = req
+        const {
+            query: { tId: toornamentId },
+        } = req
 
         const team = await Teams.getTeamByUserID(user.uid)
         if (team.id !== team_id) {
@@ -29,7 +31,7 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
             await toornamentClient.unregisterTeam(participant_id)
             await teamClient.unregisterForTournament(id!)
             // await teamClient.registerForTournament(toornamentId as string, participantId)
-            // await sendMail(req, team.contact_email, 'registration', {
+            // await sendMail( team.contact_email, 'registration', {
             //     cta_url: `https://www.toornament.com/en_US/tournaments/${toornamentId}/information`
             // })
             res.status(200).json({ status: 'success', message: 'unregistered' })
@@ -39,5 +41,4 @@ export default async function(req: NextApiRequest, res: NextApiResponse) {
     } else {
         res.status(405).end()
     }
-
 }
