@@ -1,20 +1,19 @@
 import { getDriveClient } from '@lib/api/drive'
 
-
 interface Rulebook {
-    data: string;
-    modifiedTime: string;
+    data: string
+    modifiedTime: string
 }
 
 export async function getRulebook(): Promise<Rulebook> {
     const driveClient = await getDriveClient()
     const ruleBookResponse = await driveClient.files.export({
         fileId: '1ZSsmHhXRR3OU2c_VnDBlGnujQFLE4JK66wUe5e3zmwA',
-        mimeType: 'text/plain'
+        mimeType: 'text/plain',
     })
     const rulebook = await driveClient.files.get({
         fileId: '1ZSsmHhXRR3OU2c_VnDBlGnujQFLE4JK66wUe5e3zmwA',
-        fields: 'modifiedTime'
+        fields: 'modifiedTime',
     })
     if (rulebook.status === 200 && ruleBookResponse.status === 200) {
         const { data } = ruleBookResponse as { data: string }

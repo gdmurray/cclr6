@@ -55,6 +55,14 @@
   }
 }
 
+.text-subtitle {
+  @apply text-main text-xl font-semibold;
+}
+
+.text-subtitle-description {
+  @apply text-alt-2 text-base font-medium;
+}
+
 .text-line {
   @apply flex flex-row items-center;
 }

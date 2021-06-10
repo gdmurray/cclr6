@@ -1,8 +1,6 @@
 import config from './config'
 import decrypted from '@lib/secret/google-account'
-import { isLocal } from '@lib/platform/env'
 import * as cloudTasks from '@google-cloud/tasks'
-
 
 export const defaultLocals = {
     website: config.base_url,
@@ -10,21 +8,21 @@ export const defaultLocals = {
     twitch: config.socials.twitch,
     discord: config.socials.discord,
     contact_email: config.contact_email,
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
 }
 
-export const sendMail = async (req, emailAddress, template, variables): Promise<void> => {
+export const sendMail = async (emailAddress, template, variables): Promise<void> => {
     if (process.env.NODE_ENV === 'development') {
         await fetch('http://localhost:5001/ccl-content/us-central1/sendEmail', {
             method: 'POST',
             body: JSON.stringify({
                 template: template,
                 emailAddress,
-                variables: { ...variables, ...defaultLocals }
+                variables: { ...variables, ...defaultLocals },
             }),
             headers: {
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
         })
     } else {
         console.log('QUEUING MAIL')
@@ -38,8 +36,8 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
             const client = new cloudTasks.CloudTasksClient({
                 credentials: {
                     client_email: decrypted.client_email,
-                    private_key: decrypted.private_key
-                }
+                    private_key: decrypted.private_key,
+                },
             })
 
             const parent = client.queuePath(projectId, location, queue)
@@ -47,15 +45,17 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
             const httpReq = {
                 httpMethod: cloudTasks.protos.google.cloud.tasks.v2.HttpMethod.POST,
                 url: url,
-                body: Buffer.from(JSON.stringify({
-                    template,
-                    emailAddress,
-                    variables: { ...defaultLocals, ...variables }
-                })).toString('base64'),
+                body: Buffer.from(
+                    JSON.stringify({
+                        template,
+                        emailAddress,
+                        variables: { ...defaultLocals, ...variables },
+                    })
+                ).toString('base64'),
                 oidcToken: { serviceAccountEmail },
                 headers: {
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
             }
 
             const task = { httpRequest: httpReq }
@@ -72,6 +72,4 @@ export const sendMail = async (req, emailAddress, template, variables): Promise<
             return Promise.resolve()
         }
     }
-
 }
-

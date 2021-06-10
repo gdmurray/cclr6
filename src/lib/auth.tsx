@@ -7,30 +7,29 @@ import nookies from 'nookies'
 require('firebase/auth')
 
 interface Twitter {
-    login(redirect): void;
+    login(redirect): void
 
-    link(): void;
+    link(): void
 
-    unlink(): void;
+    unlink(): void
 }
 
 interface AuthContext {
-    user: User | null;
-    loading: boolean;
-    Twitter: Twitter;
+    user: User | null
+    loading: boolean
+    Twitter: Twitter
 
-    signinWithEmail(email, password, redirect?): Promise<void>;
+    signinWithEmail(email, password, redirect?): Promise<void>
 
-    signOut(): void;
+    signOut(): void
 }
-
 
 const authContext = createContext<AuthContext>({
     loading: true,
     user: null,
     Twitter: null,
     signinWithEmail: undefined,
-    signOut: null
+    signOut: null,
 })
 
 export function AuthProvider({ children }: React.PropsWithChildren<React.ReactNode>) {
@@ -43,28 +42,32 @@ export const useAuth = () => {
 }
 
 export interface User {
-    displayName: string | null;
-    email: string;
-    emailVerified: boolean;
-    expirationTime: string;
-    photoUrl: string | null;
-    providerData: UserInfo[];
-    providers: Record<string, UserInfo>;
-    token: string;
-    uid: string;
+    displayName: string | null
+    email: string
+    emailVerified: boolean
+    expirationTime: string
+    photoUrl: string | null
+    providerData: UserInfo[]
+    providers: Record<string, UserInfo>
+    token: string
+    uid: string
 }
 
 function useFirebaseAuth() {
     useEffect(() => {
-        firebase.auth().getRedirectResult().then((result) => {
-            if (result.credential) {
-                // todo: handle additional user info, maybe save username, idk
-                const { user } = result
-                handleUser(user)
-            }
-        }).catch((err) => {
-            console.log('Could not get redirect result: ', err)
-        })
+        firebase
+            .auth()
+            .getRedirectResult()
+            .then((result) => {
+                if (result.credential) {
+                    // todo: handle additional user info, maybe save username, idk
+                    const { user } = result
+                    handleUser(user)
+                }
+            })
+            .catch((err) => {
+                console.log('Could not get redirect result: ', err)
+            })
     }, [])
 
     const [user, setUser] = useState<User | null>(null)
@@ -80,30 +83,31 @@ function useFirebaseAuth() {
 
     const Twitter = {
         link: () => {
-            return firebase.auth().currentUser.linkWithPopup(twitterProvider).then(
-                (result) => {
+            return firebase
+                .auth()
+                .currentUser.linkWithPopup(twitterProvider)
+                .then((result) => {
                     firebase.auth().updateCurrentUser(result.user)
                     handleUser(result.user)
                     Router.reload()
-                }
-            ).catch(err => {
-                console.log(err)
-            })
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
         },
         unlink: () => {
-            return firebase.auth().currentUser.unlink('twitter.com').then(
-                (result) => {
+            return firebase
+                .auth()
+                .currentUser.unlink('twitter.com')
+                .then((result) => {
                     firebase.auth().updateCurrentUser(result)
                     handleUser(result)
                     Router.reload()
-                }
-            )
+                })
         },
         login: () => {
-            return firebase
-                .auth()
-                .signInWithRedirect(new firebase.auth.TwitterAuthProvider())
-        }
+            return firebase.auth().signInWithRedirect(new firebase.auth.TwitterAuthProvider())
+        },
     }
 
     const handleUser = async (rawUser) => {
@@ -119,7 +123,6 @@ function useFirebaseAuth() {
         }
     }
 
-
     const signinWithEmail = (email, password, redirect): Promise<void> => {
         setLoading(true)
         return firebase
@@ -131,7 +134,8 @@ function useFirebaseAuth() {
                 if (redirect) {
                     Router.push(redirect)
                 }
-            }).catch((err) => {
+            })
+            .catch((err) => {
                 setLoading(false)
                 throw err
             })
@@ -160,7 +164,6 @@ function useFirebaseAuth() {
         })
     }, [])
 
-
     // force refresh the token every 10 minutes
     const FORCE_REFRESH_MINUTES = 5
     useEffect(() => {
@@ -173,13 +176,12 @@ function useFirebaseAuth() {
         return () => clearInterval(handle)
     }, [])
 
-
     return {
         user,
         loading,
         Twitter,
         signinWithEmail,
-        signOut
+        signOut,
     }
 }
 
@@ -202,7 +204,6 @@ const formatUser = async (user) => {
         providers: formatProviders(user.providerData),
         photoUrl: user.photoURL,
         token,
-        expirationTime
+        expirationTime,
     }
 }
-

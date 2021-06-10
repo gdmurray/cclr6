@@ -5,56 +5,55 @@ import React, { useEffect, useState } from 'react'
 import { FaBan, FaCheck } from 'react-icons/fa'
 import { SeasonClient } from '@lib/models/season'
 
-
 interface RegistrationStatus {
-    active: boolean;
-    reason: string;
+    active: boolean
+    reason: string
 }
 
-let baseConditions = {
+const baseConditions = {
     eligible: true,
     reason: '-',
     registration: {
         satisfied: true,
-        message: 'Registration is Closed'
+        message: 'Registration is Closed',
     },
     userPermissions: {
         satisfied: true,
-        message: 'User not Allowed to Register'
+        message: 'User not Allowed to Register',
     },
     playerCount: {
         satisfied: true,
-        message: 'Team does not have at least 5 Players'
+        message: 'Team does not have at least 5 Players',
     },
     playerCountry: {
         satisfied: true,
-        message: 'Team is not at least 3/5 Canadian'
+        message: 'Team is not at least 3/5 Canadian',
     },
     paymentSatisfied: {
         satisfied: true,
-        message: 'Team has not paid yet'
+        message: 'Team has not paid yet',
     },
     teamQualified: {
         satisfied: true,
-        message: 'Team has Qualified!'
-    }
+        message: 'Team has Qualified!',
+    },
 }
 
 interface RegistrationCondition {
-    satisfied: boolean;
-    message: string;
+    satisfied: boolean
+    message: string
 }
 
 export interface IEligibility {
-    eligible: boolean;
-    reason: string;
-    registration: RegistrationCondition;
+    eligible: boolean
+    reason: string
+    registration: RegistrationCondition
     // teamRegistered: RegistrationCondition;
-    userPermissions: RegistrationCondition;
-    playerCount: RegistrationCondition;
-    playerCountry: RegistrationCondition;
-    paymentSatisfied: RegistrationCondition;
-    teamQualified: RegistrationCondition;
+    userPermissions: RegistrationCondition
+    playerCount: RegistrationCondition
+    playerCountry: RegistrationCondition
+    paymentSatisfied: RegistrationCondition
+    teamQualified: RegistrationCondition
 }
 
 function useEligibility({ team, user, season }) {
@@ -89,8 +88,7 @@ function useEligibility({ team, user, season }) {
                 checks = not('registration')
             }
 
-
-            if (!(teamClient.canUserRegister(user.uid))) {
+            if (!teamClient.canUserRegister(user.uid)) {
                 checks = not('userPermissions')
                 if (checks.reason === '-') {
                     checks.reason = baseConditions.userPermissions.message
@@ -135,61 +133,59 @@ function useEligibility({ team, user, season }) {
             setLoading(false)
         }
         canTeamRegister()
-
     }, [])
-
 
     const getEligibilityDetails = (): JSX.Element => {
         return (
             <>
                 {!eligibility.teamQualified.satisfied ? (
-                    <div className='registration-detail' aria-label='status-qualifications'>
-                        Team Qualified! <FaCheck className='ml-1 text-success' />
+                    <div className="registration-detail" aria-label="status-qualifications">
+                        Team Qualified! <FaCheck className="ml-1 text-success" />
                     </div>
                 ) : (
                     <>
-                        <div aria-label='status-registration' className='registration-detail'>
-                            Registration is Open <FaCheck className='ml-1 text-success' />
+                        <div aria-label="status-registration" className="registration-detail">
+                            Registration is Open <FaCheck className="ml-1 text-success" />
                         </div>
-                        {eligibility.playerCountry.satisfied ?
-                            (<div className='registration-detail' aria-label='status-team'>
-                                Team is 3/5 Canadian <FaCheck className='ml-1 text-success' />
-                            </div>)
-                            :
-                            (<div className='registration-detail cursor-pointer hover:underline'
-                                  aria-label='status-team'
-                                  onClick={() => push('/team/players')}>
-                                Team is not 3/5 Canadian <FaBan className='ml-1 text-error' />
-                            </div>)
-                        }
-                        {eligibility.paymentSatisfied.satisfied ?
-                            (<div className='registration-detail' aria-label='status-payment'>
-                                Payment was Made <FaCheck className='ml-1 text-success' />
-                            </div>) :
-                            (
-                                <div className='registration-detail cursor-pointer hover:underline'
-                                     aria-label='status-payment'
-                                     onClick={() => push('/team/payments')}>
-                                    Payment Not Made <FaBan className='ml-1 text-error' />
-                                </div>
-                            )
-                        }
+                        {eligibility.playerCountry.satisfied ? (
+                            <div className="registration-detail" aria-label="status-team">
+                                Team is 3/5 Canadian <FaCheck className="ml-1 text-success" />
+                            </div>
+                        ) : (
+                            <div
+                                className="registration-detail cursor-pointer hover:underline"
+                                aria-label="status-team"
+                                onClick={() => push('/team/players')}
+                            >
+                                Team is not 3/5 Canadian <FaBan className="ml-1 text-error" />
+                            </div>
+                        )}
+                        {eligibility.paymentSatisfied.satisfied ? (
+                            <div className="registration-detail" aria-label="status-payment">
+                                Payment was Made <FaCheck className="ml-1 text-success" />
+                            </div>
+                        ) : (
+                            <div
+                                className="registration-detail cursor-pointer hover:underline"
+                                aria-label="status-payment"
+                                onClick={() => push('/team/payments')}
+                            >
+                                Payment Not Made <FaBan className="ml-1 text-error" />
+                            </div>
+                        )}
                     </>
                 )}
             </>
         )
     }
 
-
     const eligibilityChecklist = (): JSX.Element => {
         if (eligibility === undefined) {
-            return <div className='text-sm'>Checking Status...</div>
+            return <div className="text-sm">Checking Status...</div>
         }
         return (
-            <div className='flex flex-col text-right'>
-                <div className='mt-2 text-right flex flex-col items-end space-y-1'>
-                    {getEligibilityDetails()}
-                </div>
+            <div className="flex flex-col text-right">
+                <div className="mt-2 text-right flex flex-col items-end space-y-1">{getEligibilityDetails()}</div>
             </div>
         )
     }
@@ -197,10 +193,9 @@ function useEligibility({ team, user, season }) {
     return {
         eligibility,
         eligibilityChecklist,
-        loading
+        loading,
     }
 }
-
 
 // const getRegistrationDetails = (): { text: string, date: string } => {
 //     if (!client.hasRegistrationStarted()) {

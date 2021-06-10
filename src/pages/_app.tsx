@@ -20,24 +20,22 @@ import OpenGraphMeta from '../components/meta/OpenGraphMeta'
 import config from '@lib/platform/config'
 import { LoadingProvider } from '@components/Layout/useSuspenseNavigation'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
-import { useRouter } from 'next/router'
 import useAnalytics from '@lib/firebase/useAnalytics'
 
 interface SEOProps {
-    title?: string;
-    description?: string;
-    keywords?: string[];
-    url: string;
+    title?: string
+    description?: string
+    keywords?: string[]
+    url: string
 }
 
 interface CCLComponent extends React.FC {
-    SEO?: SEOProps;
-    layout: (p: JSX.Element) => JSX.Element;
+    SEO?: SEOProps
+    layout: (p: JSX.Element) => JSX.Element
 }
 
-
 type CCLAppProps = AppProps & {
-    Component: CCLComponent;
+    Component: CCLComponent
 }
 
 export default function App({ Component, pageProps }: CCLAppProps) {
@@ -46,7 +44,7 @@ export default function App({ Component, pageProps }: CCLAppProps) {
     const layout = Component.layout ?? ((p): JSX.Element => <>{p}</>)
     const paypalOptions = {
         'client-id': process.env.PAYPAL_CLIENT_ID,
-        currency: 'CAD'
+        currency: 'CAD',
     }
     return (
         <ChakraProvider theme={theme}>
@@ -55,16 +53,15 @@ export default function App({ Component, pageProps }: CCLAppProps) {
                     <AuthProvider>
                         {SEO && (
                             <Head>
-                                <title>{SEO.title ? [SEO.title, config.site_title].join(' | ') : config.site_title}
+                                <title>
+                                    {SEO.title ? [SEO.title, config.site_title].join(' | ') : config.site_title}
                                 </title>
                                 <BasicMeta url={SEO.url} {...SEO} />
                                 <TwitterCardMeta url={SEO.url} {...SEO} />
                                 <OpenGraphMeta url={SEO.url} {...SEO} />
                             </Head>
                         )}
-                        <Layout>
-                            {layout(<Component {...pageProps} />)}
-                        </Layout>
+                        <Layout>{layout(<Component {...pageProps} />)}</Layout>
                     </AuthProvider>
                 </LoadingProvider>
             </PayPalScriptProvider>

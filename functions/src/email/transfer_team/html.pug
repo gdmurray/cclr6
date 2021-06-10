@@ -1,0 +1,19 @@
+extends ../transactional
+
+block icon
+    img(src="assets/exchange.png" alt="exchange" width=80)
+
+block title
+    span.title Team Ownership Transfer
+
+block subtitle
+    span.subtitle You've been invited to take ownership of
+        b &nbsp;#{team_name}
+
+block subcontent
+    tr
+        td(align="left")
+            p To view and accept this invitation, navigate to the link below. This link expires in 24 hours, or if the current owner sends a new invite or cancels the current one.
+    tr
+        td(align="center")
+            a.cta-button(href=`${cta_url}`) View Transfer Request

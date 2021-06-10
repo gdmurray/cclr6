@@ -1,10 +1,14 @@
-html
+doctype transitional
+html(xmlns="http://www.w3.org/1999/xhtml")
     head
-        title CCLR6 - #{title}
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        meta(name="x-apple-disable-message-reformatting")
+        meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
+        meta(name="supported-color-schemes" content="only")
+        title CCLR6 - #{subject}
         meta(name="color-scheme" content="only")
         link(rel="stylesheet", href="styles/email.css", data-inline)
         link(rel="shortcut icon" type="image/x-icon" href="assets/ccl-logo-leaf-red.svg")
-
     block scripts
     body
         table(id="main")
@@ -20,7 +24,7 @@ html
                                                 tr
                                                     td(id="logo" align="center")
                                                         img(src="assets/ccl-logo-leaf-white.svg" width=100 alt="logo")
-                                                        div
+                                                        div(id="ccl-logo")
                                                             img(src="assets/ccl_logo.png" width=100 alt="CCLR6")
 
                                         table(id="content" cellpadding=0 cellspacing=0 border=0 bgcolor="#ffffff")
@@ -40,16 +44,16 @@ html
                                                     td(height=20)
                                                 tr
                                                     td(id="footer-links" align="center")
-                                                        a.link-button(href=`${website}` target='_blank' rel='noopener')
-                                                            img(src=`assets/footer/link.svg` width="15" style="top: 1px;")
-                                                        a.link-button(href=`${twitter}` target='_blank' rel='noopener')
-                                                            img(src=`assets/footer/twitter.svg` width="15" style="top: 1px;")
-                                                        a.link-button(href=`${twitch}` target='_blank' rel='noopener')
-                                                            img(src=`assets/footer/twitch.svg` width="15" style="top: 1px;")
-                                                        a.link-button(href=`${discord}` target='_blank' rel='noopener')
-                                                            img(src=`assets/footer/discord.svg` width="15" style="top: 1px;")
-                                                        a.link-button(href=`mailto:${contact_email}` target='_blank' rel='noopener')
-                                                            img(src=`assets/footer/mail.svg` width="15" style="top: 1px;")
+                                                        a.footer-btn(href=`${website}` target='_blank' rel='noopener')
+                                                            img.button(src=`assets/footer/link.svg` width="15" style="top: 2px;")
+                                                        a.footer-btn(href=`${twitter}` target='_blank' rel='noopener')
+                                                            img.button(src=`assets/footer/twitter.svg` width="15" style="top: 2px;")
+                                                        a.footer-btn(href=`${twitch}` target='_blank' rel='noopener')
+                                                            img.button(src=`assets/footer/twitch.svg` width="15" style="top: 2px;")
+                                                        a.footer-btn(href=`${discord}` target='_blank' rel='noopener')
+                                                            img.button(src=`assets/footer/discord.svg` width="15" style="top: 3px;")
+                                                        a.footer-btn(href=`mailto:${contact_email}` target='_blank' rel='noopener')
+                                                            img.button(src=`assets/footer/mail.svg` width="15" style="top: 2px;")
                                                 tr
                                                     td(height=10)
                                                 tr

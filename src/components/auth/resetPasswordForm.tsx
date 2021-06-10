@@ -9,42 +9,39 @@ import EmptyState from '@components/EmptyState'
 import { FaEnvelope } from 'react-icons/fa'
 
 const schema = yup.object().shape({
-    email: yup.string().email().required('Email address is required')
+    email: yup.string().email().required('Email address is required'),
 })
 
 interface ResetPasswordFormInputs {
-    email: string;
+    email: string
 }
 
 type State = {
-    loading: boolean;
-    sent: boolean;
-    error?: string;
+    loading: boolean
+    sent: boolean
+    error?: string
 }
 
-type Action =
-    | { type: 'loading' }
-    | { type: 'success' }
-    | { type: 'error', error: string }
+type Action = { type: 'loading' } | { type: 'success' } | { type: 'error'; error: string }
 
 function reducer(state: State, action: Action): State {
     switch (action.type) {
         case 'loading':
             return {
                 ...state,
-                loading: true
+                loading: true,
             }
         case 'error':
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                error: action.error,
             }
         case 'success':
             return {
                 loading: false,
                 sent: true,
-                error: undefined
+                error: undefined,
             }
     }
 }
@@ -54,7 +51,7 @@ const ResetPasswordForm = (): JSX.Element => {
     const [state, dispatch] = useReducer(reducer, {
         loading: false,
         sent: false,
-        error: undefined
+        error: undefined,
     })
     const { email } = query
     const {
@@ -62,10 +59,10 @@ const ResetPasswordForm = (): JSX.Element => {
         handleSubmit,
         setError,
         formState: { errors, isSubmitting },
-        reset
+        reset,
     } = useForm<ResetPasswordFormInputs>({
         mode: 'onBlur',
-        resolver: yupResolver(schema)
+        resolver: yupResolver(schema),
     })
 
     useEffect(() => {
@@ -74,22 +71,22 @@ const ResetPasswordForm = (): JSX.Element => {
         }
     }, [])
 
-    const onSubmit = data => {
+    const onSubmit = (data) => {
         dispatch({ type: 'loading' })
         const { email } = data
         fetch('/api/auth/password_reset', {
             method: 'POST',
             body: JSON.stringify({ email }),
             headers: {
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
         }).then((result) => {
             if (!result.ok) {
-                result.json().then(response => {
+                result.json().then((response) => {
                     const { message } = response
                     setError('email', {
                         type: 'manual',
-                        message
+                        message,
                     })
                 })
             } else {
@@ -101,30 +98,27 @@ const ResetPasswordForm = (): JSX.Element => {
     if (state.sent) {
         return (
             <div>
-                <EmptyState icon={<FaEnvelope />} text={'Password Reset Email Sent!'}
-                            subtext={'Please check your email folder shortly, if it does not appear, be sure to check the Spam folder'} />
+                <EmptyState
+                    icon={<FaEnvelope />}
+                    text={'Password Reset Email Sent!'}
+                    subtext={
+                        'Please check your email folder shortly, if it does not appear, be sure to check the Spam folder'
+                    }
+                />
             </div>
         )
     }
 
     return (
         <div>
-            <form className='w-full max-w-xl mb-8' onSubmit={handleSubmit(onSubmit)}>
-                <FormControl
-                    id={'email'}
-                    isRequired
-                    isInvalid={!!errors?.email?.message}>
+            <form className="w-full max-w-xl mb-8" onSubmit={handleSubmit(onSubmit)}>
+                <FormControl id={'email'} isRequired isInvalid={!!errors?.email?.message}>
                     <FormLabel>Email</FormLabel>
-                    <Input type='email' name='email' placeholder='Email Address' {...register('email')} />
+                    <Input type="email" name="email" placeholder="Email Address" {...register('email')} />
                     <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
                 </FormControl>
-                <div className='text-right'>
-                    <Button
-                        w={225}
-                        colorScheme='green'
-                        isLoading={isSubmitting}
-                        type='submit'
-                    >
+                <div className="text-right">
+                    <Button w={225} colorScheme="green" isLoading={isSubmitting} type="submit">
                         Send Password Reset
                     </Button>
                 </div>

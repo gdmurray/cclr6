@@ -1,7 +1,7 @@
 import React from 'react'
 import TeamLayout from '@components/teams/layout'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
-import { FaCalendarAlt, FaTrophy } from 'react-icons/fa'
+import { FaTrophy } from 'react-icons/fa'
 import EmptyState from '@components/EmptyState'
 import { ToornamentClient } from '@lib/api/toornament'
 import { Season, SeasonOne } from '@lib/models/season'
@@ -16,8 +16,8 @@ const url = '/team/registration'
 
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-    referral: url
-})(async ({ user }) => {
+    referral: url,
+})(async () => {
     const season = SeasonOne
     const client = new ToornamentClient()
 
@@ -31,8 +31,8 @@ export const getServerSideProps = withAuthSSR({
     season.qualifiers = qualifiers
     return {
         props: {
-            seasons: [season]
-        }
+            seasons: [season],
+        },
     }
 })
 
@@ -45,32 +45,26 @@ First check if EVENT has ended
  */
 
 interface IRegistration {
-    seasons: Season[];
+    seasons: Season[]
 }
 
 function Registration({ seasons }: IRegistration): JSX.Element {
     return (
         <>
-            {seasons.length === 0 && (
-                <EmptyState icon={<FaTrophy />} text={'No Seasons Found!'} />
-            )}
+            {seasons.length === 0 && <EmptyState icon={<FaTrophy />} text={'No Seasons Found!'} />}
             <div className={'max-w-4xl mx-auto items-center'}>
                 {seasons.map((season) => {
-                    return (
-                        <SeasonComponent key={season.name} season={season} />
-                    )
+                    return <SeasonComponent key={season.name} season={season} />
                 })}
             </div>
-
         </>
     )
 }
 
-Registration.SEO =
-    {
-        title: 'Team Registration',
-        url
-    }
+Registration.SEO = {
+    title: 'Team Registration',
+    url,
+}
 
 Registration.layout = (content: React.ReactNode): JSX.Element => {
     return <TeamLayout>{content}</TeamLayout>

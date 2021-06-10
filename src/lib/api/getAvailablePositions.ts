@@ -4,10 +4,9 @@ export async function getAvailablePositions() {
     const sheetClient = await getSheetsClient()
     const spreadsheet = sheetMap[Sheets.STAFF]
     try {
-
         const response = await sheetClient.spreadsheets.values.get({
             spreadsheetId: spreadsheet.id,
-            range: 'A:D'
+            range: 'A:D',
         })
 
         const rows = response.data.values

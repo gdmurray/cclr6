@@ -1,0 +1,22 @@
+extends ../transactional
+
+block icon
+    img(src="assets/paypal.png" alt="paypal" width=80)
+
+block title
+    span.title Payment Successful
+
+block subtitle
+    span.subtitle Your payment has been received and you're ready to go for
+        b &nbsp;#{event_name}!
+
+block subcontent
+    tr
+        td(align="left")
+            p To complete the registration for a Qualifier, navigate to the link below
+    tr
+        td(align="center")
+            a.cta-button(href=`${cta_url}`) Register for Qualifier
+    tr
+        td(align="center")
+            p.disclaimer To no longer receive emails like this, configure your notification settings in Team > Settings

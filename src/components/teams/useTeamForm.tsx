@@ -4,36 +4,41 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import React from 'react'
 import { ITeam, uploadLogoToStorage } from '@lib/models/team'
 
-
 const schema = yup.object().shape({
-    name: yup.string().min(3, 'Name must be at least 3 characters').max(32, 'Name cannot be longer than 32 characters').required('Team Name is Required'),
+    name: yup
+        .string()
+        .min(3, 'Name must be at least 3 characters')
+        .max(32, 'Name cannot be longer than 32 characters')
+        .required('Team Name is Required'),
     contact: yup.string().email().notRequired(),
-    logo: yup.string().nullable()
+    logo: yup.string().nullable(),
 })
 
 interface TeamInformationForm {
-    name: string;
-    contact?: string;
-    logo: string;
+    name: string
+    contact?: string
+    logo: string
 }
 
 interface UseTeamFormProps {
-    uploadRef: React.RefObject<HTMLInputElement>;
-    team?: ITeam;
+    uploadRef: React.RefObject<HTMLInputElement>
+    team?: ITeam
 }
 
 export function useTeamForm({ uploadRef, team }: UseTeamFormProps) {
     const defaultFormProps = {
         mode: 'onBlur' as keyof ValidationMode,
-        resolver: yupResolver(schema)
+        resolver: yupResolver(schema),
     }
-    const formProps = team ? {
-        ...defaultFormProps,
-        defaultValues: { name: team.name, logo: team.logo }
-    } : defaultFormProps
+    const formProps = team
+        ? {
+              ...defaultFormProps,
+              defaultValues: { name: team.name, logo: team.logo },
+          }
+        : defaultFormProps
 
     const methods = useForm<TeamInformationForm>({
-        ...formProps
+        ...formProps,
     })
 
     const { trigger, setValue, setError } = methods
@@ -50,29 +55,29 @@ export function useTeamForm({ uploadRef, team }: UseTeamFormProps) {
             if (sizeInMb > 4) {
                 setError('logo', {
                     type: 'manual',
-                    message: 'Logo cannot be larger than 4mb!'
+                    message: 'Logo cannot be larger than 4mb!',
                 })
                 return resolve(false)
             }
             const reader = new FileReader()
             reader.readAsDataURL(logo)
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const image = new Image()
                 image.src = e.target.result as string
-                image.onload = function() {
+                image.onload = function () {
                     const height = image.naturalHeight || image.width
                     const width = image.naturalWidth || image.width
                     if (height < 200 && width < 200) {
                         setError('logo', {
                             type: 'manual',
-                            message: 'Image must be at least 200x200px'
+                            message: 'Image must be at least 200x200px',
                         })
                         return resolve(false)
                     }
-                    if ((height / width > 1.01) || (height / width) < 0.99) {
+                    if (height / width > 1.01 || height / width < 0.99) {
                         setError('logo', {
                             type: 'manual',
-                            message: 'Logo must be square'
+                            message: 'Logo must be square',
                         })
                         return resolve(false)
                     }
@@ -91,7 +96,7 @@ export function useTeamForm({ uploadRef, team }: UseTeamFormProps) {
                     uploadLogoToStorage(file, (url) => {
                         setValue('logo', url, {
                             shouldDirty: true,
-                            shouldValidate: true
+                            shouldValidate: true,
                         })
                         trigger('logo')
                     })
@@ -102,7 +107,7 @@ export function useTeamForm({ uploadRef, team }: UseTeamFormProps) {
 
     const handleLogoClear = () => {
         setValue('logo', null, {
-            shouldDirty: true
+            shouldDirty: true,
         })
         trigger('logo')
     }
@@ -111,6 +116,6 @@ export function useTeamForm({ uploadRef, team }: UseTeamFormProps) {
         methods,
         handleLogoClick,
         handleFileInput,
-        handleLogoClear
+        handleLogoClear,
     }
 }
