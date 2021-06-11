@@ -281,7 +281,7 @@ export default function Navigation() {
 
     useEffect(() => {
         setRoutes(getRoutes())
-    }, [team, isAdmin])
+    }, [user, team, isAdmin])
 
     // const routes = getRoutes()
 
