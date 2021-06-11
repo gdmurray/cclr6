@@ -228,20 +228,8 @@ export default function Navigation() {
     const { team } = useTeam({ user })
     const [isAdmin, setIsAdmin] = useState<boolean>(false)
 
-    useEffect(() => {
-        fetch('/api/admin/verify', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }).then((result) => {
-            if (result.ok) {
-                setIsAdmin(true)
-            }
-        })
-    }, [])
-
     const getRoutes = (): NavItem[] => {
+        console.log('Fetchin routes')
         if (!features.login) {
             return baseRoutes
         }
@@ -277,7 +265,25 @@ export default function Navigation() {
         }
     }
 
-    const routes = getRoutes()
+    const [routes, setRoutes] = useState<NavItem[]>(getRoutes())
+    useEffect(() => {
+        fetch('/api/admin/verify', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((result) => {
+            if (result.ok) {
+                setIsAdmin(true)
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        setRoutes(getRoutes())
+    }, [team, isAdmin])
+
+    // const routes = getRoutes()
 
     return (
         <>
