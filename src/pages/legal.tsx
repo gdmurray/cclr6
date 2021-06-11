@@ -3,7 +3,7 @@ import React from 'react'
 const Legal = (): JSX.Element => {
     return (
         <div className="page-content max-w-2xl mx-auto">
-            <div className="page-title-sm">Legal</div>
+            <h1 className="page-title-sm">Legal</h1>
             <div className="privacy-policy mt-6 ">
                 <p className="text-center mb-2">
                     <strong>Notice of Non-Affiliation and Disclaimer</strong>
@@ -36,6 +36,7 @@ const Legal = (): JSX.Element => {
 Legal.SEO = {
     url: '/legal',
     title: 'Legal',
+    description: 'CCLR6 Legal declarations for our affiliation with other brands and companies.',
 }
 
 export default Legal

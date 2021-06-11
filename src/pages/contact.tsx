@@ -3,7 +3,7 @@ import React from 'react'
 const Contact = (): JSX.Element => {
     return (
         <div className="page-content">
-            <div className="page-title mb-6">Contact Us</div>
+            <h1 className="page-title mb-6">Contact Us</h1>
             <div className="space-y-4">
                 <div>
                     <div className="text-2xl font-semibold text-main">For General Inquiries:</div>
@@ -46,6 +46,7 @@ const Contact = (): JSX.Element => {
 Contact.SEO = {
     url: '/contact',
     title: 'Contact Us',
+    description: 'Ways to get in contact with the staff of CCLR6',
 }
 
 export default Contact

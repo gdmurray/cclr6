@@ -1,0 +1,31 @@
+
+.faq-item {
+  @apply bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-800;
+  max-height: 76px;
+  transition: max-height .5s ease-out;
+
+  .question {
+    @apply text-base;
+  }
+  .answer {
+    @apply py-2 text-alt-2 text-base font-normal leading-7;
+    display: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 1s, opacity 1s linear;
+    transition-delay: 1s;
+  }
+}
+
+.faq-item.open {
+  max-height: 300px;
+  transition: max-height .25s ease-in;
+
+  .answer {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 1s;
+  }
+  //transition-delay: 0s;
+}

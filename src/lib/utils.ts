@@ -33,3 +33,5 @@ export function getExpires(hours: number): string {
     now.setHours(now.getHours() + hours)
     return now.toISOString()
 }
+
+export const LINE_EXPRESSION = /\r\n|\n\r|\n|\r/g

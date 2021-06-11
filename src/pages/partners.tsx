@@ -6,7 +6,7 @@ import { IconButton, Image, Link } from '@chakra-ui/react'
 const Partners = () => {
     return (
         <div className="page-content mb-6">
-            <div className="page-title mb-6">CCLR6 Partners</div>
+            <h1 className="page-title mb-6">CCLR6 Partners</h1>
             <div className="text-center max-w-6xl mx-auto pt-12 pb-24">
                 {partners.map((partner) => {
                     return (
@@ -122,6 +122,7 @@ const Partners = () => {
 Partners.SEO = {
     title: 'Partners',
     url: '/partners',
+    description: 'Partners who are dedicated to developing the Canadian Rainbow Six Esports Scene.',
 }
 
 export default Partners

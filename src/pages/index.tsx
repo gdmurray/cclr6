@@ -87,6 +87,7 @@ const Index = (): JSX.Element => {
 Index.SEO = {
     url: '/',
     title: 'Home',
+    description: 'Canada Contenders League is the newest chapter in Canadian Rainbow Six Esports',
 }
 
 export default Index

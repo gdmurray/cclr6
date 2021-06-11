@@ -54,7 +54,7 @@ const Position = ({ name, description, link }: IPosition) => {
 const Positions = ({ positions = [] }: { positions: IPosition[] }) => {
     return (
         <div className="page-content">
-            <div className="page-title mb-6">CCLR6 Positions</div>
+            <h1 className="page-title mb-6">CCLR6 Positions</h1>
             <div className="px-6 space-y-4 py-8 max-w-7xl mx-auto">
                 {positions.map((position) => {
                     return <Position key={position.name} {...position} />
@@ -67,5 +67,6 @@ const Positions = ({ positions = [] }: { positions: IPosition[] }) => {
 Positions.SEO = {
     url: '/positions',
     title: 'Positions',
+    description: 'Get involved with CCLR6 and Canadian Rainbow Six Esports and apply to these positions.',
 }
 export default Positions

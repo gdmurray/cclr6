@@ -3,10 +3,10 @@ import { getRulebook } from '@lib/api/getRulebook'
 import { GetStaticProps } from 'next'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
+import { LINE_EXPRESSION } from '@lib/utils'
 
 dayjs.extend(LocalizedFormat)
 
-const LINE_EXPRESSION = /\r\n|\n\r|\n|\r/g
 const SUBSECTION_EXPRESSION = /^\d+\.\d+/g
 
 interface RuleItem {
@@ -121,7 +121,7 @@ interface RulesProps {
 }
 
 const useContents = true
-const Rules = ({ content, tableOfContents, modifiedTime }: RulesProps): JSX.Element => {
+const Rulebook = ({ content, tableOfContents, modifiedTime }: RulesProps): JSX.Element => {
     const getTableOfContents = () => {
         if (useContents) {
             return (
@@ -181,18 +181,9 @@ const Rules = ({ content, tableOfContents, modifiedTime }: RulesProps): JSX.Elem
     )
 }
 
-Rules.SEO = {
-    url: '/rules',
+Rulebook.SEO = {
+    url: '/rulebook',
     title: 'Rulebook',
 }
 
-export default Rules
-
-// {content.filter(elem => elem.id !== undefined).map(({ id, className, content }) => {
-//     if (className === 'section') {
-//         return <a className='table-section' key={id} href={`#${id}`}>{content}</a>
-//     }
-//     if (className === 'subsection') {
-//         return <a className='table-subsection' key={id} href={`#${id}`}>{content}</a>
-//     }
-// })}
+export default Rulebook

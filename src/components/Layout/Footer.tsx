@@ -71,7 +71,11 @@ const FooterData: FooterData[] = [
         links: [
             {
                 name: 'Rulebook',
-                link: '/rules',
+                link: '/rulebook',
+            },
+            {
+                name: 'FAQ',
+                link: '/faq',
             },
             {
                 name: 'Contact',

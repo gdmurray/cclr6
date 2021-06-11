@@ -5,7 +5,7 @@ import { Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
 const Watch = () => {
     return (
         <div className="page-content">
-            <div className="page-title">Watch CCL</div>
+            <h1 className="page-title">Watch CCL</h1>
             <div>
                 <Tabs className="watch-tabs focus:outline-none" variant="soft-rounded" colorScheme="red">
                     <div className="flex py-4 items-start md:items-center flex-col md:flex-row justify-between">
@@ -49,7 +49,8 @@ const Watch = () => {
 }
 
 Watch.SEO = {
-    title: 'Watch CCLR6',
+    title: 'Watch',
     url: '/watch',
+    description: 'Watch CCLR6 Live or catch the replays of all of our Rainbow Six Esports games',
 }
 export default Watch

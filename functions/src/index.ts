@@ -1,50 +1,8 @@
 import * as functions from "firebase-functions";
 import {sendMail, verifyCloudTaskRequest} from "./tasks";
+import * as firestore from "@google-cloud/firestore";
+const firestoreClient = new firestore.v1.FirestoreAdminClient();
 
-// const cors = require('cors')({ origin: true })
-//
-// const anonymousTemplates = ['forgot_password']
-
-
-// export const triggerEmail = functions.https.onRequest(async (req, res) => {
-//     cors(req, res, async () => {
-//         if (req.method === 'POST') {
-//             try {
-//                 const { template } = req.body
-//                 if (templates.indexOf(template) !== -1) {
-//                     if (anonymousTemplates.indexOf(template) === -1) {
-//                         const authToken = validateHeader(req)
-//                         if (!authToken) {
-//                             res.status(403).send('Not authorized. Missing auth Token')
-//                             return
-//                         }
-//
-//                         const uid = await decodeAuthToken(authToken)
-//                         if (uid === undefined) {
-//                             res.status(403).send('Invalid or expired token.')
-//                             return
-//                         }
-//                     }
-//                     const request = req.body
-//                     await dispatchGCloudTask(request)
-//                     res.status(200).send({ result: 'Email Sent' })
-//                 } else {
-//                     res.status(404).send({ result: 'No Template with that name found' })
-//                 }
-//
-//             } catch (error) {
-//                 functions.logger.error('Error: ', error)
-//                 res.status(500).send({ result: 'Error occured during email' })
-//             }
-//         } else {
-//             res.status(405).end()
-//         }
-//
-//     })
-// })
-
-
-// const cors = require('cors')({ origin: true })
 export const sendEmail = functions.https.onRequest(async (req, res) => {
     try {
         if (process.env.FUNCTIONS_EMULATOR !== "true") {
@@ -59,10 +17,28 @@ export const sendEmail = functions.https.onRequest(async (req, res) => {
         res.status(500).json({result: error});
     }
 });
+
+export const scheduledFirestoreExport = functions.pubsub.schedule("every 12 hours").onRun((context) => {
+    const bucket = "gs://ccl-content.appspot.com";
+    const projectId = "ccl-content";
+
+    const databaseName = firestoreClient.databasePath(projectId, "(default)");
+
+    return firestoreClient.exportDocuments({
+        name: databaseName,
+        outputUriPrefix: bucket,
+        collectionIds: [],
+    }).then((responses) => {
+        const response = responses[0];
+        functions.logger.info(`Operation Name: ${response["name"]}`);
+    }).catch((err) => {
+        functions.logger.error(`Export operation failed: ${err}`);
+        throw new Error("Export Operation Failed");
+    });
+});
 // https://firebase.google.com/docs/functions/typescript
 
 // import { google } from 'googleapis'
-
 
 //
 // export const createNewTeam = functions.database.ref('/teams').onCreate(async data => {

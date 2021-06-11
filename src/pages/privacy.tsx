@@ -3,7 +3,7 @@ import React from 'react'
 const Privacy = () => {
     return (
         <div className="page-content text-content mb-24">
-            <div className="page-title-sm mb-5">Canada Contenders League Privacy Policy</div>
+            <h1 className="page-title-sm mb-5">Canada Contenders League Privacy Policy</h1>
             <div className="privacy-policy">
                 <div className="text-xs text-error font-semibold leading-4 tracking-tight mb-5">
                     This Privacy Policy is a Work In Progress and is subject to change until the start of the league
@@ -148,6 +148,7 @@ const Privacy = () => {
 Privacy.SEO = {
     url: '/privacy',
     title: 'Privacy Policy',
+    description: 'Privacy Policy of using CCLR6',
 }
 
 export default Privacy

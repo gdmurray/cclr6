@@ -1,5 +1,5 @@
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
-    enabled: process.env.ANALYZE === 'true'
+    enabled: process.env.ANALYZE === 'true',
 })
 
 module.exports = withBundleAnalyzer({
@@ -21,11 +21,11 @@ module.exports = withBundleAnalyzer({
         SES_ACCESS_KEY_ID: process.env.SES_ACCESS_KEY_ID,
         SES_ACCESS_KEY_SECRET: process.env.SES_ACCESS_KEY_SECRET,
         COSMIC_BUCKET_SLUG: process.env.COSMIC_BUCKET_SLUG,
-        COSMIC_READ_KEY: process.env.COSMIC_READ_KEY
+        COSMIC_READ_KEY: process.env.COSMIC_READ_KEY,
     },
     buildDir: 'out',
     future: {
-        webpack5: true
+        webpack5: true,
     },
     async headers() {
         return [
@@ -34,10 +34,18 @@ module.exports = withBundleAnalyzer({
                 headers: [
                     {
                         key: 'cache-control',
-                        value: 's-maxage=3600'
-                    }
-                ]
-            }
+                        value: 's-maxage=3600',
+                    },
+                ],
+            },
+        ]
+    },
+    async rewrites() {
+        return [
+            {
+                source: '/rules',
+                destination: '/rulebook',
+            },
         ]
     },
     webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
@@ -53,14 +61,14 @@ module.exports = withBundleAnalyzer({
                 {
                     test: /\.yml$/,
                     type: 'json',
-                    use: 'yaml-loader'
+                    use: 'yaml-loader',
                 },
                 {
                     test: /\.svg$/,
-                    use: '@svgr/webpack'
-                }
+                    use: '@svgr/webpack',
+                },
             ]
         )
         return config
-    }
+    },
 })
