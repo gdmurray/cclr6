@@ -7,7 +7,6 @@ import '../../public/styles/global.css'
 import '../styles/chakra.css'
 import '../styles/base.scss'
 
-// import {AuthProvider} from "../lib/auth";
 import Layout from '../components/Layout/Layout'
 
 import { ChakraProvider } from '@chakra-ui/react'

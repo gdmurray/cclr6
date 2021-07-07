@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { getRulebook } from '@lib/api/getRulebook'
 import { GetStaticProps } from 'next'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
 import { LINE_EXPRESSION } from '@lib/utils'
+import { FaLink } from 'react-icons/fa'
+import { Tooltip, useClipboard, useToast } from '@chakra-ui/react'
+
+import { getHostName } from '@lib/utils'
 
 dayjs.extend(LocalizedFormat)
 
@@ -120,46 +124,76 @@ interface RulesProps {
     tableOfContents: TableBlock[]
 }
 
-const useContents = true
 const Rulebook = ({ content, tableOfContents, modifiedTime }: RulesProps): JSX.Element => {
-    const getTableOfContents = () => {
-        if (useContents) {
-            return (
+    const [copyValue, setCopyValue] = useState<string>()
+    const { hasCopied, onCopy } = useClipboard(copyValue)
+    const toast = useToast()
+    useEffect(() => {
+        if (copyValue && !hasCopied) {
+            onCopy()
+            toast({
+                title: 'Copied to Clipboard!',
+                duration: 1000,
+                position: 'top',
+            })
+        }
+    }, [copyValue])
+
+    const copyLink = (id) => {
+        const link = `${getHostName()}/rulebook#${id}`
+        setCopyValue(link)
+    }
+    return (
+        <div className="page-content">
+            <div className="rulebook text-content">
                 <>
                     <p className={content[0].className}>{content[0].content}</p>
                     <div className="table-of-contents">
                         <div className="table-title">Table of Contents</div>
                         <div className="table-content">
-                            {tableOfContents.map((section) => {
+                            {tableOfContents.map((section, idx) => {
+                                const sectionTitle = section.section.content.split('-')
+                                sectionTitle.shift()
                                 return (
                                     <div key={section.section.id} className="table-block">
                                         <a className="table-section" href={`#${section.section.id}`}>
-                                            {section.section.content}
+                                            {idx + 1}. {sectionTitle.join(' ')}
                                         </a>
-                                        <div className="table-subsections">
-                                            {section.subsections.map((subsection) => {
-                                                return (
-                                                    <a key={subsection.id} href={`#${subsection.id}`}>
-                                                        {subsection.content}
-                                                    </a>
-                                                )
-                                            })}
-                                        </div>
                                     </div>
                                 )
                             })}
                         </div>
                     </div>
                 </>
-            )
-        }
-    }
-    return (
-        <div className="page-content">
-            <div className="rulebook text-content">
-                {getTableOfContents()}
                 {content.map(({ id, className, content }, index) => {
                     const key = `line-${index}`
+                    if (className === 'section') {
+                        return (
+                            <h1 id={id} key={key} className={className}>
+                                {content}
+                            </h1>
+                        )
+                    }
+                    if (className === 'subsection') {
+                        return (
+                            <h2 id={id} key={key} className={className}>
+                                {content}{' '}
+                                <Tooltip
+                                    label="Copy to Clipboard"
+                                    placement="right"
+                                    colorScheme="blackAlpha"
+                                    hasArrow={true}
+                                >
+                                    <span>
+                                        <FaLink
+                                            className="ml-2 text-sm cursor-pointer hover:text-primary transition-colors duration-150"
+                                            onClick={() => copyLink(id)}
+                                        />
+                                    </span>
+                                </Tooltip>
+                            </h2>
+                        )
+                    }
                     return (
                         <p id={id} key={key} className={className}>
                             {content}

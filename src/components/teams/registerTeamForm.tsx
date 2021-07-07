@@ -57,7 +57,7 @@ export default function RegisterTeamForm(): JSX.Element {
     }
 
     const onSubmit = (data) => {
-        const contactEmail = data.contact ? data.contact : user.email!
+        const contactEmail = data.contact_email ? data.contact_email : user.email!
         handleCreate({
             name: data.name,
             logo: data.logo,
@@ -114,11 +114,11 @@ export default function RegisterTeamForm(): JSX.Element {
                             </InputGroup>
                             <FormErrorMessage>{errors?.name?.message}</FormErrorMessage>
                         </FormControl>
-                        <FormControl id="contact">
+                        <FormControl id="contact_email">
                             <FormLabel>Contact Email</FormLabel>
                             <InputGroup>
                                 <InputLeftElement pointerEvents="none" children={<FaEnvelope />} />
-                                <Input placeholder="Email Address" type="email" {...register('contact')} />
+                                <Input placeholder="Email Address" type="email" {...register('contact_email')} />
                             </InputGroup>
                             <FormHelperText>Leave Blank for your email</FormHelperText>
                         </FormControl>

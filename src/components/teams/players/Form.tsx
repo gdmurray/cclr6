@@ -4,69 +4,11 @@ import { Teams } from '@lib/models/team'
 import { IPlayer } from '@lib/models/player'
 import { FormProvider, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
 import { Button, useRadioGroup, useToast } from '@chakra-ui/react'
 import Player from '@components/teams/players/Player'
-import { findWithAttr } from '@lib/utils'
+import { findWithAttr, isPlayerEqual } from '@lib/utils'
 import { LockState } from '../../../pages/team/players'
-
-yup.addMethod(yup.array, 'unique', function (message, mapper = (a) => a) {
-    return this.test('unique', message, function (list) {
-        const listWithValues = list.map(mapper).filter((val) => val != '')
-        if (listWithValues.length > 0) {
-            const counts = listWithValues.reduce((acc: Record<string, number>, val: string, _idx) => {
-                if (!(val in acc)) {
-                    acc[val] = 1
-                } else {
-                    acc[val] += 1
-                }
-                return acc
-            }, {})
-            const indexes = Object.keys(counts)
-                .filter((key) => counts[key] > 1)
-                .reduce((acc: number[][], val: string) => {
-                    const values = findWithAttr(list, 'email', val)
-                    acc.push(values)
-                    return acc
-                }, [])
-            if (indexes.length > 0) {
-                const [idx] = indexes
-
-                const [_idx, errorIndex] = idx
-                return this.createError({
-                    path: `players.${errorIndex}.email`,
-                    message: 'Cannot use the same email address',
-                })
-            }
-        }
-        return true
-    })
-})
-
-const isPlayerEqual = (updatedPlayer, originalPlayer): boolean => {
-    const fields = ['country', 'email', 'id', 'is_captain', 'uplay']
-    return !fields.some((field) => updatedPlayer[field] != originalPlayer[field])
-}
-
-const schema = yup.object().shape({
-    players: yup
-        .array()
-        .of(
-            yup.object().shape({
-                email: yup.string().email('Must be a Valid Email'),
-                uplay: yup.string().when('email', {
-                    is: (email) => email !== '' && email.length > 0,
-                    then: yup
-                        .string()
-                        .required('Must include players Uplay')
-                        .min(1, "Player's Uplay must be longer than 1 character")
-                        .max(16, "Player's Uplay must be shorter than 16 characters"),
-                }),
-                is_captain: yup.boolean(),
-            })
-        )
-        .unique('duplicate email', (a) => a.email),
-})
+import { getDefaultCaptain, playerFormSchema, TransactionResult } from '@lib/playerform'
 
 export interface PlayerFormItem {
     id?: string
@@ -74,6 +16,8 @@ export interface PlayerFormItem {
     uplay: string
     is_captain: boolean
     required: boolean
+    twitter?: string
+    twitch?: string
 }
 
 interface PlayersForm {
@@ -82,14 +26,19 @@ interface PlayersForm {
     lockState: LockState
 }
 
-export default function PlayerForm({ players, callback, lockState }: PlayersForm) {
+interface IPlayersForm {
+    players: PlayerFormItem[]
+}
+
+const PlayerForm = ({ players, callback, lockState }: PlayersForm) => {
+    console.log('PLAYERS: ', players)
     const teamContext = useContext(TeamContext)
     const { team } = teamContext
     const toast = useToast({ duration: 1000, position: 'top-right' })
 
-    const methods = useForm<PlayersForm>({
+    const methods = useForm<IPlayersForm>({
         mode: 'onTouched',
-        resolver: yupResolver(schema),
+        resolver: yupResolver(playerFormSchema),
     })
 
     const {
@@ -100,19 +49,9 @@ export default function PlayerForm({ players, callback, lockState }: PlayersForm
         setError,
     } = methods
 
-    const getDefaultCaptain = () => {
-        const defaultCaptain = 'players.0'
-        for (let i = 0; i < players.length; i += 1) {
-            if (players[i].is_captain) {
-                return `players.${i}`
-            }
-        }
-        return defaultCaptain
-    }
-
     const { getRootProps, getRadioProps } = useRadioGroup({
         name: 'captain',
-        defaultValue: getDefaultCaptain(),
+        defaultValue: getDefaultCaptain(players),
         onChange: (value) => {
             const { players } = getValues()
             const idx = findWithAttr(players, 'is_captain', true)
@@ -129,11 +68,6 @@ export default function PlayerForm({ players, callback, lockState }: PlayersForm
     })
 
     const captainGroup = getRootProps()
-
-    interface TransactionResult {
-        player: IPlayer
-        status: 'CREATED' | 'UPDATED' | 'REMOVED'
-    }
 
     const upsertPlayer = (ref, player): Promise<TransactionResult> => {
         return new Promise((resolve) => {
@@ -189,12 +123,14 @@ export default function PlayerForm({ players, callback, lockState }: PlayersForm
         const doSave = true
         if (isValid && dirtyFields.players) {
             const { players: formStatePlayers } = data
+            console.log(formStatePlayers)
             const validPlayers = formStatePlayers
                 .map((p, i) => ({ ...p, index: i }))
                 .filter((player) => !isPlayerEqual(player, players[player.index]))
                 .filter((player) => player.email !== '')
                 .filter((player) => typeof dirtyFields?.players[player.index] !== 'undefined')
 
+            console.log('VALID PLAYERS: ', validPlayers)
             const removedPlayers = formStatePlayers
                 .map((p, i) => ({ ...p, index: i }))
                 .filter(
@@ -309,3 +245,5 @@ export default function PlayerForm({ players, callback, lockState }: PlayersForm
         </div>
     )
 }
+
+export default PlayerForm

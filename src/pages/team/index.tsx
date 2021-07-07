@@ -132,6 +132,40 @@ function Team(): JSX.Element {
                                 />
                                 <FormErrorMessage>{errors?.name?.message}</FormErrorMessage>
                             </FormControl>
+                            <FormControl
+                                id="contact_email"
+                                isRequired={true}
+                                isInvalid={!!errors?.contact_email?.message}
+                            >
+                                <FormLabel>Contact Email</FormLabel>
+                                <Input
+                                    readOnly={!canEdit()}
+                                    {...register('contact_email')}
+                                    defaultValue={team.contact_email}
+                                    width={300}
+                                    size="lg"
+                                    px={5}
+                                    py={5}
+                                    variant="flushed"
+                                    placeholder={'Team Contact Email'}
+                                />
+                                <FormErrorMessage>{errors?.contact_email?.message}</FormErrorMessage>
+                            </FormControl>
+                            <FormControl id="twitter" isRequired={true} isInvalid={!!errors?.twitter?.message}>
+                                <FormLabel>Team Twitter</FormLabel>
+                                <Input
+                                    readOnly={!canEdit()}
+                                    {...register('twitter')}
+                                    defaultValue={team.twitter}
+                                    width={300}
+                                    size="lg"
+                                    px={5}
+                                    py={5}
+                                    variant="flushed"
+                                    placeholder={'Team Twitter Acount'}
+                                />
+                                <FormErrorMessage>{errors?.twitter?.message}</FormErrorMessage>
+                            </FormControl>
                         </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>

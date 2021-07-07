@@ -3,8 +3,7 @@ import authenticate from '@lib/api/authenticate'
 import { Teams } from '@lib/models/team'
 import { adminFireStore } from '@lib/firebase/admin'
 import dayjs from 'dayjs'
-import { getExpires } from '@lib/utils'
-import { getHostName } from './invite'
+import { getExpires, getHostName } from '@lib/utils'
 import { sendMail } from '@lib/platform/mail'
 
 // Turns existing transfers to CANCELLED

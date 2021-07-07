@@ -171,6 +171,19 @@ const MobileNav = ({ routes }: { routes: NavItem[] }) => {
 
 const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
     const router = useRouter()
+
+    function getActive(href: string): boolean {
+        if (router.pathname === href) {
+            return true
+        }
+        if (href) {
+            if (href !== '/' && router.pathname.startsWith(href)) {
+                return true
+            }
+        }
+        return false
+    }
+
     return (
         <Flex display={desktopScreen} className="desktop">
             <>
@@ -191,9 +204,7 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
             </>
             <div className="flex flex-row space-x-4">
                 {routes.map((route) => {
-                    return (
-                        <DesktopNavigationItem key={route.label} {...route} active={router.pathname === route.href} />
-                    )
+                    return <DesktopNavigationItem key={route.label} {...route} active={getActive(route.href)} />
                 })}
             </div>
         </Flex>
@@ -206,6 +217,10 @@ const baseRoutes: NavItem[] = [
         href: '/',
     },
     {
+        label: 'Season One',
+        href: '/seasons/one',
+    },
+    {
         label: 'Partners',
         href: '/partners',
     },
@@ -214,12 +229,8 @@ const baseRoutes: NavItem[] = [
         href: '/watch',
     },
     {
-        label: 'Blog',
+        label: 'Announcements',
         href: '/posts',
-    },
-    {
-        label: 'Get Involved',
-        href: '/positions',
     },
 ]
 
@@ -229,7 +240,6 @@ export default function Navigation() {
     const [isAdmin, setIsAdmin] = useState<boolean>(false)
 
     const getRoutes = (): NavItem[] => {
-        console.log('Fetchin routes')
         if (!features.login) {
             return baseRoutes
         }

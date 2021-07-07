@@ -10,13 +10,15 @@ const schema = yup.object().shape({
         .min(3, 'Name must be at least 3 characters')
         .max(32, 'Name cannot be longer than 32 characters')
         .required('Team Name is Required'),
-    contact: yup.string().email().notRequired(),
+    twitter: yup.string().max(15, 'Twitter handle cannot be longer than 15 characters').notRequired(),
+    contact_email: yup.string().email().notRequired(),
     logo: yup.string().nullable(),
 })
 
 interface TeamInformationForm {
     name: string
-    contact?: string
+    contact_email?: string
+    twitter?: string
     logo: string
 }
 
@@ -33,7 +35,12 @@ export function useTeamForm({ uploadRef, team }: UseTeamFormProps) {
     const formProps = team
         ? {
               ...defaultFormProps,
-              defaultValues: { name: team.name, logo: team.logo },
+              defaultValues: {
+                  name: team.name,
+                  logo: team.logo,
+                  twitter: team.twitter,
+                  contact_email: team.contact_email,
+              },
           }
         : defaultFormProps
 

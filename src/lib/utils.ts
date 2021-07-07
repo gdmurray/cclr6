@@ -35,3 +35,15 @@ export function getExpires(hours: number): string {
 }
 
 export const LINE_EXPRESSION = /\r\n|\n\r|\n|\r/g
+
+export function getHostName(): string {
+    if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:3001'
+    }
+    return 'https://cclr6.com'
+}
+
+export const isPlayerEqual = (updatedPlayer, originalPlayer): boolean => {
+    const fields = ['country', 'email', 'id', 'is_captain', 'uplay', 'twitter', 'twitch']
+    return !fields.some((field) => updatedPlayer[field] != originalPlayer[field])
+}

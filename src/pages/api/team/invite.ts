@@ -1,13 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { adminFireStore } from '@lib/firebase/admin'
 
-export function getHostName(): string {
-    if (process.env.NODE_ENV === 'development') {
-        return 'http://localhost:3001'
-    }
-    return 'https://cclr6.com'
-}
-
 // todo: some goddamn validation
 export default async function (req: NextApiRequest, res: NextApiResponse): Promise<void> {
     const data = req.body

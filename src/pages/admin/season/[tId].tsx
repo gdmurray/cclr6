@@ -9,22 +9,19 @@ import { FaCheck, FaTimes } from 'react-icons/fa'
 import React from 'react'
 
 interface TeamRegistrations extends ITeam {
-    registered: boolean;
-    registration: IRegistration;
+    registered: boolean
+    registration: IRegistration
 }
 
 export const getServerSideProps = withAuthSSR({
-    whenNotAdmin: AuthAction.REDIRECT_TO_APP
+    whenNotAdmin: AuthAction.REDIRECT_TO_APP,
 })(async (ctx) => {
-    const { query: { tId } } = ctx
-    const registrations = await adminFireStore
-        .collectionGroup('registrations')
-        .where('tournament_id', '==', tId)
-        .get()
+    const {
+        query: { tId },
+    } = ctx
+    const registrations = await adminFireStore.collectionGroup('registrations').where('tournament_id', '==', tId).get()
 
-    const teams = await adminFireStore
-        .collection('teams')
-        .get()
+    const teams = await adminFireStore.collection('teams').get()
 
     // const registrationMap = getQueryKeyMap(registrations.docs)
 
@@ -32,7 +29,7 @@ export const getServerSideProps = withAuthSSR({
         const teamId = doc.ref.path.split('/')[1]
         acc[teamId] = {
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
         }
         return acc
     }, {})
@@ -43,15 +40,15 @@ export const getServerSideProps = withAuthSSR({
         let body: Partial<TeamRegistrations> = {
             id: team.id,
             registered: false,
-            ...team.data()
+            ...team.data(),
         }
         if (registeredTeams.indexOf(team.id) !== -1) {
             body = {
                 ...body,
                 registered: true,
                 registration: {
-                    ...registrationMap[team.id]
-                }
+                    ...registrationMap[team.id],
+                },
             }
         }
         acc[team.id] = body
@@ -61,8 +58,8 @@ export const getServerSideProps = withAuthSSR({
     const teamData = Object.values(teamMap)
     return {
         props: {
-            data: teamData
-        }
+            data: teamData,
+        },
     }
 })
 
@@ -72,7 +69,7 @@ const AdminTournament = ({ data }): JSX.Element => {
         {
             title: 'Team Name',
             dataIndex: 'name',
-            key: 'name'
+            key: 'name',
         },
         {
             title: 'registered',
@@ -80,26 +77,26 @@ const AdminTournament = ({ data }): JSX.Element => {
             key: 'registered',
             render: (registered: boolean): JSX.Element => {
                 if (registered) {
-                    return <FaCheck className='text-success' />
+                    return <FaCheck className="text-success" />
                 } else {
-                    return <FaTimes className='text-warning' />
+                    return <FaTimes className="text-warning" />
                 }
-            }
+            },
         },
         {
             title: 'Actions',
             key: 'actions',
             render: (record) => {
-                return (
-                    <Button type='button'>Register</Button>
-                )
-            }
-        }
+                return <Button type="button">Register</Button>
+            },
+        },
     ]
-    return <div>
-        <div>STILL A WIP, NOT FUNCTIONAL</div>
-        <Table rowKey={(record) => record.id} className='data-table' columns={columns} data={data} />
-    </div>
+    return (
+        <div>
+            <div>STILL A WIP, NOT FUNCTIONAL</div>
+            <Table rowKey={(record) => record.id} className="data-table" columns={columns} data={data} />
+        </div>
+    )
 }
 
 AdminTournament.layout = (content: React.ReactNode): JSX.Element => {

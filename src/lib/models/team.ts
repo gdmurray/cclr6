@@ -16,6 +16,7 @@ export interface ITeam {
         payment: boolean
         qualification: boolean
     }
+    twitter?: string
 }
 
 export interface IRegistration {
@@ -279,6 +280,9 @@ export const Teams = {
     },
     getPlayersCollection: (id) => {
         return db.collection('teams').doc(id)
+    },
+    getTeams: () => {
+        return db.collection('teams').get()
     },
 }
 

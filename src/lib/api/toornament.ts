@@ -26,7 +26,7 @@ const tournaments = [
     },
 ]
 
-const data: Tournament[] = [
+const tournamentData: Tournament[] = [
     {
         name: 'CCL Open Qualifier #1',
         full_name: 'CCL Stage 1 Open Qualifier #1',
@@ -105,13 +105,13 @@ const data: Tournament[] = [
     },
 ]
 
-interface ToornamentAPI {
-    getTournament(id: string): Promise<Tournament>
-
-    getTournaments(): Promise<Tournament[]>
-
-    registerTeam(id: string, body: RegisterParticipants): Promise<void>
-}
+// interface ToornamentAPI {
+//     getTournament(id: string): Promise<Tournament>
+//
+//     getTournaments(): Promise<Tournament[]>
+//
+//     registerTeam(id: string, body: RegisterParticipants): Promise<void>
+// }
 
 interface OAuth2Result {
     expires_in: number
@@ -136,7 +136,7 @@ export class ToornamentClient {
     private auth: OAuth2Result
     public authURL = 'https://api.toornament.com/oauth/v2/token'
     public url = 'https://api.toornament.com/organizer/v2'
-    public scope = 'organizer:view organizer:participant organizer:registration'
+    public scope = 'organizer:view organizer:participant organizer:registration organizer:result'
 
     constructor() {}
 
@@ -147,6 +147,7 @@ export class ToornamentClient {
     private headers() {
         return {
             'X-Api-Key': process.env.TOORNAMENT_API_KEY,
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${this.auth.access_token}`,
         }
     }
@@ -226,7 +227,7 @@ export class ToornamentClient {
             const toornament = await response.json()
             return Promise.resolve(toornament)
         } else {
-            return Promise.resolve(data[parseInt(id, 10) - 1])
+            return Promise.resolve(tournamentData[parseInt(id, 10) - 1])
         }
     }
 
@@ -236,7 +237,6 @@ export class ToornamentClient {
             method: 'POST',
             headers: {
                 ...this.headers(),
-                'Content-Type': 'application/json',
             },
             body: JSON.stringify(body),
         })
@@ -251,7 +251,6 @@ export class ToornamentClient {
             method: 'DELETE',
             headers: {
                 ...this.headers(),
-                'Content-Type': 'application/json',
             },
         })
         console.log(response)
@@ -269,7 +268,6 @@ export class ToornamentClient {
             headers: {
                 ...this.headers(),
                 Range: 'participants=0-49',
-                'Content-Type': 'application/json',
             },
         })
         const data = await response.json()
@@ -283,11 +281,81 @@ export class ToornamentClient {
             body: JSON.stringify(body),
             headers: {
                 ...this.headers(),
-                'Content-Type': 'application/json',
             },
         })
         const data = await response.json()
         console.log('DATA: ', data)
         return Promise.resolve(true)
+    }
+
+    async getRounds(stage_id: string): Promise<any> {
+        await this.init()
+        const roundResponse = await fetch(this.url + `/rounds?stage_ids=${stage_id}`, {
+            method: 'GET',
+            headers: {
+                ...this.headers(),
+                Range: 'rounds=0-49',
+            },
+        })
+        const rounds = await roundResponse.json()
+        return Promise.resolve(rounds)
+    }
+
+    async getMatches(tournament_id: string): Promise<any> {
+        await this.init()
+        const response = await fetch(this.url + `/matches?tournament_ids=${tournament_id}`, {
+            method: 'GET',
+            headers: {
+                ...this.headers(),
+                Range: 'matches=0-99',
+            },
+        })
+        const data = await response.json()
+        return Promise.resolve(data)
+    }
+
+    async getTeamMatches(tournament_id: string, participant_id: string): Promise<any> {
+        await this.init()
+        const response = await fetch(
+            this.url + `/matches?tournament_ids=${tournament_id}&participant_ids=${participant_id}`,
+            {
+                method: 'GET',
+                headers: {
+                    ...this.headers(),
+                    Range: 'matches=0-99',
+                },
+            }
+        )
+        const data = await response.json()
+        return Promise.resolve(data)
+    }
+
+    async getRankings(tournament_id: string): Promise<any> {
+        await this.init()
+        const response = await fetch(this.url + `/ranking-items?tournament_ids=${tournament_id}`, {
+            method: 'GET',
+            headers: {
+                ...this.headers(),
+                Range: 'items=0-49',
+            },
+        })
+        const data = await response.json()
+        return Promise.resolve(data)
+    }
+
+    async getTeamRanking(tournament_id: string, team_id: string): Promise<any> {
+        await this.init()
+        const response = await fetch(
+            this.url + `/ranking-items?tournament_ids=${tournament_id}&custom_user_identifiers=${team_id}`,
+            {
+                method: 'GET',
+                headers: {
+                    ...this.headers(),
+                    Range: 'items=0-49',
+                },
+            }
+        )
+        const data = await response.json()
+        return Promise.resolve(data)
     }
 }

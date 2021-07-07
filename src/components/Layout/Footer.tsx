@@ -3,6 +3,7 @@ import { FaDiscord, FaYoutube, FaTwitch, FaTwitter } from 'react-icons/fa'
 import config from '@lib/platform/config'
 import { useRouter } from 'next/router'
 import { Link } from '@chakra-ui/react'
+import { LiquipediaIcon } from '@components/Layout/CustomIcons'
 
 interface FooterLink {
     name: string
@@ -38,6 +39,11 @@ const FooterData: FooterData[] = [
                 name: 'Youtube',
                 link: config.socials.youtube,
                 icon: <FaYoutube />,
+            },
+            {
+                name: 'Liquipedia',
+                link: 'https://liquipedia.net/rainbowsix/Canada_Contenders_League/2021',
+                icon: <LiquipediaIcon />,
             },
         ],
     },

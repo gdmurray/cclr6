@@ -1,7 +1,0 @@
-.social-button {
-    @apply focus:outline-none flex flex-row items-center justify-center w-full rounded-md border-gray-300 py-1.5 tracking-tight font-semibold transition-colors duration-150;
-}
-
-.navigation-item {
-    @apply transition-all duration-150 uppercase font-heavy font-semibold px-2 text-2xl  hover:text-primary hover:underline cursor-pointer;
-}

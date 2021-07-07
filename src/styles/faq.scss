@@ -1,7 +1,7 @@
 
 .faq-item {
   @apply bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-800;
-  max-height: 76px;
+  max-height: 200px;
   transition: max-height .5s ease-out;
 
   .question {
@@ -18,7 +18,7 @@
 }
 
 .faq-item.open {
-  max-height: 300px;
+  max-height: 500px;
   transition: max-height .25s ease-in;
 
   .answer {

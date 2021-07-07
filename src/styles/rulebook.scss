@@ -47,7 +47,7 @@
 
   .subsection {
     @extend .text-main;
-    @apply font-bold text-2xl tracking-tighter ml-2 mt-4 mb-1;
+    @apply font-bold text-2xl tracking-tighter ml-2 mt-4 mb-1 flex flex-row items-center;
   }
 
   .text {
