@@ -113,7 +113,7 @@ const SeasonOneTeams = ({ rankings, teams, idToSlugMap }: SeasonOneTeamProps): J
                                                         <img
                                                             alt="country"
                                                             style={{ width: '12px', marginRight: '0.25em' }}
-                                                            src={`${getHostName()}/images/${player.country}.svg`}
+                                                            src={`${getHostName()}/images/${player.country.toLowerCase()}.svg`}
                                                         />
                                                         {player.uplay}
                                                     </div>

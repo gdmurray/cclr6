@@ -19,7 +19,7 @@ function PlayerCard({ player }: { player: IPlayer }): JSX.Element {
                 <span className="flex flex-row text-center whitespace-nowrap justify-center">
                     <img
                         style={{ width: '15px', marginRight: '0.25em' }}
-                        src={`${getHostName()}/images/${player.country}.svg`}
+                        src={`${getHostName()}/images/${player.country.toLowerCase()}.svg`}
                     />
                     {player.uplay}
                 </span>
