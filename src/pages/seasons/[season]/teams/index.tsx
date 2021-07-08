@@ -149,12 +149,13 @@ const SeasonTeams = ({ rankings, teams, idToSlugMap }: SeasonTeamProps) => {
                                                                         key={player.id}
                                                                         className="flex flex-row mt-1 text-sm font-medium whitespace-nowrap justify-end sm:justify-center"
                                                                     >
-                                                                        <span style={{ paddingTop: '5px' }}>
+                                                                        <span style={{ paddingTop: '6px' }}>
                                                                             <img
                                                                                 alt="country"
                                                                                 style={{
+                                                                                    minWidth: '12px',
                                                                                     width: '12px',
-                                                                                    marginRight: '0.25em',
+                                                                                    marginRight: '0.15em',
                                                                                     position: 'static',
                                                                                 }}
                                                                                 src={`${getHostName()}/images/${player.country.toLowerCase()}.svg`}

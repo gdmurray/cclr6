@@ -17,10 +17,18 @@ function PlayerCard({ player }: { player: IPlayer }): JSX.Element {
             />
             <div className="flex flex-col mt-1 text-sm font-medium text-center" style={{ height: '35px' }}>
                 <span className="flex flex-row text-center whitespace-nowrap justify-center">
-                    <img
-                        style={{ width: '15px', marginRight: '0.25em' }}
-                        src={`${getHostName()}/images/${player.country.toLowerCase()}.svg`}
-                    />
+                    <span style={{ paddingTop: '5px' }}>
+                        <img
+                            alt="country"
+                            style={{
+                                minWidth: '12px',
+                                width: '12px',
+                                marginRight: '0.15em',
+                                position: 'static',
+                            }}
+                            src={`${getHostName()}/images/${player.country.toLowerCase()}.svg`}
+                        />
+                    </span>
                     {player.uplay}
                 </span>
 
