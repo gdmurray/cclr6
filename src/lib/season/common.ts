@@ -23,7 +23,7 @@ export const SeasonOne: ISeason = {
     BASE_URL: '/seasons/one',
     TOURNAMENT_ID: '4585711997166354432',
     STAGE_ID: '4753738149735563264',
-    BASE_MATCH: new Date(2021, 6, 10, 14, 0, 0),
+    BASE_MATCH: new Date(Date.UTC(2021, 6, 10, 18, 0, 0)),
 }
 
 export const Seasons: Record<string, ISeason> = {
