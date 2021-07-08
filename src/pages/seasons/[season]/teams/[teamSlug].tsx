@@ -75,16 +75,20 @@ const SeasonTeamPage = ({
     slugMap: Record<string, string>
 }): JSX.Element => {
     const previous_matches = matches
-        .filter((round) => round.matches.some((match) => dayjs(match.match_date) < dayjs()))
-        .map((round) => {
-            return round.matches[0]
-        })
+        ? matches
+              .filter((round) => round.matches.some((match) => dayjs(match.match_date) < dayjs()))
+              .map((round) => {
+                  return round.matches[0]
+              })
+        : []
     const upcoming_matches = matches
-        .filter((round) => round.matches.some((match) => dayjs(match.match_date) > dayjs()))
-        .map((round) => {
-            return round.matches[0]
-        })
-    const next_match = upcoming_matches.length > 0 ? upcoming_matches[0] : null
+        ? matches
+              .filter((round) => round.matches.some((match) => dayjs(match.match_date) > dayjs()))
+              .map((round) => {
+                  return round.matches[0]
+              })
+        : []
+    const next_match = upcoming_matches !== undefined && upcoming_matches.length > 0 ? upcoming_matches[0] : null
 
     function getNextMatchText(): JSX.Element {
         if (!next_match) {
@@ -105,45 +109,52 @@ const SeasonTeamPage = ({
         )
     }
 
-    return (
-        <div className="max-w-4xl mx-auto">
-            <div className="text-main">
-                <div className="flex flex-row py-6">
-                    <div className="mr-4">
-                        <Image
-                            src={team.logo}
-                            width={{ base: 100, md: 125 }}
-                            height={{ base: 100, md: 125 }}
-                            minWidth={{ base: 100, md: 125 }}
-                        />
-                    </div>
-                    <div className="py-4">
-                        <div className="text-4xl font-semibold flex flex-row items-center">
-                            {team.name}
-                            {team.twitter && (
-                                <div className="text-2xl ml-4">
-                                    <a
-                                        className="hover:text-twitter"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={`https://twitter.com/${team.twitter}`}
-                                    >
-                                        <FaTwitter />
-                                    </a>
-                                </div>
-                            )}
+    if (team) {
+        return (
+            <div className="max-w-4xl mx-auto">
+                <div className="text-main">
+                    <div className="flex flex-row py-6">
+                        <div className="mr-4">
+                            <Image
+                                src={team.logo}
+                                width={{ base: 100, md: 125 }}
+                                height={{ base: 100, md: 125 }}
+                                minWidth={{ base: 100, md: 125 }}
+                            />
                         </div>
-                        <div className="ml-1 text-subtitle">
-                            Rank &nbsp;{ranking[0].rank ? `#${ranking[0].rank}` : '-'}&nbsp; in CCL Season One
+                        <div className="py-4">
+                            <div className="text-4xl font-semibold flex flex-row items-center">
+                                {team.name}
+                                {team.twitter && (
+                                    <div className="text-2xl ml-4">
+                                        <a
+                                            className="hover:text-twitter"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            href={`https://twitter.com/${team.twitter}`}
+                                        >
+                                            <FaTwitter />
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="ml-1 text-subtitle">
+                                Rank &nbsp;{ranking[0].rank ? `#${ranking[0].rank}` : '-'}&nbsp; in CCL Season One
+                            </div>
+                            <div className="ml-1 text-subtitle-description">{getNextMatchText()}</div>
                         </div>
-                        <div className="ml-1 text-subtitle-description">{getNextMatchText()}</div>
                     </div>
+                    <Players players={players} />
+                    <Matches
+                        upcoming_matches={upcoming_matches}
+                        previous_matches={previous_matches}
+                        slugMap={slugMap}
+                    />
                 </div>
-                <Players players={players} />
-                <Matches upcoming_matches={upcoming_matches} previous_matches={previous_matches} slugMap={slugMap} />
             </div>
-        </div>
-    )
+        )
+    }
+    return <></>
 }
 
 SeasonTeamPage.layout = (content: React.ReactNode): JSX.Element => {

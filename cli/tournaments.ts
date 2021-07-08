@@ -17,7 +17,7 @@ const baseTournament = {
     size: 32,
     online: true,
     logo: {
-        original: '/images/backgroundtemp.jpeg'
+        original: '/images/backgroundtemp.jpeg',
     },
     location: 'Toronto',
     country: 'CA',
@@ -26,9 +26,7 @@ const baseTournament = {
     registration_closing_datetime: null,
     id: null,
     discipline: 'rainbowsix_siege',
-    platforms: [
-        'pc'
-    ]
+    platforms: ['pc'],
 }
 const tournaments = []
 for (let i = 0; i < 4; i += 1) {
@@ -41,5 +39,3 @@ for (let i = 0; i < 4; i += 1) {
     tournament.registration_closing_datetime = dayjs(endDate).add(i, 'week').hour(9).toISOString()
     tournaments.push(tournament)
 }
-
-console.log(tournaments);

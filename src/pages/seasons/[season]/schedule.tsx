@@ -117,7 +117,7 @@ const SeasonOneSchedule = ({ data, teams }: SeasonOneScheduleProps): JSX.Element
                     <hr />
                 </div>
             </div>
-            {data.map((week, weekNumber) => {
+            {(data ? data : []).map((week, weekNumber) => {
                 return (
                     <>
                         <div className="flex md:hidden justify-center pt-8 pb-4">

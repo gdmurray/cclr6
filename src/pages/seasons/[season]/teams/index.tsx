@@ -79,12 +79,11 @@ function TeamPlayer({ player }: { player: IPlayer }): JSX.Element {
 }
 
 const SeasonTeams = ({ rankings, teams, idToSlugMap }: SeasonTeamProps) => {
-    console.log(rankings)
     const router = useRouter()
     return (
         <div className="max-w-6xl mx-auto">
             <div className="flex flex-col space-y-4">
-                {rankings.map((rank) => {
+                {(rankings ? rankings : []).map((rank) => {
                     const team = teams[rank.participant.custom_user_identifier]
                     const slug = idToSlugMap[rank.participant.custom_user_identifier]
 
@@ -93,78 +92,84 @@ const SeasonTeams = ({ rankings, teams, idToSlugMap }: SeasonTeamProps) => {
                     }
 
                     const players = [...team.players].sort((a, b) => (a.index > b.index ? 1 : -1))
-                    return (
-                        <div
-                            key={team.id}
-                            onClick={goToTeam}
-                            className="bordered group border rounded-lg py-2 px-4 flex flex-col text-main dark:hover:border-gray-700 hover:border-gray-400 hover:shadow-sm cursor-pointer"
-                        >
-                            <div className="flex flex-row justify-between py-2">
-                                <div className="flex flex-row text-xl font-semibold">
-                                    <div className="text-alt">{rank.number}.&nbsp;</div>
-                                    <div className="group-hover:underline">{team.name}</div>
-                                </div>
-                                <div className="text-lg font-medium">
-                                    {rank.points ? rank.points : '-'} <span className="text-alt-2">pts</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-row">
-                                <div className=" md:p-2 md:mr-8 ">
-                                    <Image
-                                        minWidth={{ base: 120, sm: 150 }}
-                                        width={{ base: 120, sm: 150 }}
-                                        height={{ base: 120, sm: 150 }}
-                                        src={team.logo}
-                                    />
-                                </div>
-                                <div className="w-full pr-2">
-                                    <div>
-                                        <div className="flex flex-col">
-                                            <div className="text-main font-semibold sm:text-center text-right">
-                                                Players
-                                            </div>
-                                            <div className="flex sm:flex-row flex-col sm:space-x-2 md:space-x-4 lg:space-x-8 w-full justify-center md:justify-evenly max-w-3xl mx-auto pb-2 sm:pb-0">
-                                                {players
-                                                    .filter((_, idx) => idx < 5)
-                                                    .map((player) => {
-                                                        return <TeamPlayer key={player.id} player={player} />
-                                                    })}
-                                            </div>
-                                        </div>
+                    if (team) {
+                        return (
+                            <div
+                                key={team.id}
+                                onClick={goToTeam}
+                                className="bordered group border rounded-lg py-2 px-4 flex flex-col text-main dark:hover:border-gray-700 hover:border-gray-400 hover:shadow-sm cursor-pointer"
+                            >
+                                <div className="flex flex-row justify-between py-2">
+                                    <div className="flex flex-row text-xl font-semibold">
+                                        <div className="text-alt">{rank.number}.&nbsp;</div>
+                                        <div className="group-hover:underline">{team.name}</div>
                                     </div>
-                                    <div>
-                                        <div className="text-main font-semibold sm:text-center text-right">
-                                            Substitutes
-                                        </div>
-                                        <div className="flex flex-col sm:flex-row justify-center sm:space-x-6">
-                                            {players.filter((_, idx) => idx > 4).length > 0 ? (
-                                                <>
+                                    <div className="text-lg font-medium">
+                                        {rank.points ? rank.points : '-'} <span className="text-alt-2">pts</span>
+                                    </div>
+                                </div>
+                                <div className="flex flex-row">
+                                    <div className=" md:p-2 md:mr-8 ">
+                                        <Image
+                                            minWidth={{ base: 120, sm: 150 }}
+                                            width={{ base: 120, sm: 150 }}
+                                            height={{ base: 120, sm: 150 }}
+                                            src={team ? team.logo : undefined}
+                                        />
+                                    </div>
+                                    <div className="w-full pr-2">
+                                        <div>
+                                            <div className="flex flex-col">
+                                                <div className="text-main font-semibold sm:text-center text-right">
+                                                    Players
+                                                </div>
+                                                <div className="flex sm:flex-row flex-col sm:space-x-2 md:space-x-4 lg:space-x-8 w-full justify-center md:justify-evenly max-w-3xl mx-auto pb-2 sm:pb-0">
                                                     {players
-                                                        .filter((_, idx) => idx > 4)
+                                                        .filter((_, idx) => idx < 5)
                                                         .map((player) => {
-                                                            return (
-                                                                <div
-                                                                    key={player.id}
-                                                                    className="flex flex-row mt-1 text-sm font-medium whitespace-nowrap justify-end sm:justify-center"
-                                                                >
-                                                                    <img
-                                                                        style={{ width: '12px', marginRight: '0.25em' }}
-                                                                        src={`${getHostName()}/images/${player.country.toLowerCase()}.svg`}
-                                                                    />
-                                                                    {player.uplay}
-                                                                </div>
-                                                            )
+                                                            return <TeamPlayer key={player.id} player={player} />
                                                         })}
-                                                </>
-                                            ) : (
-                                                <span className="text-alt-2 font-medium text-sm">No subs</span>
-                                            )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-main font-semibold sm:text-center text-right">
+                                                Substitutes
+                                            </div>
+                                            <div className="flex flex-col sm:flex-row justify-center sm:space-x-6">
+                                                {players.filter((_, idx) => idx > 4).length > 0 ? (
+                                                    <>
+                                                        {players
+                                                            .filter((_, idx) => idx > 4)
+                                                            .map((player) => {
+                                                                return (
+                                                                    <div
+                                                                        key={player.id}
+                                                                        className="flex flex-row mt-1 text-sm font-medium whitespace-nowrap justify-end sm:justify-center"
+                                                                    >
+                                                                        <img
+                                                                            style={{
+                                                                                width: '12px',
+                                                                                marginRight: '0.25em',
+                                                                            }}
+                                                                            src={`${getHostName()}/images/${player.country.toLowerCase()}.svg`}
+                                                                        />
+                                                                        {player.uplay}
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                    </>
+                                                ) : (
+                                                    <span className="text-alt-2 font-medium text-sm">No subs</span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )
+                        )
+                    }
+                    return <></>
                 })}
             </div>
             <style jsx>{`

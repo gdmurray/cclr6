@@ -109,7 +109,6 @@ function Players(): JSX.Element {
                 'Content-Type': 'application/json',
             },
         }).then((response) => {
-            console.log(response)
             response.json().then((res) => {
                 const { status, message } = res
                 lockDispatch({ type: 'update', locked: status === 'locked', message })

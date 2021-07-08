@@ -25,8 +25,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         const hasRegistered = await teamClient.hasTeamRegistered(toornamentId as string)
 
         if (hasRegistered) {
-            console.log(hasRegistered)
-            console.log('HAS REGISTERED')
             const { id, participant_id } = hasRegistered as IRegistration
             await toornamentClient.unregisterTeam(participant_id)
             await teamClient.unregisterForTournament(id!)
