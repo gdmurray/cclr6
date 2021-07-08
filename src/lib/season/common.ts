@@ -33,7 +33,8 @@ export const Seasons: Record<string, ISeason> = {
 export function getGameDate({ base, match, week }: { base: Date; match: number; week: number }): dayjs.Dayjs {
     const dayDelta = match > 2 ? 1 : 0
     const hourDelta = match % 2 == 1 ? 0 : 2
-    return dayjs(base)
+    const date = dayjs(base).tz('America/Toronto', false)
+    return date
         .add(week - 1, 'week')
         .add(dayDelta, 'day')
         .add(hourDelta, 'hour')
