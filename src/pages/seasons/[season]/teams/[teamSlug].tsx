@@ -1,27 +1,25 @@
-import React from 'react'
-import SeasonLayout from '@components/season/layout'
-import { withAuthSSR } from '@lib/withSSRAuth'
-import { adminFireStore } from '@lib/firebase/admin'
-import { Image } from '@chakra-ui/react'
-import Link from 'next/link'
-import { ITeam } from '@lib/models/team'
-import { IPlayer } from '@lib/models/player'
+import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
+import { getCurrentSeason, MatchData } from '@lib/season/common'
 import { ToornamentClient } from '@lib/api/toornament'
-import { getMatchData, MatchData, SeasonOne } from '@lib/season'
+import React from 'react'
+import SeasonLayout from '@components/season/SeasonLayout'
+import { getIdToSlugMap, getMatchData, getSeasonTeamsUrls } from '@lib/season/api'
+import { adminFireStore } from '@lib/firebase/admin'
+import { IPlayer } from '@lib/models/player'
 import dayjs from 'dayjs'
+import Link from 'next/link'
+import { Image } from '@chakra-ui/react'
+import { FaTwitter } from 'react-icons/fa'
 import Players from '@components/season/team/Players'
 import Matches from '@components/season/team/Matches'
-import { FaTwitter } from 'react-icons/fa'
+import { ITeam } from '@lib/models/team'
 
-// TODO: I'D PREFER SLUGS
-export const getServerSideProps = withAuthSSR()(async (ctx) => {
-    const tournament_id = '4585711997166354432'
-    // const stage_id = '4753738149735563264'
+export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
+    const { teamSlug } = params
+    const currentSeason = getCurrentSeason(params)
+    const client = new ToornamentClient()
 
-    const {
-        query: { teamSlug },
-    } = ctx
-    const slugs = await adminFireStore.collection('season').doc('one').collection('teams').get()
+    const slugs = await adminFireStore.collection('season').doc(params.season).collection('teams').get()
     const slugToIdMap = slugs.docs.reduce((acc, elem) => {
         const data = elem.data()
         acc[data.slug] = {
@@ -31,20 +29,8 @@ export const getServerSideProps = withAuthSSR()(async (ctx) => {
         return acc
     }, {})
 
-    const idToSlugMap = slugs.docs.reduce((acc, elem) => {
-        const data = elem.data()
-        acc[data.team_id] = data.slug
-        return acc
-    }, {})
+    const idToSlugMap = await getIdToSlugMap(params.season)
 
-    if (!(teamSlug in slugToIdMap)) {
-        return {
-            redirect: {
-                destination: '/seasons/one/teams',
-                permanent: false,
-            },
-        }
-    }
     const { team_id } = slugToIdMap[teamSlug]
     const teamData = await adminFireStore.collection('teams').doc(team_id).get()
     const team = { id: teamData.id, ...teamData.data() }
@@ -56,17 +42,11 @@ export const getServerSideProps = withAuthSSR()(async (ctx) => {
         } as IPlayer
     })
 
-    const client = new ToornamentClient()
-    const matches = await client.getTeamMatches(tournament_id, slugToIdMap[teamSlug].participant_id)
-    const matchData = await getMatchData(matches, SeasonOne.BASE_MATCH)
-    // matchData.forEach((elem) => {
-    //     console.log('Matches: ', elem.matches)
-    //     elem.matches.forEach((opp) => {
-    //         console.log(opp.opponents)
-    //     })
-    // })
+    const matches = await client.getTeamMatches(currentSeason.TOURNAMENT_ID, slugToIdMap[teamSlug].participant_id)
+    const matchData = await getMatchData(matches, currentSeason)
 
-    const ranking = await client.getTeamRanking(tournament_id, team_id)
+    const ranking = await client.getTeamRanking(currentSeason.TOURNAMENT_ID, team_id)
+
     return {
         props: {
             team,
@@ -75,10 +55,11 @@ export const getServerSideProps = withAuthSSR()(async (ctx) => {
             matches: matchData,
             slugMap: idToSlugMap,
         },
+        revalidate: 3600,
     }
-})
+}
 
-const SeasonTeam = ({
+const SeasonTeamPage = ({
     team,
     players,
     matches,
@@ -129,7 +110,12 @@ const SeasonTeam = ({
             <div className="text-main">
                 <div className="flex flex-row py-6">
                     <div className="mr-4">
-                        <Image src={team.logo} width={125} height={125} />
+                        <Image
+                            src={team.logo}
+                            width={{ base: 100, md: 125 }}
+                            height={{ base: 100, md: 125 }}
+                            minWidth={{ base: 100, md: 125 }}
+                        />
                     </div>
                     <div className="py-4">
                         <div className="text-4xl font-semibold flex flex-row items-center">
@@ -160,8 +146,16 @@ const SeasonTeam = ({
     )
 }
 
-SeasonTeam.layout = (content: React.ReactNode): JSX.Element => {
-    return <SeasonLayout baseUrl={`/seasons/one`}>{content}</SeasonLayout>
+SeasonTeamPage.layout = (content: React.ReactNode): JSX.Element => {
+    return <SeasonLayout>{content}</SeasonLayout>
 }
 
-export default SeasonTeam
+export default SeasonTeamPage
+
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+    const paths = await getSeasonTeamsUrls()
+    return {
+        paths,
+        fallback: true,
+    }
+}

@@ -1,0 +1,34 @@
+
+.cms-content {
+  h1 {
+    @extend .base-title;
+    @apply text-5xl mb-4;
+
+  }
+
+  h2 {
+    @extend .base-title;
+    @apply text-3xl mb-2;
+  }
+
+  h3 {
+    @extend .base-title;
+    @apply text-2xl mb-2;
+  }
+
+  p {
+    @extend .text-main;
+    @apply text-base font-normal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style: circle;
+  }
+
+  li {
+    @extend .text-main;
+    @apply text-base font-normal;
+  }
+
+}

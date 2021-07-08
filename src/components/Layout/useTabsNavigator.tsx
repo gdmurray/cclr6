@@ -34,8 +34,15 @@ export default function useTabsNavigator({ tabs, baseUrl }: { tabs: Tab[]; baseU
 
     const getPathName = (): { pathname: string; isQuery: boolean } => {
         if (Object.keys(query).length > 0) {
-            const [queryKey] = Object.keys(query)
-            const filteredPathname = pathname.replace(`/[${queryKey}]`, '')
+            let filteredPathname = pathname
+            const replaceKeys = ['season']
+            for (const queryKey of Object.keys(query)) {
+                if (replaceKeys.indexOf(queryKey) !== -1) {
+                    filteredPathname = filteredPathname.replace(`[${queryKey}]`, query[queryKey] as string)
+                } else {
+                    filteredPathname = pathname.replace(`/[${queryKey}]`, '')
+                }
+            }
             return {
                 pathname: withBase(filteredPathname),
                 isQuery: true,
@@ -49,22 +56,23 @@ export default function useTabsNavigator({ tabs, baseUrl }: { tabs: Tab[]; baseU
 
     useEffect(() => {
         const activeTab = tabs[tabIndex]
+        // console.log('Active: ', activeTab)
+        // console.log(activeTab.path, withBase(activeTab.path), getPathName().pathname)
         if (withBase(activeTab.path) !== getPathName().pathname) {
-            console.log('initial')
-            console.log(getPathName().pathname)
             const tab = tabs.map((e) => withBase(e.path)).indexOf(getPathName().pathname)
-            console.log('Tab: ', tab)
+            // console.log('Tab: ', tab)
             if (tab !== -1) {
                 setTabIndex(tab)
             }
         }
 
         const handleRouteChange = (path) => {
-            console.log('ROUTE CHANGE: ', path, activeTab.path)
             if (path !== activeTab.path) {
-                const tab = tabs.map((e) => withBase(e.path)).indexOf(path)
-                console.log('path: ', path)
-                console.log('Tab: ', tab)
+                const tab = tabs
+                    .map((e) => {
+                        return withBase(e.path)
+                    })
+                    .indexOf(path)
                 if (tab !== -1) {
                     setTabIndex(tab)
                 }
@@ -78,7 +86,6 @@ export default function useTabsNavigator({ tabs, baseUrl }: { tabs: Tab[]; baseU
         setTabIndex(index)
         const tab = tabs[index]
         const path = withBase(tab.path)
-        console.log('Handling tab change: ', tab.path, path)
         if (getPathName().pathname !== path) {
             navigate(tab.label, path)
         }

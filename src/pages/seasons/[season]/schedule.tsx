@@ -1,21 +1,20 @@
-import React from 'react'
-import SeasonLayout from '@components/season/layout'
+import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
+import { getCurrentSeason, getSeasonPaths, MatchWithDate } from '@lib/season/common'
 import { ToornamentClient } from '@lib/api/toornament'
-import CustomParseFormat from 'dayjs/plugin/customParseFormat'
+import { getMatchData } from '@lib/season/api'
+import { ITeam, Teams } from '@lib/models/team'
 import dayjs from 'dayjs'
 import { Image, useColorMode } from '@chakra-ui/react'
-import { ITeam, Teams } from '@lib/models/team'
 import { getHostName } from '@lib/utils'
-import { getMatchData, SeasonOne } from '@lib/season'
+import React from 'react'
+import SeasonLayout from '@components/season/SeasonLayout'
 
-dayjs.extend(CustomParseFormat)
-
-export const getServerSideProps = async () => {
-    const tournament_id = '4585711997166354432'
-
+export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
+    const currentSeason = getCurrentSeason(params)
     const client = new ToornamentClient()
-    const matches = await client.getMatches(tournament_id)
-    const matchData = await getMatchData(matches, SeasonOne.BASE_MATCH)
+
+    const matches = await client.getMatches(currentSeason.TOURNAMENT_ID)
+    const matchData = await getMatchData(matches, currentSeason)
 
     const teamData = await Teams.getTeams()
     const teamMap = teamData.docs.reduce((acc, elem) => {
@@ -30,34 +29,27 @@ export const getServerSideProps = async () => {
             data: matchData,
             teams: teamMap,
         },
+        revalidate: 3600,
     }
 }
 
 interface ScheduledMatchProps {
-    day: number
-    match: number
-    week: number
-    matchData: Record<any, any>
+    match: MatchWithDate
     teams: ITeam[]
 }
 
-function ScheduledMatch({ day, match, week, matchData, teams }: ScheduledMatchProps): JSX.Element {
-    const [team1, team2] = matchData.opponents
-    const first = new Date(2021, 6, 10, 14, 0, 0)
-    // const first_match = dayjs('July 10, 2021 2pm -0500', 'MMMM D, YYYY ma ZZ')
-    // console.log(first_match)
-    const matchDate = dayjs(first)
-        .add(week, 'week')
-        .add(day, 'day')
-        .add(match * 2, 'hour')
+function ScheduledMatch({ match, teams }: ScheduledMatchProps): JSX.Element {
+    const [team1, team2] = match.opponents
 
     const { colorMode } = useColorMode()
 
     return (
         <div className="flex flex-row">
             <div className="w-3/12 flex flex-col justify-center text-main font-heavy text-3xl font-medium uppercase pb-6 text-center">
+                <span className="flex justify-center md:hidden text-2xl">{dayjs(match.match_date).format('dddd')}</span>
                 <span>
-                    {matchDate.format('MMM')} <span className="text-primary">{matchDate.format('D')}</span>
+                    {dayjs(match.match_date).format('MMM')}{' '}
+                    <span className="text-primary">{dayjs(match.match_date).format('D')}</span>
                 </span>
             </div>
             <div className="flex flex-row w-full justify-evenly">
@@ -78,7 +70,7 @@ function ScheduledMatch({ day, match, week, matchData, teams }: ScheduledMatchPr
                         VS
                     </div>
                     <div className="font-heavy text-2xl text-main font-medium pb-6">
-                        {matchDate.format('hA')}
+                        {dayjs(match.match_date).format('hA')}
                         <span className="text-primary">EST</span>
                     </div>
                 </div>
@@ -107,7 +99,7 @@ interface SeasonOneScheduleProps {
 const SeasonOneSchedule = ({ data, teams }: SeasonOneScheduleProps): JSX.Element => {
     return (
         <div className="max-w-6xl mx-auto">
-            <div className="flex flex-row space-x-6 justify-evenly">
+            <div className="hidden md:flex flex-row space-x-6 justify-evenly">
                 <div className="w-full max-w-lg">
                     <div className="text-center mb-10">
                         <span className="text-main uppercase font-heavy text-5xl font-semibold">
@@ -127,55 +119,49 @@ const SeasonOneSchedule = ({ data, teams }: SeasonOneScheduleProps): JSX.Element
             </div>
             {data.map((week, weekNumber) => {
                 return (
-                    <div key={`week-${weekNumber}`} className="flex flex-row space-x-6 justify-evenly">
-                        <div className="w-full max-w-lg space-y-10 pt-12">
-                            {week.matches
-                                .filter((_, idx) => idx < 2)
-                                .map((matchData, idx) => {
-                                    return (
-                                        <ScheduledMatch
-                                            key={matchData.id}
-                                            day={0}
-                                            week={weekNumber}
-                                            match={idx}
-                                            matchData={matchData}
-                                            teams={teams}
-                                        />
-                                    )
-                                })}
-                            <hr />
+                    <>
+                        <div className="flex md:hidden justify-center pt-8 pb-4">
+                            <span className="text-main uppercase font-heavy text-3xl font-semibold">
+                                Week <span className="text-primary">{weekNumber + 1}</span>
+                            </span>
                         </div>
-                        <div className="w-full max-w-lg space-y-10 pt-12">
-                            {week.matches
-                                .filter((_, idx) => idx > 1)
-                                .map((matchData, idx) => {
-                                    return (
-                                        <ScheduledMatch
-                                            key={matchData.id}
-                                            day={1}
-                                            week={weekNumber}
-                                            match={idx}
-                                            matchData={matchData}
-                                            teams={teams}
-                                        />
-                                    )
-                                })}
-                            <hr />
+                        <div
+                            key={`week-${weekNumber}`}
+                            className="flex flex-col justify-center md:flex-row md:space-x-6 md:justify-evenly"
+                        >
+                            <div className="mx-auto md:mx-0 w-full max-w-lg space-y-2 md:space-y-10 pt-2 md:pt-12">
+                                {week.matches
+                                    .filter((_, idx) => idx < 2)
+                                    .map((matchData) => {
+                                        return <ScheduledMatch key={matchData.id} match={matchData} teams={teams} />
+                                    })}
+                                <hr />
+                            </div>
+                            <div className="mx-auto md:mx-0 w-full max-w-lg space-y-2 md:space-y-10 pt-2 md:pt-12">
+                                {week.matches
+                                    .filter((_, idx) => idx > 1)
+                                    .map((matchData) => {
+                                        return <ScheduledMatch key={matchData.id} match={matchData} teams={teams} />
+                                    })}
+                                <hr />
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )
             })}
         </div>
     )
 }
 
-SeasonOneSchedule.SEO = {
-    url: '/seasons/one/schedule',
-    title: 'Season One Schedule',
-    description: 'Schedule for teams playing in Season One of Canada Contenders League',
+SeasonOneSchedule.layout = (content: React.ReactNode): JSX.Element => {
+    return <SeasonLayout>{content}</SeasonLayout>
 }
 
-SeasonOneSchedule.layout = (content: React.ReactNode): JSX.Element => {
-    return <SeasonLayout baseUrl={'/seasons/one'}>{content}</SeasonLayout>
-}
 export default SeasonOneSchedule
+
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+    return {
+        paths: getSeasonPaths('schedule'),
+        fallback: true,
+    }
+}

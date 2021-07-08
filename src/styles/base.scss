@@ -4,6 +4,8 @@
 @import "posts";
 @import "table";
 @import "faq";
+@import "seasons";
+@import "cms-content";
 
 .page-content {
   @apply py-2 px-6 lg:px-16;
@@ -20,6 +22,7 @@
 .navigation-item {
   @apply transition-all duration-150 uppercase font-heavy font-semibold px-2 text-2xl  hover:text-primary hover:underline cursor-pointer;
 }
+
 
 .privacy-policy {
   p {

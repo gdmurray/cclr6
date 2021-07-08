@@ -52,16 +52,14 @@ function PlayerCard({ player }: { player: IPlayer }): JSX.Element {
 }
 
 const Players = ({ players }: { players: IPlayer[] }): JSX.Element => {
-    const { colorMode } = useColorMode()
     return (
         <>
             <div className="py-4">
                 <div className="page-title-sm">Players</div>
-                <div className="flex flex-row space-x-6 justify-around">
+                <div className="flex flex-wrap sm:flex-row space-x-0 sm:space-x-6 justify-around">
                     {players
                         .filter((_, idx) => idx < 5)
                         .map((player) => {
-                            console.log(player.twitter)
                             return <PlayerCard key={player.id} player={player} />
                         })}
                 </div>
@@ -70,7 +68,7 @@ const Players = ({ players }: { players: IPlayer[] }): JSX.Element => {
                 {players.filter((_, idx) => idx > 4).length > 0 ? (
                     <div className="py-4">
                         <div className="page-title-sm">Substitutes</div>
-                        <div className="flex flex-row space-x-6 justify-center">
+                        <div className="flex flex-wrap sm:flex-row space-x-0 sm:space-x-6 justify-around">
                             {players
                                 .filter((_, idx) => idx > 4)
                                 .map((player) => {

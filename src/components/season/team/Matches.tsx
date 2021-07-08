@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MatchWithDate } from '@lib/season'
+import { MatchWithDate } from '@lib/season/common'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { ITeam, Teams } from '@lib/models/team'
@@ -46,8 +46,8 @@ function UpcomingMatch({
             <div className="text-subtitle pb-1">{dayjs(match.match_date).format('dddd, MMMM D')}</div>
             <div>
                 <div className="bordered border rounded-lg px-4 pt-4 flex flex-col">
-                    <div className="flex flex-row w-full space-x-6 justify-center ">
-                        <div className="flex flex-row text-xl text-main font-semibold w-2/5 justify-end">
+                    <div className="flex flex-row w-full space-x-1 sm:space-x-6 justify-center ">
+                        <div className="flex flex-row text-lg sm:text-xl text-main font-semibold w-2/5 justify-end">
                             {slugMap[team1.participant.custom_user_identifier] === teamSlug ? (
                                 <span>{team1.participant.name}</span>
                             ) : (
