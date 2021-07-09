@@ -36,7 +36,6 @@ export default function Post(post: CMSPost): JSX.Element {
                             <ReactPlayer
                                 url={metadata.video}
                                 className="react-player"
-                                playing
                                 width="100%"
                                 height="100%"
                                 controls={true}

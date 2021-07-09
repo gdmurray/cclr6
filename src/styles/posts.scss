@@ -18,7 +18,7 @@
     top: 0;
     left: 0;
   }
-  
+
   ul {
     padding-left: 20px;
     list-style-type: disc;
@@ -33,7 +33,7 @@
   }
 
   @extend .text-main;
-  @apply text-base font-medium tracking-tight;
+  @apply text-lg font-normal tracking-tight leading-7;
   p > a {
     @apply font-medium transition-colors duration-150;
     text-decoration: underline;
