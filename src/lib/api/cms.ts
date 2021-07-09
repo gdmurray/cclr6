@@ -13,7 +13,7 @@ const is404 = (error) => /not found/i.test(error.message)
 export async function getAllPostsForHome() {
     const params = {
         type: 'posts',
-        props: 'slug,title,metadata,created_at,thumbnail,content',
+        props: 'slug,title,metadata,created_at,thumbnail,content,type',
         sort: '-created_at',
     }
     const data = await bucket.getObjects(params)
@@ -22,7 +22,7 @@ export async function getAllPostsForHome() {
 
 export async function getAllPostsWithSlug() {
     const params = {
-        type: 'posts',
+        type_slug: 'posts',
         props: 'slug',
     }
     const data = await bucket.getObjects(params)

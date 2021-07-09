@@ -1,6 +1,6 @@
 import React from 'react'
 import { CMSPost } from '@components/posts/Post'
-import { Image, WrapItem } from '@chakra-ui/react'
+import { Image } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import RelativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
@@ -18,7 +18,7 @@ export default function PostPreview(post: CMSPostPreview): JSX.Element {
     const { push } = useRouter()
 
     return (
-        <WrapItem>
+        <div className="flex mx-auto">
             <motion.div
                 onClick={() => push(`/posts/${slug}`)}
                 style={{ borderTop: '6px solid #e50a25' }}
@@ -26,7 +26,7 @@ export default function PostPreview(post: CMSPostPreview): JSX.Element {
                     y: -2,
                 }}
                 whileTap={{ scale: 0.98 }}
-                className="group cursor-pointer bordered border rounded-md max-w-lg overflow-hidden"
+                className="group cursor-pointer bordered border rounded-md max-w-xl overflow-hidden"
             >
                 <div>
                     <Image src={thumbnail} />
@@ -41,6 +41,6 @@ export default function PostPreview(post: CMSPostPreview): JSX.Element {
                     </div>
                 </div>
             </motion.div>
-        </WrapItem>
+        </div>
     )
 }

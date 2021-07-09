@@ -8,6 +8,17 @@
 }
 
 .post-content {
+  .player-wrapper {
+    position: relative;
+    padding-top: 56.25%; /* 720 / 1280 = 0.5625 */
+  }
+
+  .react-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
   ul {
     padding-left: 20px;
     list-style-type: disc;
@@ -30,6 +41,50 @@
     &:hover {
       @apply text-primary;
       text-decoration: none;
+    }
+  }
+
+  iframe {
+    @apply mx-auto m-2;
+  }
+
+
+  figcaption {
+    @apply text-right mr-24 text-lg;
+
+    a {
+      @apply font-medium transition-colors duration-150;
+      text-decoration: underline;
+
+      &:hover {
+        @apply text-primary;
+        text-decoration: none;
+      }
+    }
+  }
+
+  blockquote {
+    position: relative;
+    @apply mb-4 mx-6;
+
+    p {
+      @apply font-light text-alt-2 text-3xl tracking-tight leading-8 mx-8;
+    }
+
+    &:before {
+      @apply text-5xl text-alt;
+      content: '“';
+      position: relative;
+      top: 20px;
+      left: 10px;
+    }
+
+    &:after {
+      @apply text-5xl;
+      content: "„";
+      position: absolute;
+      right: 40px;
+      bottom: -15px;
     }
   }
 }

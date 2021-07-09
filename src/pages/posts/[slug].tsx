@@ -38,7 +38,7 @@ export default function PostPage(props: PostProps): JSX.Element {
         )
     }
     return (
-        <div className="page-content">
+        <div className="page-content max-w-5xl mx-auto">
             {router.isFallback ? (
                 <div>
                     <Loader text="Loading..." />
@@ -103,6 +103,6 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
     const allPosts = (await getAllPostsWithSlug()) || []
     return {
         paths: allPosts.map((post) => `/posts/${post.slug}`),
-        fallback: true,
+        fallback: 'blocking',
     }
 }
