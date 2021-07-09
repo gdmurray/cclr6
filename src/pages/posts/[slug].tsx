@@ -57,7 +57,7 @@ export default function PostPage(props: PostProps): JSX.Element {
                             </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} href={`/post/${post?.slug}`}>
+                            <BreadcrumbLink as={Link} href={`/posts/${post?.slug}`}>
                                 {post?.title}
                             </BreadcrumbLink>
                         </BreadcrumbItem>
