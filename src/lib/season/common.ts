@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-dayjs.tz.setDefault('America/Toronto')
 
 interface BaseSeason {
     TITLE: string
@@ -33,8 +32,7 @@ export const Seasons: Record<string, ISeason> = {
 export function getGameDate({ base, match, week }: { base: Date; match: number; week: number }): dayjs.Dayjs {
     const dayDelta = match > 2 ? 1 : 0
     const hourDelta = match % 2 == 1 ? 0 : 2
-    const date = dayjs(base).tz('America/Toronto', false)
-    return date
+    return dayjs(base)
         .add(week - 1, 'week')
         .add(dayDelta, 'day')
         .add(hourDelta, 'hour')

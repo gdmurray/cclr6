@@ -67,7 +67,7 @@ const MobileTabs = ({ tabIndex, handleTabChange }: TabsProps) => {
             <div className="w-full">
                 <div
                     onClick={onToggle}
-                    className="w-full flex flex-row justify-between items-center pb-0 py-1 px-2 cursor-pointer"
+                    className="w-full flex flex-row justify-between items-center pb-0 py-1 cursor-pointer"
                 >
                     <span className="page-title-sm text-center text-main">
                         Season One&nbsp;<span className="text-primary">{seasonTabs[tabIndex].label}</span>

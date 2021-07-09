@@ -11,6 +11,29 @@ interface INavItem extends NavItem {
     active: boolean
 }
 
+const baseRoutes: NavItem[] = [
+    {
+        label: 'Home',
+        href: '/',
+    },
+    {
+        label: 'Season One',
+        href: '/seasons/one',
+    },
+    {
+        label: 'Partners',
+        href: '/partners',
+    },
+    {
+        label: 'Watch',
+        href: '/watch',
+    },
+    {
+        label: 'Posts',
+        href: '/posts',
+    },
+]
+
 const MobileNavigationItem = ({ children, label, onClick, href }: INavItem) => {
     const router = useRouter()
     const { navigate, isLoading } = useSuspenseNavigation()
@@ -202,7 +225,7 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
                     src={'/images/ccl-logo-redblack.svg'}
                 />
             </>
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-row space-x-2 lg:space-x-4">
                 {routes.map((route) => {
                     return <DesktopNavigationItem key={route.label} {...route} active={getActive(route.href)} />
                 })}
@@ -210,29 +233,6 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
         </Flex>
     )
 }
-
-const baseRoutes: NavItem[] = [
-    {
-        label: 'Home',
-        href: '/',
-    },
-    {
-        label: 'Season One',
-        href: '/seasons/one',
-    },
-    {
-        label: 'Partners',
-        href: '/partners',
-    },
-    {
-        label: 'Watch',
-        href: '/watch',
-    },
-    {
-        label: 'Announcements',
-        href: '/posts',
-    },
-]
 
 export default function Navigation() {
     const { user, signOut } = useAuth()

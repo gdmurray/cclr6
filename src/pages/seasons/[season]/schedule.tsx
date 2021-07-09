@@ -3,11 +3,18 @@ import { getCurrentSeason, getSeasonPaths, MatchWithDate } from '@lib/season/com
 import { ToornamentClient } from '@lib/api/toornament'
 import { getMatchData } from '@lib/season/api'
 import { ITeam, Teams } from '@lib/models/team'
-import dayjs from 'dayjs'
-import { Image, useColorMode } from '@chakra-ui/react'
+import { Box, Image, useColorMode } from '@chakra-ui/react'
 import { getHostName } from '@lib/utils'
 import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import dayjs from 'dayjs'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(advancedFormat)
 
 export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
     const currentSeason = getCurrentSeason(params)
@@ -38,6 +45,14 @@ interface ScheduledMatchProps {
     teams: ITeam[]
 }
 
+function ignoreDaylight(tz_string: string): string {
+    const DATE_REGEX = /(?=[^])D(?=[^])/i
+    if (DATE_REGEX.test(tz_string)) {
+        return tz_string.replace(DATE_REGEX, 'S')
+    }
+    return tz_string
+}
+
 function ScheduledMatch({ match, teams }: ScheduledMatchProps): JSX.Element {
     const [team1, team2] = match.opponents
 
@@ -45,47 +60,59 @@ function ScheduledMatch({ match, teams }: ScheduledMatchProps): JSX.Element {
 
     return (
         <div className="flex flex-row">
-            <div className="w-3/12 flex flex-col justify-center text-main font-heavy text-3xl font-medium uppercase pb-6 text-center">
-                <span className="flex justify-center md:hidden text-2xl">{dayjs(match.match_date).format('dddd')}</span>
+            <div className="w-3/12 flex flex-col justify-center text-main font-heavy text-2xl sm:text-3xl font-medium uppercase pb-6 text-center">
+                <span className="flex justify-center md:hidden text-xl sm:text-2xl">
+                    {/* Long Form Saturday */}
+                    <Box as="span" display={{ base: 'none', sm: 'block' }}>
+                        {dayjs(match.match_date).format('dddd')}
+                    </Box>
+                    {/* Short Form Saturday */}
+                    <Box as="span" display={{ base: 'block', sm: 'none' }}>
+                        {dayjs(match.match_date).format('ddd')}
+                    </Box>
+                </span>
                 <span>
                     {dayjs(match.match_date).format('MMM')}{' '}
                     <span className="text-primary">{dayjs(match.match_date).format('D')}</span>
                 </span>
             </div>
             <div className="flex flex-row w-full justify-evenly">
-                <div style={{ width: '120px', height: '140px' }}>
+                <Box width={{ base: 100, sm: 120 }} height={{ base: 120, sm: 140 }}>
                     <Image
                         className="mx-auto"
                         src={teams[team1.participant.custom_user_identifier].logo}
                         fallbackSrc={`${getHostName()}/images/${
                             colorMode === 'light' ? 'liquipedia_default_light.png' : 'liquipedia_default_dark.png'
                         }`}
-                        width={100}
-                        height={100}
+                        width={{ base: 75, sm: 100 }}
+                        height={{ base: 75, sm: 100 }}
                     />
                     <div className="text-main text-center font-medium text-sm">{team1.participant.name}</div>
-                </div>
+                </Box>
                 <div className="flex flex-col justify-center text-center">
-                    <div className="font-heavy text-4xl text-main font-semibold" style={{ lineHeight: '0.6em' }}>
+                    <div
+                        className="font-heavy text-3xl sm:text-4xl text-main font-semibold"
+                        style={{ lineHeight: '0.6em' }}
+                    >
                         VS
                     </div>
-                    <div className="font-heavy text-2xl text-main font-medium pb-6">
+                    <div className="font-heavy text-xl sm:text-2xl text-main font-medium pb-6">
                         {dayjs(match.match_date).format('hA')}
-                        <span className="text-primary">EST</span>
+                        <span className="text-primary">{ignoreDaylight(dayjs(match.match_date).format('z'))}</span>
                     </div>
                 </div>
-                <div style={{ width: '100px', height: '140px' }}>
+                <Box width={{ base: 100, sm: 120 }}>
                     <Image
                         className="mx-auto"
                         src={teams[team2.participant.custom_user_identifier].logo}
                         fallbackSrc={`${getHostName()}/images/${
                             colorMode === 'light' ? 'liquipedia_default_light.png' : 'liquipedia_default_dark.png'
                         }`}
-                        width={100}
-                        height={100}
+                        width={{ base: 75, sm: 100 }}
+                        height={{ base: 75, sm: 100 }}
                     />
                     <div className="text-main text-center font-medium text-sm">{team2.participant.name}</div>
-                </div>
+                </Box>
             </div>
         </div>
     )
@@ -120,24 +147,24 @@ const SeasonOneSchedule = ({ data, teams }: SeasonOneScheduleProps): JSX.Element
             {(data ? data : []).map((week, weekNumber) => {
                 return (
                     <>
-                        <div className="flex md:hidden justify-center pt-8 pb-4">
+                        <div className="flex md:hidden justify-center pt-12 pb-4">
                             <span className="text-main uppercase font-heavy text-3xl font-semibold">
                                 Week <span className="text-primary">{weekNumber + 1}</span>
                             </span>
                         </div>
                         <div
                             key={`week-${weekNumber}`}
-                            className="flex flex-col justify-center md:flex-row md:space-x-6 md:justify-evenly"
+                            className="flex flex-col justify-center md:flex-row space-y-4 md:space-y-0 md:space-x-6 md:justify-evenly"
                         >
-                            <div className="mx-auto md:mx-0 w-full max-w-lg space-y-2 md:space-y-10 pt-2 md:pt-12">
+                            <div className="mx-auto md:mx-0 w-full max-w-lg space-y-4 md:space-y-10 pt-2 md:pt-12">
                                 {week.matches
                                     .filter((_, idx) => idx < 2)
                                     .map((matchData) => {
                                         return <ScheduledMatch key={matchData.id} match={matchData} teams={teams} />
                                     })}
-                                <hr />
+                                <Box as="hr" width={{ base: '80%', md: '100%' }} marginX={{ base: 'auto', md: '0' }} />
                             </div>
-                            <div className="mx-auto md:mx-0 w-full max-w-lg space-y-2 md:space-y-10 pt-2 md:pt-12">
+                            <div className="mx-auto md:mx-0 w-full max-w-lg space-y-4 md:space-y-10 pt-2 md:pt-12">
                                 {week.matches
                                     .filter((_, idx) => idx > 1)
                                     .map((matchData) => {

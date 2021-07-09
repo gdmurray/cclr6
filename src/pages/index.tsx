@@ -23,12 +23,12 @@ const Index = (): JSX.Element => {
                 <div>
                     <DashboardButton
                         label={'Register Team'}
-                        href="/team/register"
+                        href="/seasons/one"
                         className={
                             'dark:bg-white dark:hover:bg-gray-50 dark:active:bg-gray-100 dark:text-gray-900 bg-gray-900 text-gray-50 font-heavy'
                         }
                     >
-                        Register Team&nbsp;
+                        Season One
                     </DashboardButton>
                 </div>
             </div>
