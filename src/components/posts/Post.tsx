@@ -39,7 +39,7 @@ export default function Post(post: CMSPost): JSX.Element {
                                 playing
                                 width="100%"
                                 height="100%"
-                                controls={false}
+                                controls={true}
                             />
                         </div>
                     </div>
