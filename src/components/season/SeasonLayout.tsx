@@ -67,12 +67,17 @@ const MobileTabs = ({ tabIndex, handleTabChange }: TabsProps) => {
             <div className="w-full">
                 <div
                     onClick={onToggle}
-                    className="w-full flex flex-row justify-between items-center pb-0 py-1 cursor-pointer"
+                    className="w-full flex flex-row justify-between items-center pb-0 py-1 cursor-pointer items-stretch"
                 >
-                    <span className="page-title-sm text-center text-main">
-                        Season One&nbsp;<span className="text-primary">{seasonTabs[tabIndex].label}</span>
-                    </span>
-                    <div>{isOpen ? <FaCaretDown className="text-xl" /> : <FaCaretLeft className="text-xl" />}</div>
+                    <div className="flex flex-row page-title-sm w-full">
+                        <span className="text-main flex-shrink-0">Season One&nbsp;</span>
+                        <span className={`text-primary w-full ${isOpen ? '' : 'border-b'}`}>
+                            {seasonTabs[tabIndex].label}
+                        </span>
+                    </div>
+                    <div className={`flex align-center ${isOpen ? '' : 'border-b'}`}>
+                        {isOpen ? <FaCaretDown className="text-xl" /> : <FaCaretLeft className="text-xl" />}
+                    </div>
                 </div>
                 <Collapse in={isOpen}>
                     <Stack mt={0} spacing={0}>
