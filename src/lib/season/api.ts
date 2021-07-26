@@ -27,11 +27,12 @@ export async function getMatchData(matches: Match[], season: ISeason): Promise<M
         const round = matchData[i]
         for (let j = 0; j < matchData[i].matches.length; j += 1) {
             const match = matchData[i].matches[j]
-            matchData[i].matches[j].match_date = getGameDate({
+            const gameDate = getGameDate({
                 match: match.number,
                 week: round.number,
                 base: SeasonOne.BASE_MATCH,
-            }).toISOString()
+            })
+            matchData[i].matches[j].match_date = gameDate.toISOString()
         }
     }
 
@@ -94,4 +95,22 @@ export async function getSeasonTeamsUrls() {
         paths = paths.concat(slugs)
     }
     return paths
+}
+
+export async function getSeasonTeams(season) {
+    const seasonTeams = await adminFireStore.collection('season').doc(season).collection('teams').get()
+    const teams = await adminFireStore.collection('teams').get()
+    const teamIdMap = teams.docs.reduce((acc, val) => {
+        acc[val.id] = {
+            id: val.id,
+            ...val.data(),
+        }
+        return acc
+    }, {})
+
+    return seasonTeams.docs.reduce((acc, val) => {
+        const data = val.data()
+        acc[data.team_id] = teamIdMap[data.team_id]
+        return acc
+    }, {})
 }

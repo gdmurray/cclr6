@@ -1,7 +1,7 @@
 import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
 import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
-import { getCurrentSeason, getSeasonPaths, Seasons } from '@lib/season/common'
+import { getCurrentSeason, getSeasonPaths } from '@lib/season/common'
 import { ToornamentClient } from '@lib/api/toornament'
 import { ITeam, Teams } from '@lib/models/team'
 import { adminFireStore } from '@lib/firebase/admin'
@@ -94,6 +94,7 @@ const SeasonTeams = ({ rankings, teams, idToSlugMap }: SeasonTeamProps) => {
                     }
 
                     const players = [...team.players].sort((a, b) => (a.index > b.index ? 1 : -1))
+
                     if (team) {
                         return (
                             <div
@@ -103,7 +104,7 @@ const SeasonTeams = ({ rankings, teams, idToSlugMap }: SeasonTeamProps) => {
                             >
                                 <div className="flex flex-row justify-between py-2">
                                     <div className="flex flex-row text-xl font-semibold">
-                                        <div className="text-alt">{rank.number}.&nbsp;</div>
+                                        <div className="text-alt">{rank.rank}.&nbsp;</div>
                                         <div className="group-hover:underline">{team.name}</div>
                                     </div>
                                     <div className="text-lg font-medium">

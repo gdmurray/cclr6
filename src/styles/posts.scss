@@ -65,10 +65,10 @@
 
   blockquote {
     position: relative;
-    @apply mb-4 mx-6;
+    @apply mb-4 mx-0 sm:mx-6;
 
     p {
-      @apply font-light text-alt-2 text-3xl tracking-tight leading-8 mx-8;
+      @apply font-light text-alt-2 text-3xl tracking-tight leading-8 mx-6 sm:mx-8;
     }
 
     &:before {

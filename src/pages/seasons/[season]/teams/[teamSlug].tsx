@@ -12,7 +12,7 @@ import { Image } from '@chakra-ui/react'
 import { FaTwitter } from 'react-icons/fa'
 import Players from '@components/season/team/Players'
 import Matches from '@components/season/team/Matches'
-import { ITeam } from '@lib/models/team'
+import { ITeam, Teams } from '@lib/models/team'
 
 export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
     const { teamSlug } = params
@@ -46,11 +46,13 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
     const matchData = await getMatchData(matches, currentSeason)
 
     const ranking = await client.getTeamRanking(currentSeason.TOURNAMENT_ID, team_id)
+    const teamMap = await Teams.getTeamIdMap()
 
     return {
         props: {
             team,
             ranking,
+            teamMap,
             players: players.sort((a: IPlayer, b: IPlayer): number => (a.index > b.index ? 1 : -1)),
             matches: matchData,
             slugMap: idToSlugMap,
@@ -65,6 +67,7 @@ const SeasonTeamPage = ({
     matches,
     ranking,
     slugMap,
+    teamMap,
 }: {
     team: ITeam
     players: IPlayer[]
@@ -73,6 +76,7 @@ const SeasonTeamPage = ({
         number: number
     }
     slugMap: Record<string, string>
+    teamMap: Record<string, ITeam>
 }): JSX.Element => {
     const previous_matches = matches
         ? matches
@@ -149,6 +153,7 @@ const SeasonTeamPage = ({
                         upcoming_matches={upcoming_matches}
                         previous_matches={previous_matches}
                         slugMap={slugMap}
+                        teamMap={teamMap}
                     />
                 </div>
             </div>

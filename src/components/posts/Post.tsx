@@ -43,7 +43,7 @@ export default function Post(post: CMSPost): JSX.Element {
                         </div>
                     </div>
                 )}
-                <div className="py-4" dangerouslySetInnerHTML={{ __html: content }} />
+                <div className="py-4 px-2" dangerouslySetInnerHTML={{ __html: content }} />
             </div>
         </div>
     )

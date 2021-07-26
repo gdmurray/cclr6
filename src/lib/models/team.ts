@@ -7,6 +7,7 @@ import { SeasonOne } from '@lib/models/season'
 export interface ITeam {
     id?: string
     name: string
+    short_name?: string
     logo: string
     contact_email: string
     owner: string
@@ -283,6 +284,17 @@ export const Teams = {
     },
     getTeams: () => {
         return db.collection('teams').get()
+    },
+    getTeamIdMap: async () => {
+        const teamsData = await db.collection('teams').get()
+        const teamsIdMap = teamsData.docs.reduce((acc, value) => {
+            acc[value.id] = {
+                id: value.id,
+                ...value.data(),
+            }
+            return acc
+        }, {})
+        return Promise.resolve(teamsIdMap)
     },
 }
 

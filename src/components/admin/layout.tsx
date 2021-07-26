@@ -21,6 +21,10 @@ const tabs = [
         label: 'Email Test',
         path: '/admin/test',
     },
+    {
+        label: 'Image Generation',
+        path: '/admin/images',
+    },
 ]
 
 const AdminLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
