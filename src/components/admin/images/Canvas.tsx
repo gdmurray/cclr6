@@ -1,18 +1,18 @@
-import React, { createContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button } from '@chakra-ui/react'
 
-interface CanvasContext {
-    context: any
-}
+// interface CanvasContext {
+//     context: any
+// }
 
-export const CanvasContext = createContext({
-    context: undefined,
-})
+// export const CanvasContext = createContext({
+//     context: undefined,
+// })
 
 const Canvas = (props) => {
     const canvasRef = useRef(null)
-    const [canvasContext, setCanvasContext] = useState()
-    const [backgroundImage, setBackgroundImage] = useState()
+    const [canvasContext, setCanvasContext] = useState<CanvasRenderingContext2D>()
+    const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement>()
 
     useEffect(() => {
         const image = document.createElement('img')

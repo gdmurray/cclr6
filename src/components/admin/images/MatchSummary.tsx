@@ -196,13 +196,7 @@ export default function MatchSummary({ teams }: { teams: Record<string, ITeam> }
         ...defaultText,
     })
 
-    const {
-        register,
-        handleSubmit,
-        watch,
-        getValues,
-        formState: { dirtyFields },
-    } = useForm({
+    const { register, handleSubmit, watch } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
             team1: Object.keys(teams)[0],
