@@ -116,7 +116,7 @@ const AdminEditTeam = ({ team }: { team: ITeam }) => {
                         />
                         <FormErrorMessage>{errors?.contact_email?.message}</FormErrorMessage>
                     </FormControl>
-                    <FormControl id="twitter" isRequired={true} isInvalid={!!errors?.twitter?.message}>
+                    <FormControl id="twitter" isRequired={false} isInvalid={!!errors?.twitter?.message}>
                         <FormLabel>Team Twitter</FormLabel>
                         <Input
                             {...register('twitter')}

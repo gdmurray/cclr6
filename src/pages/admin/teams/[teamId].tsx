@@ -4,9 +4,10 @@ import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { adminFireStore } from '@lib/firebase/admin'
 import { ITeam } from '@lib/models/team'
 import AdminEditTeam from '@components/admin/EditTeam'
-import { basePlayers, IPlayer } from '@lib/models/player'
-import { PlayerFormItem } from '@components/teams/players/Form'
+import { basePlayers, Players } from '@lib/models/player'
 import AdminPlayerForm from '@components/admin/AdminPlayerForm'
+import { PlayerFormItem } from '@components/teams/players/usePlayerForm'
+import { resetServerContext } from 'react-beautiful-dnd'
 
 export const getServerSideProps = withAuthSSR({
     whenNotAdmin: AuthAction.REDIRECT_TO_APP,
@@ -18,11 +19,8 @@ export const getServerSideProps = withAuthSSR({
     const team = { id: data.id, ...data.data() } as ITeam
 
     const result = await adminFireStore.collection('teams').doc(teamId).collection('players').get()
-    const indexMap = result.docs.reduce((acc: Record<number, IPlayer>, doc) => {
-        const data = { ...doc.data(), id: doc.id } as IPlayer
-        acc[data.index] = data
-        return acc
-    }, {})
+    const indexMap = Players.getPlayerIndexMap(result)
+
     const players = basePlayers.map((elem, idx) => {
         if (idx in indexMap) {
             return {
@@ -32,6 +30,8 @@ export const getServerSideProps = withAuthSSR({
         }
         return elem
     })
+
+    resetServerContext()
     return {
         props: {
             team,

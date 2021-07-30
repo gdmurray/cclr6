@@ -36,6 +36,11 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
         props: {
             data: matchData,
             teams: teamMap,
+            SEO: {
+                title: `${currentSeason.TITLE} Schedule `,
+                image: null,
+                url: `${currentSeason.BASE_URL}/schedule`,
+            },
         },
         revalidate: 3600,
     }

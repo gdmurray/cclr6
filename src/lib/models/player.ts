@@ -33,3 +33,13 @@ export const basePlayers = [
         required: false,
     },
 ]
+
+export const Players = {
+    getPlayerIndexMap: (result) => {
+        return result.docs.reduce((acc: Record<number, IPlayer>, doc) => {
+            const data = { ...doc.data(), id: doc.id } as IPlayer
+            acc[data.index] = data
+            return acc
+        }, {})
+    },
+}

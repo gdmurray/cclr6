@@ -33,7 +33,7 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
 
     const { team_id } = slugToIdMap[teamSlug]
     const teamData = await adminFireStore.collection('teams').doc(team_id).get()
-    const team = { id: teamData.id, ...teamData.data() }
+    const team = { id: teamData.id, ...teamData.data() } as ITeam
     const playerData = await adminFireStore.collection('teams').doc(team_id).collection('players').get()
     const players = playerData.docs.map((player) => {
         return {
@@ -56,6 +56,11 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
             players: players.sort((a: IPlayer, b: IPlayer): number => (a.index > b.index ? 1 : -1)),
             matches: matchData,
             slugMap: idToSlugMap,
+            SEO: {
+                title: `${team.name}`,
+                image: null,
+                url: `${currentSeason.BASE_URL}/teams/${teamSlug}`,
+            },
         },
         revalidate: 3600,
     }

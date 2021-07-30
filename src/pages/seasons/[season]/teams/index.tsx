@@ -40,6 +40,11 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
             rankings,
             teams: teamMap,
             idToSlugMap: idToSlugMap,
+            SEO: {
+                title: `${currentSeason.TITLE} Teams `,
+                image: null,
+                url: `${currentSeason.BASE_URL}/teams`,
+            },
         },
         revalidate: 3600,
     }

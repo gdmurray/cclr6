@@ -47,3 +47,22 @@ export const isPlayerEqual = (updatedPlayer, originalPlayer): boolean => {
     const fields = ['country', 'email', 'id', 'is_captain', 'uplay', 'twitter', 'twitch']
     return !fields.some((field) => updatedPlayer[field] != originalPlayer[field])
 }
+
+export function makeId(length: number): string {
+    let result = ''
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    const charactersLength = characters.length
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength))
+    }
+    return result
+}
+
+export function omit<T>(obj, omitKey): Partial<T> {
+    return Object.keys(obj).reduce((result, key) => {
+        if (key !== omitKey) {
+            result[key] = obj[key]
+        }
+        return result
+    }, {})
+}

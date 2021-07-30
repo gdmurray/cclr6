@@ -6,6 +6,7 @@ import { FaBars, FaChevronDown, FaChevronLeft, FaTimes } from 'react-icons/fa'
 import { useSuspenseNavigation } from './useSuspenseNavigation'
 import useTeam from '@lib/useTeam'
 import { features } from '@lib/platform/features'
+import { useAdminCheck } from '@components/Layout/useAdminCheck'
 
 interface INavItem extends NavItem {
     active: boolean
@@ -237,7 +238,8 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
 export default function Navigation() {
     const { user, signOut } = useAuth()
     const { team } = useTeam({ user })
-    const [isAdmin, setIsAdmin] = useState<boolean>(false)
+
+    const { isAdmin } = useAdminCheck()
 
     const getRoutes = (): NavItem[] => {
         if (!features.login) {
@@ -276,18 +278,6 @@ export default function Navigation() {
     }
 
     const [routes, setRoutes] = useState<NavItem[]>(getRoutes())
-    useEffect(() => {
-        fetch('/api/admin/verify', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }).then((result) => {
-            if (result.ok) {
-                setIsAdmin(true)
-            }
-        })
-    }, [])
 
     useEffect(() => {
         setRoutes(getRoutes())

@@ -4,17 +4,23 @@ import PlayerForm from '@components/teams/players/Form'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { TeamContext } from '@components/teams/teamContext'
 import { Teams } from '@lib/models/team'
-import { basePlayers, IPlayer } from '@lib/models/player'
+import { basePlayers, IPlayer, Players } from '@lib/models/player'
 import Loader from '@components/Loader'
 import { InvitationProvider } from '@components/teams/invitationContext'
 import { useToast } from '@chakra-ui/react'
+import { resetServerContext } from 'react-beautiful-dnd'
 
 const url = '/team/players'
 
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
     referral: url,
-})({})
+})(async () => {
+    resetServerContext()
+    return {
+        props: {},
+    }
+})
 
 type State = {
     players: any[]
@@ -95,7 +101,7 @@ function playerReducer(state: State, action: Action): State {
     }
 }
 
-function Players(): JSX.Element {
+function TeamPlayers(): JSX.Element {
     const teamContext = useContext(TeamContext)
     const toast = useToast({ duration: 1000, position: 'top-right' })
     const { team } = teamContext
@@ -115,14 +121,11 @@ function Players(): JSX.Element {
             })
         })
     }, [])
+
     useEffect(() => {
         dispatch({ type: 'loading' })
         Teams.getPlayers(team.id).then((result) => {
-            const indexMap = result.docs.reduce((acc: Record<number, IPlayer>, doc) => {
-                const data = { ...doc.data(), id: doc.id } as IPlayer
-                acc[data.index] = data
-                return acc
-            }, {})
+            const indexMap = Players.getPlayerIndexMap(result)
             const players = basePlayers.map((elem, idx) => {
                 if (idx in indexMap) {
                     return {
@@ -170,12 +173,12 @@ function Players(): JSX.Element {
     )
 }
 
-Players.SEO = {
+TeamPlayers.SEO = {
     title: 'Team Players',
     url,
 }
 
-Players.layout = (content: React.ReactNode): JSX.Element => {
+TeamPlayers.layout = (content: React.ReactNode): JSX.Element => {
     return <TeamLayout>{content}</TeamLayout>
 }
-export default Players
+export default TeamPlayers
