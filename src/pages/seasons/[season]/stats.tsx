@@ -1,7 +1,7 @@
 import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
-// import { GetStaticPathsResult } from 'next'
-// import { getSeasonPaths } from '@lib/season/common'
+import { GetStaticPathsResult } from 'next'
+import { getSeasonPaths } from '@lib/season/common'
 
 const SeasonStats = (): JSX.Element => {
     return (
@@ -17,10 +17,10 @@ SeasonStats.layout = (content: React.ReactNode): JSX.Element => {
 
 export default SeasonStats
 
-// export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-//     const paths = getSeasonPaths('teams')
-//     return {
-//         paths: paths,
-//         fallback: true,
-//     }
-// }
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+    const paths = getSeasonPaths('stats')
+    return {
+        paths: paths,
+        fallback: true,
+    }
+}

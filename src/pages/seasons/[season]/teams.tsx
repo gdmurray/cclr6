@@ -17,10 +17,10 @@ SeasonTeams.layout = (content: React.ReactNode): JSX.Element => {
 
 export default SeasonTeams
 
-// export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-//     const paths = getSeasonPaths('teams')
-//     return {
-//         paths: paths,
-//         fallback: true,
-//     }
-// }
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+    const paths = getSeasonPaths('teams')
+    return {
+        paths: paths,
+        fallback: true,
+    }
+}

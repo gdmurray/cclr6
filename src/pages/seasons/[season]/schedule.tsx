@@ -1,5 +1,7 @@
 import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
+import { getSeasonPaths, Seasons } from '@lib/season/common'
+import { GetStaticPathsResult } from 'next'
 // import { GetStaticPathsResult } from 'next'
 // import { getSeasonPaths } from '@lib/season/common'
 
@@ -17,6 +19,13 @@ SeasonSchedule.layout = (content: React.ReactNode): JSX.Element => {
 
 export default SeasonSchedule
 
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+    const paths = getSeasonPaths('schedule')
+    return {
+        paths: paths,
+        fallback: true,
+    }
+}
 // export async function getStaticPaths(): Promise<GetStaticPathsResult> {
 //     const paths = getSeasonPaths('teams')
 //     return {
