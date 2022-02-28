@@ -56,7 +56,7 @@ export const SeasonTwoSplit1: Season = {
             scheduled_date_end: '2022-03-06',
             registration_enabled: true,
             registration_opening_datetime: dayjs('2022-02-28').toISOString(),
-            registration_closing_datetime: dayjs(new Date('March 4, 2021 16:00:00')).toISOString(),
+            registration_closing_datetime: dayjs(new Date('March 4, 2022 16:00:00')).toISOString(),
         },
         {
             id: 's2p1q2',
@@ -66,7 +66,7 @@ export const SeasonTwoSplit1: Season = {
             scheduled_date_end: '2022-03-13',
             registration_enabled: true,
             registration_opening_datetime: dayjs('2022-03-06').toISOString(),
-            registration_closing_datetime: dayjs(new Date('March 11, 2021 16:00:00')).toISOString(),
+            registration_closing_datetime: dayjs(new Date('March 11, 2022 16:00:00')).toISOString(),
         },
     ],
 }
