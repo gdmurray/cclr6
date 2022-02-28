@@ -34,6 +34,7 @@ export const SeasonTwo: ISeason = {
 }
 
 export const Seasons: Record<string, ISeason> = {
+    one: SeasonOne,
     two: SeasonTwo,
 }
 

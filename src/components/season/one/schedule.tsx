@@ -5,7 +5,6 @@ import { getMatchData } from '@lib/season/api'
 import { ITeam, Teams } from '@lib/models/team'
 import { Box } from '@chakra-ui/react'
 import React from 'react'
-import SeasonLayout from '@components/season/SeasonLayout'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -16,8 +15,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
 
-export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
-    const params = { season: 'one' }
+export async function getStaticProps(params): Promise<GetStaticPropsResult<any>> {
     const currentSeason = getCurrentSeason(params)
     const client = new ToornamentClient()
 
@@ -52,7 +50,7 @@ interface SeasonScheduleProps {
     teams: ITeam[]
 }
 
-const SeasonSchedule = ({ data, teams }: SeasonScheduleProps): JSX.Element => {
+export const SeasonOneSchedule = ({ data, teams }: SeasonScheduleProps): JSX.Element => {
     return (
         <div className="max-w-6xl mx-auto">
             <div className="hidden md:flex flex-row space-x-6 justify-evenly">
@@ -105,9 +103,3 @@ const SeasonSchedule = ({ data, teams }: SeasonScheduleProps): JSX.Element => {
         </div>
     )
 }
-
-SeasonSchedule.layout = (content: React.ReactNode): JSX.Element => {
-    return <SeasonLayout>{content}</SeasonLayout>
-}
-
-export default SeasonSchedule

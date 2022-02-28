@@ -11,8 +11,7 @@ import { Image, useColorMode } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { getHostName } from '@lib/utils'
 
-export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
-    const params = { season: 'one' }
+export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
     const currentSeason = getCurrentSeason(params)
     const client = new ToornamentClient()
     const rankings = await client.getRankings(currentSeason.TOURNAMENT_ID)
