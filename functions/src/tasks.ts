@@ -78,7 +78,7 @@ export async function dispatchGCloudTask(payload: Record<any, any>) {
  * @param {functions.https.Request} request The function request
  * @return {Promise<boolean>} Status of verification
  */
-export async function verifyCloudTaskRequest(request: functions.https.Request) {
+export async function verifyCloudTaskRequest(request: functions.https.Request, cloudFunction: string) {
     try {
         const serviceAccount = JSON.parse(getDecrypted(accounts.GOOGLE));
         const serviceAccountEmail = serviceAccount.client_email;
@@ -87,8 +87,8 @@ export async function verifyCloudTaskRequest(request: functions.https.Request) {
         if (!projectId) throw new Error("No Project ID found");
 
         const client = new gAuth.OAuth2Client();
-
-        const aud = "https://us-central1-ccl-content.cloudfunctions.net/sendEmail";
+        functions.logger.info(request);
+        const aud = `https://us-central1-ccl-content.cloudfunctions.net/${cloudFunction}`;
 
         const ticket = await client.verifyIdToken({
             idToken: oidcToken,

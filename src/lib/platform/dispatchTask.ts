@@ -50,15 +50,15 @@ export async function dispatchTask(body: RegistrationTask) {
         const url = 'https://us-central1-ccl-content.cloudfunctions.net/updateTeamRegistrationSheet'
         const serviceAccountEmail = decrypted.client_email
 
+        const credentials = {
+            client_email: decrypted.client_email,
+            private_key: decrypted.private_key,
+        }
         const client = new cloudTasks.CloudTasksClient({
-            credentials: {
-                client_email: decrypted.client_email,
-                private_key: decrypted.private_key,
-            },
+            credentials,
         })
 
         const parent = client.queuePath(projectId, location, queue)
-
         const httpReq = {
             httpMethod: cloudTasks.protos.google.cloud.tasks.v2.HttpMethod.POST,
             body: Buffer.from(JSON.stringify(body)),
@@ -71,9 +71,9 @@ export async function dispatchTask(body: RegistrationTask) {
 
         const task = { httpRequest: httpReq }
         const request = { parent, task }
-        console.log('CREATING TASK')
+        console.log('CREATING TASK: ', queue, url)
         await client.createTask(request)
-        console.log('TASK SENT')
+        console.log('TASK SENT', queue, url)
         return Promise.resolve()
     } catch (err) {
         console.log('ERROR DISPATCHING TASK: ', err)

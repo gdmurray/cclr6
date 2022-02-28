@@ -8,7 +8,7 @@ const firestoreClient = new admin.firestore.v1.FirestoreAdminClient();
 export const sendEmail = functions.https.onRequest(async (req, res) => {
     try {
         if (process.env.FUNCTIONS_EMULATOR !== "true") {
-            await verifyCloudTaskRequest(req);
+            await verifyCloudTaskRequest(req, "sendEmail");
         }
         const request = req.body;
         functions.logger.info(request);
@@ -23,13 +23,14 @@ export const sendEmail = functions.https.onRequest(async (req, res) => {
 export const updateTeamRegistrationSheet = functions.https.onRequest(async (req, res) => {
     try {
         if (process.env.FUNCTIONS_EMULATOR !== "true") {
-            await verifyCloudTaskRequest(req);
+            await verifyCloudTaskRequest(req, "updateTeamRegistrationSheet");
         }
         const request = req.body;
         functions.logger.info("Team Registration Event");
         await handleSheetEvent(request);
         res.status(200).end();
     } catch (error) {
+        functions.logger.error(error);
         res.status(500).json({result: error}).end();
     }
 });
@@ -40,15 +41,18 @@ export const scheduledFirestoreExport = functions.pubsub.schedule("every 12 hour
 
     const databaseName = firestoreClient.databasePath(projectId, "(default)");
 
-    return firestoreClient.exportDocuments({
-        name: databaseName,
-        outputUriPrefix: bucket,
-        collectionIds: [],
-    }).then((responses) => {
-        const response = responses[0];
-        functions.logger.info(`Operation Name: ${response["name"]}`);
-    }).catch((err) => {
-        functions.logger.error(`Export operation failed: ${err}`);
-        throw new Error("Export Operation Failed");
-    });
+    return firestoreClient
+        .exportDocuments({
+            name: databaseName,
+            outputUriPrefix: bucket,
+            collectionIds: [],
+        })
+        .then((responses) => {
+            const response = responses[0];
+            functions.logger.info(`Operation Name: ${response["name"]}`);
+        })
+        .catch((err) => {
+            functions.logger.error(`Export operation failed: ${err}`);
+            throw new Error("Export Operation Failed");
+        });
 });
