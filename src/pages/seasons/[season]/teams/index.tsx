@@ -3,13 +3,14 @@ import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
 import { GetStaticPathsResult } from 'next'
 import { getSeasonPaths } from '@lib/season/common'
-import { getStaticProps as getTeamsStaticProps } from '@components/season/one/teams'
+// import { getStaticProps as getTeamsStaticProps } from '@components/season/one/teams'
 
 export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
-    const { season } = params
-    if (season === 'one') {
-        return getTeamsStaticProps(params)
-    }
+    // const { season } = params
+    // if (season === 'one') {
+    // this needs to be wrapped in { }, but lets ignore that for now.
+    //     return getTeamsStaticProps(params)
+    // }
     return {
         props: {},
     }
