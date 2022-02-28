@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { FaRegCreditCard, FaTimes } from 'react-icons/fa'
 import { Button, Tooltip } from '@chakra-ui/react'
 import { Season } from '@lib/models/season'
@@ -19,6 +19,20 @@ export default function SeasonComponent({ season }: { season: Season }): JSX.Ele
     const { team, user } = teamContext
 
     const { isPurchasing, teamPurchases, handlePaymentClick } = useContext(PaymentContext)
+    const [isHovering, setIsHovering] = useState<boolean>(false)
+
+    const handleHover = (e: React.MouseEvent<HTMLButtonElement>): void => {
+        const { type } = e
+        if (type === 'mouseenter') {
+            if (!isHovering) {
+                setIsHovering(true)
+            }
+        } else if (type === 'mouseleave') {
+            if (isHovering) {
+                setIsHovering(false)
+            }
+        }
+    }
 
     const getButtonContent = () => {
         if (!season.active) {
@@ -29,6 +43,15 @@ export default function SeasonComponent({ season }: { season: Season }): JSX.Ele
                 <>
                     Cancel Purchase&nbsp;
                     <FaTimes />
+                </>
+            )
+        }
+
+        if (isHovering) {
+            return (
+                <>
+                    $80.00 CAD&nbsp;
+                    <FaRegCreditCard />
                 </>
             )
         }
@@ -79,6 +102,8 @@ export default function SeasonComponent({ season }: { season: Season }): JSX.Ele
                                             name: season.name,
                                         })
                                     }
+                                    onMouseEnter={handleHover}
+                                    onMouseLeave={handleHover}
                                 >
                                     {getButtonContent()}
                                 </Button>

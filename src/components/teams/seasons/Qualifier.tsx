@@ -219,6 +219,8 @@ export function Qualifier({ qualifier, eligibility, season }: QualifierProps): J
             return (
                 <Tooltip label={`Pass grants you access to ${qualifier.name}`} hasArrow>
                     <Button
+                        onMouseEnter={hover.handleHover}
+                        onMouseLeave={hover.handleHover}
                         colorScheme={isPurchasing || !season.active ? 'red' : 'green'}
                         onClick={() =>
                             handlePaymentClick({
@@ -228,7 +230,7 @@ export function Qualifier({ qualifier, eligibility, season }: QualifierProps): J
                             })
                         }
                     >
-                        Purchase
+                        {hover.isHovering ? <>$40.00 CAD</> : <>&nbsp;&nbsp;&nbsp;Purchase&nbsp;&nbsp;</>}
                     </Button>
                 </Tooltip>
             )
@@ -254,7 +256,6 @@ export function Qualifier({ qualifier, eligibility, season }: QualifierProps): J
     }
 
     function hasPaid(): boolean {
-        console.log(teamPurchases)
         return (
             teamPurchases.findIndex((elem) => elem.season === 's2p1') !== -1 ||
             teamPurchases.findIndex((elem) => elem.season === qualifier.id) !== -1
