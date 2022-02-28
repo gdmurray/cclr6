@@ -1,10 +1,6 @@
 import { Tournament } from '@lib/models/tournament'
 import dayjs from 'dayjs'
 
-interface TournamentRef {
-    id: number
-}
-
 export interface Season {
     id: string
     active: boolean
@@ -24,6 +20,7 @@ export const SeasonOne: Season = {
     start_date: '2021-07-01',
     end_date: '2021-09-01',
     registration_opens: '2021-02-22',
+    registration_closes: '',
     name: 'Canada Contenders Series: Season 1',
     qualifiers: [
         {

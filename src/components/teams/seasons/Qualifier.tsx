@@ -215,7 +215,6 @@ export function Qualifier({ qualifier, eligibility, season }: QualifierProps): J
 
         // If they purchased a full pass : disable
         // If they purchased that pass : disable
-        console.log(hasPaid())
         if (status.disabled === false && !hasPaid())
             return (
                 <Tooltip label={`Pass grants you access to ${qualifier.name}`} hasArrow>

@@ -161,7 +161,7 @@ const Partners = ({ partners }: { partners: Partner[] }) => {
             <div className="container">
                 <div className="flex flex-wrap -mx-4">
                     {partners.map((partner) => (
-                        <Partner partner={partner} />
+                        <Partner key={partner.title} partner={partner} />
                     ))}
                 </div>
             </div>

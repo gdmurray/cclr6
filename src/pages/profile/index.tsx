@@ -60,7 +60,7 @@ const Profile = () => {
                                         <Input
                                             w={200}
                                             p={2}
-                                            isReadonly={true}
+                                            isReadOnly={true}
                                             variant={'unstyled'}
                                             defaultValue={usersTwitter()?.displayName}
                                         />

@@ -1,9 +1,8 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { FaRegCreditCard, FaTimes } from 'react-icons/fa'
 import { Button, Tooltip } from '@chakra-ui/react'
 import { Season } from '@lib/models/season'
 import { TeamContext } from '@components/teams/teamContext'
-import { CreateTeamClient } from '@lib/models/team'
 import useEligibility from '@components/teams/seasons/Eligibility'
 import { Tournament } from '@lib/models/tournament'
 import Loader from '@components/Loader'
@@ -19,9 +18,7 @@ export default function SeasonComponent({ season }: { season: Season }): JSX.Ele
     const teamContext = useContext(TeamContext)
     const { team, user } = teamContext
 
-    const teamClient = CreateTeamClient(team)
-
-    const { isPurchasing, teamPurchases, teamPaid, handlePaymentClick } = useContext(PaymentContext)
+    const { isPurchasing, teamPurchases, handlePaymentClick } = useContext(PaymentContext)
 
     const getButtonContent = () => {
         if (!season.active) {
@@ -43,7 +40,7 @@ export default function SeasonComponent({ season }: { season: Season }): JSX.Ele
         )
     }
 
-    const { eligibility, eligibilityChecklist, loading } = useEligibility({ team, user, season })
+    const { eligibility, eligibilityChecklist, loading } = useEligibility({ team, user })
     return (
         <div className="bordered border rounded-xl">
             <div className="flex flex-col w-full p-4 h-full z-10 relative">
