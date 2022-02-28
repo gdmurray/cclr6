@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { TeamContext } from '@components/teams/teamContext'
 import { Teams } from '@lib/models/team'
 import { IPlayer } from '@lib/models/player'
@@ -19,7 +19,7 @@ interface PlayersForm {
 const PlayerForm = ({ players, callback, lockState }: PlayersForm) => {
     const teamContext = useContext(TeamContext)
     const { team } = teamContext
-    const toast = useToast({ duration: 1000, position: 'top-right' })
+    const toast = useToast({ duration: 2500, position: 'top-right', variant: 'solid' })
 
     const { methods, captainGroup, getRadioProps, getValidPlayers, onDragEnd } = usePlayerForm({ players })
 
@@ -29,51 +29,91 @@ const PlayerForm = ({ players, callback, lockState }: PlayersForm) => {
         reset,
     } = methods
 
-    const onSubmit = ({ players: formStatePlayers }) => {
+    const onSubmit = async ({ players: formStatePlayers }) => {
         const doSave = true
         if (isValid && dirtyFields.players) {
             const validPlayers = getValidPlayers(formStatePlayers)
 
             const playersCollection = Teams.getPlayersCollection(team.id)
             if (doSave && validPlayers.length > 0) {
-                Promise.all<TransactionResult>(
+                const results = await Promise.all<TransactionResult>(
                     validPlayers.map((player) => upsertPlayer(playersCollection, player))
-                ).then((result: TransactionResult[]) => {
-                    result.forEach((updated) => {
-                        if (updated.status === 'CREATED') {
-                            toast({
-                                title: `Added Player ${updated.player.index + 1}`,
-                                status: 'success',
-                            })
-                        } else if (updated.status === 'UPDATED') {
-                            toast({
-                                title: `Updated Player ${updated.player.index + 1}`,
-                                status: 'info',
-                            })
-                        } else if (updated.status === 'REMOVED') {
-                            toast({
-                                title: `Removed Player ${updated.player.index + 1}`,
-                                status: 'warning',
-                            })
-                        }
-                    })
-                    const updatedPlayers = result.map((p) => p.player)
-
-                    const existingValues = getValues()
-
-                    for (let i = 0; i < updatedPlayers.length; i += 1) {
-                        const updated = updatedPlayers[i]
-                        existingValues.players[updated.index] = {
-                            ...updated,
-                            required: players[updated.index].required,
-                        }
+                )
+                for (const updated of results) {
+                    if (updated.status === 'CREATED') {
+                        toast({
+                            title: `Added Player ${updated.player.index + 1}`,
+                            status: 'success',
+                        })
+                    } else if (updated.status === 'UPDATED') {
+                        toast({
+                            title: `Updated Player ${updated.player.index + 1}`,
+                            status: 'info',
+                        })
+                    } else if (updated.status === 'REMOVED') {
+                        toast({
+                            title: `Removed Player ${updated.player.index + 1}`,
+                            status: 'warning',
+                        })
                     }
-                    callback(updatedPlayers, existingValues.players as unknown as IPlayer[])
-                    reset(existingValues)
-                })
+                }
+                const updatedPlayers = results.map((p) => p.player)
+
+                const existingValues = getValues()
+
+                for (let i = 0; i < updatedPlayers.length; i += 1) {
+                    const updated = updatedPlayers[i]
+                    existingValues.players[updated.index] = {
+                        ...updated,
+                        required: players[updated.index].required,
+                    }
+                }
+                callback(updatedPlayers, existingValues.players as unknown as IPlayer[])
+                reset(existingValues)
+                // Promise.all<TransactionResult>(
+                //     validPlayers.map((player) => upsertPlayer(playersCollection, player))
+                // ).then((result: TransactionResult[]) => {
+                //     result.forEach((updated) => {
+                //         if (updated.status === 'CREATED') {
+                //             toast({
+                //                 title: `Added Player ${updated.player.index + 1}`,
+                //                 status: 'success',
+                //             })
+                //         } else if (updated.status === 'UPDATED') {
+                //             toast({
+                //                 title: `Updated Player ${updated.player.index + 1}`,
+                //                 status: 'info',
+                //             })
+                //         } else if (updated.status === 'REMOVED') {
+                //             toast({
+                //                 title: `Removed Player ${updated.player.index + 1}`,
+                //                 status: 'warning',
+                //             })
+                //         }
+                //     })
+                //     const updatedPlayers = result.map((p) => p.player)
+                //
+                //     const existingValues = getValues()
+                //
+                //     for (let i = 0; i < updatedPlayers.length; i += 1) {
+                //         const updated = updatedPlayers[i]
+                //         existingValues.players[updated.index] = {
+                //             ...updated,
+                //             required: players[updated.index].required,
+                //         }
+                //     }
+                //     callback(updatedPlayers, existingValues.players as unknown as IPlayer[])
+                //     reset(existingValues)
+                // })
             }
         }
     }
+
+    console.log('isValid: ', isValid)
+    console.log('Dirtyfields: ', dirtyFields.players)
+    console.log('locked: ', lockState.locked)
+    const saveDisabled = !(isValid && !!dirtyFields.players) || lockState.locked
+    console.log('Save Disabled: ', saveDisabled)
 
     return (
         <div>
@@ -86,11 +126,7 @@ const PlayerForm = ({ players, callback, lockState }: PlayersForm) => {
                             )}
                             <div className="text-right max-w-3xl w-full">
                                 <div className="space-x-4">
-                                    <Button
-                                        colorScheme="green"
-                                        type="submit"
-                                        isDisabled={!(isValid && !!dirtyFields.players) || lockState.locked}
-                                    >
+                                    <Button colorScheme="green" type="submit" isDisabled={saveDisabled}>
                                         Save
                                     </Button>
                                 </div>
@@ -98,7 +134,11 @@ const PlayerForm = ({ players, callback, lockState }: PlayersForm) => {
                             </div>
                             <Droppable droppableId="playerList">
                                 {(provided) => (
-                                    <div className="space-y-4" ref={provided.innerRef} {...provided.droppableProps}>
+                                    <div
+                                        className="space-y-4 w-auto w-full"
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                    >
                                         {players.map((player, idx) => {
                                             return (
                                                 <Player
@@ -116,12 +156,8 @@ const PlayerForm = ({ players, callback, lockState }: PlayersForm) => {
                             </Droppable>
 
                             <div className="text-right max-w-3xl w-full">
-                                <div className="space-x-4">
-                                    <Button
-                                        colorScheme="green"
-                                        type="submit"
-                                        isDisabled={!(isValid && !!dirtyFields.players) || lockState.locked}
-                                    >
+                                <div className="space-x-4 pt-2">
+                                    <Button colorScheme="green" type="submit" isDisabled={saveDisabled}>
                                         Save
                                     </Button>
                                 </div>

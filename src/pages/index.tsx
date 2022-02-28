@@ -1,10 +1,17 @@
 import React from 'react'
 import DashboardButton from '@components/DashboardButton'
 import { Flex, Image } from '@chakra-ui/react'
-// import Home from './home'
 import ReactPlayer from 'react-player'
+import { SeasonTwoSplit1 } from '@lib/models/season'
+import dayjs from 'dayjs'
 
 const Index = (): JSX.Element => {
+    function showRegisterButton() {
+        return (
+            dayjs() < dayjs(SeasonTwoSplit1.registration_closes) && dayjs() > dayjs(SeasonTwoSplit1.registration_opens)
+        )
+    }
+
     return (
         <div className="max-w-6xl mx-auto">
             <div className="flex flex-col items-center text-center my-8">
@@ -21,15 +28,27 @@ const Index = (): JSX.Element => {
                     Canada Contenders League is the newest chapter in Canadian Rainbow Six Esports
                 </p>
                 <div>
-                    <DashboardButton
-                        label={'Register Team'}
-                        href="/seasons/one"
-                        className={
-                            'dark:bg-white dark:hover:bg-gray-50 dark:active:bg-gray-100 dark:text-gray-900 bg-gray-900 text-gray-50 font-heavy'
-                        }
-                    >
-                        Season One
-                    </DashboardButton>
+                    {showRegisterButton() ? (
+                        <DashboardButton
+                            label={'Register Team'}
+                            href="/team/register"
+                            className={
+                                'dark:bg-white dark:hover:bg-gray-50 dark:active:bg-gray-100 dark:text-gray-900 bg-gray-900 text-gray-50 font-heavy'
+                            }
+                        >
+                            Register for Season Two Now!
+                        </DashboardButton>
+                    ) : (
+                        <DashboardButton
+                            label={'Register Team'}
+                            href="/seasons/two"
+                            className={
+                                'dark:bg-white dark:hover:bg-gray-50 dark:active:bg-gray-100 dark:text-gray-900 bg-gray-900 text-gray-50 font-heavy'
+                            }
+                        >
+                            Season Two
+                        </DashboardButton>
+                    )}
                 </div>
             </div>
             <div className="about mt-24">

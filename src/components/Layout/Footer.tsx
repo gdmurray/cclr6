@@ -99,21 +99,21 @@ const FooterData: FooterData[] = [
     },
 ]
 
-const ToornamentLogo = () => {
+const PoweredBy = () => {
     return (
         <div className="mt-6">
-            <div className="px-5 text-xs font-semibold text-alt-2 -mb-1 antialiased">Powered By</div>
-            <a href="https://www.toornament.com" target="_blank" rel="noopener noreferrer">
+            <div className="px-5 text-xs font-semibold text-alt-2 mb-0 antialiased">Powered By</div>
+            <a href="https://www.firstblood.io/" target="_blank" rel="noopener noreferrer">
                 <img
-                    alt="toornament"
+                    alt="firstblood"
                     className="mx-auto logo-dark cursor-pointer"
-                    src={'/images/toornament_logo_white.png'}
+                    src={'/images/firstblood-logo-white.svg'}
                     width="150"
                 />
                 <img
-                    alt="toornament"
+                    alt="firstblood"
                     className="mx-auto logo-light cursor-pointer"
-                    src={'/images/toornament_logo_black.png'}
+                    src={'/images/firstblood-logo-black.svg'}
                     width="150"
                 />
             </a>
@@ -165,7 +165,7 @@ export default function Footer(): JSX.Element {
                             className="logo-light mx-auto"
                             src={'/images/ccl-logo-redblack.svg'}
                         />
-                        <ToornamentLogo />
+                        <PoweredBy />
                     </>
                 </div>
                 <div className="flex-grow flex items-center sm:items-start flex-col sm:flex-row justify-around">

@@ -29,7 +29,9 @@
   },
   "exclude": [
     "functions",
-    "node_modules"
+    "node_modules",
+    "banlogger",
+    "**/_old/*"
   ],
   "include": [
     "next-env.d.ts",

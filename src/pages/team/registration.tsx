@@ -1,14 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import TeamLayout from '@components/teams/layout'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { FaTrophy } from 'react-icons/fa'
 import EmptyState from '@components/EmptyState'
 import { ToornamentClient } from '@lib/api/toornament'
-import { Season, SeasonOne } from '@lib/models/season'
+import { Season, SeasonTwoSplit1 } from '@lib/models/season'
 
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
 import SeasonComponent from '@components/teams/seasons/Season'
+import { TeamContext } from '@components/teams/teamContext'
+import { PaymentProvider } from '@components/teams/PaymentContext'
 
 dayjs.extend(LocalizedFormat)
 
@@ -18,20 +20,9 @@ export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
     referral: url,
 })(async () => {
-    const season = SeasonOne
-    const client = new ToornamentClient()
-
-    const qualifiers = []
-    for (let i = 0; i < season.qualifiers.length; i += 1) {
-        const { id } = season.qualifiers[i]
-        const qual = await client.getTournament(id)
-        qualifiers.push(qual)
-    }
-
-    season.qualifiers = qualifiers
     return {
         props: {
-            seasons: [season],
+            seasons: [SeasonTwoSplit1],
         },
     }
 })
@@ -49,15 +40,17 @@ interface IRegistration {
 }
 
 function Registration({ seasons }: IRegistration): JSX.Element {
+    const teamContext = useContext(TeamContext)
+    const { team } = teamContext
     return (
-        <>
+        <PaymentProvider team={team}>
             {seasons.length === 0 && <EmptyState icon={<FaTrophy />} text={'No Seasons Found!'} />}
             <div className={'max-w-4xl mx-auto items-center'}>
                 {seasons.map((season) => {
                     return <SeasonComponent key={season.name} season={season} />
                 })}
             </div>
-        </>
+        </PaymentProvider>
     )
 }
 

@@ -2,7 +2,7 @@ import db from '@lib/firebase/firestore'
 import { CaptureOrderResponseBody } from '@paypal/paypal-js/types/apis/orders'
 import { IPlayer } from '@lib/models/player'
 import { Firestore, storage } from '@lib/firebase/firebase'
-import { SeasonOne } from '@lib/models/season'
+import { SeasonTwoSplit1 } from '@lib/models/season'
 
 export interface ITeam {
     id?: string
@@ -41,7 +41,11 @@ interface TeamClient {
 
     getPayments(): Promise<any[]>
 
+    getPaymentsStartingWith(prefix: string): Promise<any[]>
+
     hasTeamPaid(season: string): Promise<boolean>
+
+    hasPaidForQualifier(qualifier: string): Promise<boolean>
 
     registerForTournament(tournamentId: string, participantId: string): Promise<boolean>
 
@@ -57,7 +61,7 @@ interface TeamClient {
 }
 
 export function CreateTeamClient(team: ITeam, database: Firestore | any = db): TeamClient {
-    return {
+    return <TeamClient>{
         purchasePass: async (season, payment): Promise<void> => {
             const data = {
                 season,
@@ -90,6 +94,23 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
         getPayments: async (): Promise<any[]> => {
             const payments = await database.collection('teams').doc(team.id).collection('payments').get()
             return payments.docs
+        },
+        getPaymentsStartingWith: async (prefix: string): Promise<any[]> => {
+            const payments = await database
+                .collection('teams')
+                .doc(team.id)
+                .collection('payments')
+                .where('season', '>=', prefix)
+                .get()
+            return payments.docs
+        },
+        async hasPaidForQualifier(qualifier: string): Promise<boolean> {
+            const query = qualifier.slice(0, -2)
+            const payments = await this.getPaymentsStartingWith(query)
+            return (
+                payments.findIndex((elem) => elem.season === 's2p1') !== -1 ||
+                payments.findIndex((elem) => elem.season === qualifier) !== -1
+            )
         },
         hasMinimumPlayers: async (): Promise<boolean> => {
             const players = await database.collection('teams').doc(team.id).collection('players').get()
@@ -153,6 +174,7 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
                 registered: new Date().toISOString(),
             })
             console.log(tournamentId)
+            console.log(registration)
             // const data = await registration.get()
             return Promise.resolve(true)
         },
@@ -189,7 +211,7 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
             return Promise.resolve(registrations.docs.map((reg) => ({ id: reg.id, ...reg.data() })))
         },
         async hasQualified(): Promise<boolean> {
-            const season = SeasonOne
+            const season = SeasonTwoSplit1
             const registrations = []
             for (let i = 0; i < season.qualifiers.length; i += 1) {
                 const registration = await this.getRegistration(season.qualifiers[i].id)

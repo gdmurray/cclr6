@@ -1,9 +1,9 @@
 import { useFormContext } from 'react-hook-form'
-import React, { useEffect } from 'react'
-import { FormErrorMessage, HStack, Input, Radio, Tooltip, useRadioGroup, UseRadioProps } from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
+import { Button, FormErrorMessage, HStack, Input, Radio, Tooltip, useRadioGroup, UseRadioProps } from '@chakra-ui/react'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import CountryRadio from '@components/teams/players/CountryRadio'
-import { FaTimes } from 'react-icons/fa'
+import { FaTimes, FaPlusSquare, FaMinusSquare } from 'react-icons/fa'
 import { PlayerFormItem } from '@components/teams/players/usePlayerForm'
 import { Draggable } from 'react-beautiful-dnd'
 
@@ -16,6 +16,7 @@ interface IPlayerProps {
 
 function Player({ locked, player, order, captainRadioProps }: IPlayerProps): JSX.Element {
     const { register, formState, setValue, watch } = useFormContext()
+    const [socialsOpen, setSocialsOpen] = useState<boolean>(false)
     const { errors } = formState
     const radioOptions = [
         {
@@ -84,7 +85,7 @@ function Player({ locked, player, order, captainRadioProps }: IPlayerProps): JSX
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    className="flex flex-col mx bordered border rounded-xl w-full max-w-3xl py-1 px-2"
+                    className="flex flex-col mx bordered border rounded-xl w-full max-w-3xl py-1 px-2 mx-auto"
                 >
                     <div className="flex items-center justify-between text-main font-medium pt-4 px-6 pr-6">
                         <div>{player.required ? `Player ${order + 1}` : `Substitute ${order - 4} (Optional)`}</div>
@@ -121,29 +122,39 @@ function Player({ locked, player, order, captainRadioProps }: IPlayerProps): JSX
                                 />
                                 <FormErrorMessage>{error()?.uplay?.message}</FormErrorMessage>
                             </FormControl>
-                            <div className="flex flex-col sm:flex-row sm:space-x-4">
-                                <FormControl id={`twitter${order}`} isInvalid={!!error()?.twitter}>
-                                    <FormLabel>Twitter Account</FormLabel>
-                                    <Input
-                                        {...register(`players.${order}.twitter`)}
-                                        defaultValue={player.twitter}
-                                        type="text"
-                                        placeholder="Twitter Handle"
-                                        isReadOnly={locked}
-                                    />
-                                    <FormErrorMessage>{error()?.twitter?.message}</FormErrorMessage>
-                                </FormControl>
-                                <FormControl id={`twitch${order}`} isInvalid={!!error()?.twitch}>
-                                    <FormLabel>Twitch Account</FormLabel>
-                                    <Input
-                                        {...register(`players.${order}.twitch`)}
-                                        defaultValue={player.twitch}
-                                        type="text"
-                                        placeholder="Twitch Username"
-                                        isReadOnly={locked}
-                                    />
-                                    <FormErrorMessage>{error()?.twitch?.message}</FormErrorMessage>
-                                </FormControl>
+                            <Button
+                                size="xs"
+                                onClick={() => setSocialsOpen(!socialsOpen)}
+                                leftIcon={socialsOpen ? <FaMinusSquare /> : <FaPlusSquare />}
+                                variant="outline"
+                            >
+                                Social Accounts (Optional)
+                            </Button>
+                            <div className={socialsOpen ? '' : 'hidden'}>
+                                <div className="flex flex-col sm:flex-row sm:space-x-4">
+                                    <FormControl id={`twitter${order}`} isInvalid={!!error()?.twitter}>
+                                        <FormLabel>Twitter Account</FormLabel>
+                                        <Input
+                                            {...register(`players.${order}.twitter`)}
+                                            defaultValue={player.twitter}
+                                            type="text"
+                                            placeholder="Twitter Handle"
+                                            isReadOnly={locked}
+                                        />
+                                        <FormErrorMessage>{error()?.twitter?.message}</FormErrorMessage>
+                                    </FormControl>
+                                    <FormControl id={`twitch${order}`} isInvalid={!!error()?.twitch}>
+                                        <FormLabel>Twitch Account</FormLabel>
+                                        <Input
+                                            {...register(`players.${order}.twitch`)}
+                                            defaultValue={player.twitch}
+                                            type="text"
+                                            placeholder="Twitch Username"
+                                            isReadOnly={locked}
+                                        />
+                                        <FormErrorMessage>{error()?.twitch?.message}</FormErrorMessage>
+                                    </FormControl>
+                                </div>
                             </div>
                         </div>
                         <div className="flex-1 flex flex-col justify-between pb-2 text-right px-6">

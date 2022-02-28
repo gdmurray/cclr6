@@ -73,7 +73,7 @@ const NotificationSettings = () => {
                 toast({
                     title: 'Updated Notification Preferences',
                     status: 'success',
-                    duration: 1500,
+                    duration: 2000,
                 })
             }
         })

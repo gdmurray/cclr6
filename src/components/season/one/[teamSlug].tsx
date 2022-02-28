@@ -16,6 +16,7 @@ import { ITeam, Teams } from '@lib/models/team'
 
 export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
     const { teamSlug } = params
+    Object.assign(params, { season: 'one' })
     const currentSeason = getCurrentSeason(params)
     const client = new ToornamentClient()
 

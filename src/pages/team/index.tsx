@@ -5,7 +5,7 @@ import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { Button, FormErrorMessage, Image, Input, Tooltip, useToast } from '@chakra-ui/react'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import { FaQuestionCircle, FaTimes } from 'react-icons/fa'
-import { Teams } from '@lib/models/team'
+import { CreateTeamClient, Teams } from '@lib/models/team'
 import { useTeamForm } from '@components/teams/useTeamForm'
 
 const url = '/team'
@@ -17,6 +17,7 @@ export const getServerSideProps = withAuthSSR({
 function Team(): JSX.Element {
     const teamContext = useContext(TeamContext)
     const { team, setTeam } = teamContext
+    const teamClient = CreateTeamClient(team)
     const toast = useToast({ position: 'top-right', duration: 2000 })
 
     const uploadRef = useRef<HTMLInputElement>()
@@ -54,7 +55,7 @@ function Team(): JSX.Element {
                         'Content-Type': 'application/json',
                     },
                 }).then((res) => {
-                    if (res.ok) {
+                    if (res.ok && res.status === 201) {
                         toast({
                             title: 'Registration Information Updated',
                             status: 'success',
@@ -151,7 +152,7 @@ function Team(): JSX.Element {
                                 />
                                 <FormErrorMessage>{errors?.contact_email?.message}</FormErrorMessage>
                             </FormControl>
-                            <FormControl id="twitter" isRequired={true} isInvalid={!!errors?.twitter?.message}>
+                            <FormControl id="twitter" isRequired={false} isInvalid={!!errors?.twitter?.message}>
                                 <FormLabel>Team Twitter</FormLabel>
                                 <Input
                                     readOnly={!canEdit()}

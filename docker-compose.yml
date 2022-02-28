@@ -1,0 +1,16 @@
+version: "3.7"
+
+volumes:
+  ban-log-db:
+services:
+  db:
+    image: postgres:13.5-alpine
+    volumes:
+      - ban-log-db:/var/lib/postgresql/data
+    ports:
+      - "5469:5432"
+    restart: always
+    environment:
+      - POSTGRES_DB=twitter
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password

@@ -103,23 +103,23 @@ function playerReducer(state: State, action: Action): State {
 
 function TeamPlayers(): JSX.Element {
     const teamContext = useContext(TeamContext)
-    const toast = useToast({ duration: 1000, position: 'top-right' })
+    const toast = useToast({ duration: 2000, position: 'top-right' })
     const { team } = teamContext
     const [state, dispatch] = useReducer(playerReducer, { loading: true, players: [] })
     const [lockState, lockDispatch] = useReducer(lockReducer, { loading: true, locked: true, message: '' })
     useEffect(() => {
-        lockDispatch({ type: 'loading' })
-        fetch('/api/team/players/locked', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => {
-            response.json().then((res) => {
-                const { status, message } = res
-                lockDispatch({ type: 'update', locked: status === 'locked', message })
-            })
-        })
+        lockDispatch({ type: 'update', locked: false, message: '' })
+        // fetch('/api/team/players/locked', {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        // }).then((response) => {
+        //     response.json().then((res) => {
+        //         const { status, message } = res
+        //         lockDispatch({ type: 'update', locked: status === 'locked', message })
+        //     })
+        // })
     }, [])
 
     useEffect(() => {
@@ -157,10 +157,11 @@ function TeamPlayers(): JSX.Element {
                 'Content-Type': 'applicaton/json',
             },
         }).then((res) => {
-            if (res.ok) {
+            if (res.ok && res.status === 201) {
                 toast({
                     status: 'success',
-                    title: 'Updated Tournament Registration',
+                    title: 'Updated Tournament Registration(s)',
+                    variant: 'solid',
                 })
             }
         })

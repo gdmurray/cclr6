@@ -96,9 +96,10 @@ export interface TransactionResult {
 }
 
 export function usePlayerForm({ players }: { players: PlayerFormItem[] }) {
-    const toast = useToast({ duration: 1000, position: 'top-right', variant: 'solid' })
+    const toast = useToast({ duration: 2000, position: 'top-right', variant: 'solid' })
     const methods = useForm<IPlayersForm>({
         mode: 'onTouched',
+        // @ts-ignore
         resolver: yupResolver(playerFormSchema),
     })
 
@@ -168,7 +169,9 @@ export function usePlayerForm({ players }: { players: PlayerFormItem[] }) {
         )
 
         if (sourceValue.country !== destValue.country) {
+            // @ts-ignore
             sourceValue.setCountryValue(destValue.country)
+            // @ts-ignore
             destValue.setCountryValue(sourceValue.country)
         }
 
