@@ -17,9 +17,6 @@ interface SeasonScheduleProps {
 
 export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
     const { season } = params
-    if (season === 'one') {
-        return getStaticSeasonProps(params)
-    }
     return {
         props: {},
         revalidate: 3600,

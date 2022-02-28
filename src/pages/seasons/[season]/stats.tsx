@@ -1,7 +1,14 @@
 import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
-import { GetStaticPathsResult } from 'next'
+import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
 import { getSeasonPaths } from '@lib/season/common'
+
+export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
+    return {
+        props: {},
+        revalidate: 3600,
+    }
+}
 
 const SeasonStats = (): JSX.Element => {
     return (
