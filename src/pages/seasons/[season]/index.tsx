@@ -1,16 +1,9 @@
-import React from 'react'
-import SeasonLayout from '@components/season/SeasonLayout'
-import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
+import { GetStaticPropsResult } from 'next'
 import { getCurrentSeason, Seasons } from '@lib/season/common'
 import { getSeasonHome } from '@lib/season/api'
 import { CMSPost } from '@components/posts/Post'
-
-interface SeasonHomeProps {
-    page: {
-        slug: string
-        content: string
-    }
-}
+import React from 'react'
+import SeasonLayout from '@components/season/SeasonLayout'
 
 export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
     const currentSeason = getCurrentSeason(params)
@@ -40,7 +33,7 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
     }
 }
 
-const SeasonHome = ({ page }: SeasonHomeProps) => {
+const SeasonHome = ({ page }): JSX.Element => {
     if (page) {
         return (
             <div>
@@ -48,7 +41,7 @@ const SeasonHome = ({ page }: SeasonHomeProps) => {
             </div>
         )
     }
-    return <div>No content available</div>
+    return <div>No Content Available</div>
 }
 
 SeasonHome.layout = (content: React.ReactNode): JSX.Element => {
@@ -57,7 +50,7 @@ SeasonHome.layout = (content: React.ReactNode): JSX.Element => {
 
 export default SeasonHome
 
-export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+export async function getStaticPaths() {
     const paths = Object.values(Seasons).map((season) => season.BASE_URL)
     return {
         paths,

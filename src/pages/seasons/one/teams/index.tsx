@@ -1,7 +1,7 @@
 import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
-import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
-import { getCurrentSeason, getSeasonPaths } from '@lib/season/common'
+import { GetStaticPropsResult } from 'next'
+import { getCurrentSeason } from '@lib/season/common'
 import { ToornamentClient } from '@lib/api/toornament'
 import { ITeam, Teams } from '@lib/models/team'
 import { adminFireStore } from '@lib/firebase/admin'
@@ -11,7 +11,8 @@ import { Image, useColorMode } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { getHostName } from '@lib/utils'
 
-export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
+export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
+    const params = { season: 'one' }
     const currentSeason = getCurrentSeason(params)
     const client = new ToornamentClient()
     const rankings = await client.getRankings(currentSeason.TOURNAMENT_ID)
@@ -202,10 +203,3 @@ SeasonTeams.layout = (content: React.ReactNode): JSX.Element => {
 }
 
 export default SeasonTeams
-
-export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    return {
-        paths: getSeasonPaths('teams'),
-        fallback: true,
-    }
-}

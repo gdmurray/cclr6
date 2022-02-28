@@ -6,6 +6,7 @@ import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import Table from 'rc-table'
 // import { TeamContext } from '@components/teams/teamContext'
 import Loader from '@components/Loader'
+import { SeasonTwoSplit1 } from '@lib/models/season'
 
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -35,11 +36,25 @@ function Payments(): JSX.Element {
         })
     }, [])
 
+    const seasonMap = [SeasonTwoSplit1].reduce((acc, elem) => {
+        acc[elem.id] = elem.name
+        for (const qual of elem.qualifiers) {
+            acc[qual.id] = qual.name
+        }
+        return acc
+    }, {})
+
     const columns = [
         {
             title: 'Season',
             dataIndex: 'season',
             key: 'season',
+            render: (season_name: string) => {
+                if (season_name in seasonMap) {
+                    return <>{seasonMap[season_name]}</>
+                }
+                return <>{season_name}</>
+            },
         },
         {
             title: 'Payment Type',

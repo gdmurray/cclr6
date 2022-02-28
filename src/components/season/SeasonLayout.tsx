@@ -3,7 +3,7 @@ import { Collapse, Flex, Stack, Tab, TabList, Tabs, useDisclosure } from '@chakr
 import useTabsNavigator from '@components/Layout/useTabsNavigator'
 import Loader from '@components/Loader'
 import { FaCaretDown, FaCaretLeft } from 'react-icons/fa'
-import styled from '@emotion/styled'
+// import styled from '@emotion/styled'
 import { useRouter } from 'next/router'
 
 const seasonTabs: { label: React.ReactNode; path: string }[] = [
@@ -36,10 +36,10 @@ const seasonTabs: { label: React.ReactNode; path: string }[] = [
     },
 ]
 
-interface Props {
-    children: React.ReactNode
-    baseUrl: string
-}
+// interface Props {
+//     children: React.ReactNode
+//     baseUrl: string
+// }
 
 const mobileScreen = {
     base: 'flex',
@@ -51,16 +51,17 @@ const desktopScreen = {
     sm: 'flex',
 }
 
-const MobileDropdownTab = styled.div`
-    padding-left: 147px;
-`
+// const MobileDropdownTab = styled.div`
+//     padding-left: 147px;
+// `
 
 interface TabsProps {
+    season: string
     tabIndex: number
     handleTabChange: (index: number) => void
 }
 
-const MobileTabs = ({ tabIndex, handleTabChange }: TabsProps) => {
+const MobileTabs = ({ tabIndex, handleTabChange, season }: TabsProps) => {
     const { isOpen, onToggle } = useDisclosure()
     return (
         <Flex display={mobileScreen}>
@@ -70,7 +71,7 @@ const MobileTabs = ({ tabIndex, handleTabChange }: TabsProps) => {
                     className="w-full flex flex-row justify-between items-center pb-0 py-1 cursor-pointer items-stretch"
                 >
                     <div className="flex flex-row page-title-sm w-full">
-                        <span className="text-main flex-shrink-0">Season One&nbsp;</span>
+                        <span className="text-main flex-shrink-0">Season {season}&nbsp;</span>
                         <span className={`text-primary w-full ${isOpen ? '' : 'border-b'}`}>
                             {seasonTabs[tabIndex].label}
                         </span>
@@ -109,10 +110,10 @@ const MobileTabs = ({ tabIndex, handleTabChange }: TabsProps) => {
     )
 }
 
-const DesktopTabs = ({ tabIndex, handleTabChange }: TabsProps) => {
+const DesktopTabs = ({ tabIndex, handleTabChange, season }: TabsProps) => {
     return (
         <Flex display={desktopScreen} justifyContent={'center'} flexDirection={'column'}>
-            <div className="page-title-sm text-center">Season One</div>
+            <div className="page-title-sm text-center">Season {season}</div>
             <div>
                 <Tabs index={tabIndex} onChange={handleTabChange} variant={'unstyled'}>
                     <TabList style={{ justifyContent: 'center' }}>
@@ -134,18 +135,26 @@ const DesktopTabs = ({ tabIndex, handleTabChange }: TabsProps) => {
     )
 }
 
+function getSeasonFromPath(path: string): string {
+    const seasonSplit = path.split('/')
+    return seasonSplit[seasonSplit.findIndex((elem) => elem === 'seasons') + 1]
+}
+
 const SeasonLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
     const {
         query: { season },
+        pathname,
     } = useRouter()
+    const currentSeason = season ?? getSeasonFromPath(pathname)
     const { handleTabChange, tabIndex, tabLoading } = useTabsNavigator({
         tabs: seasonTabs,
-        baseUrl: `/seasons/${season}`,
+        baseUrl: `/seasons/${currentSeason}`,
     })
+    const uppercaseSeason = (currentSeason as string).replace(/^\w/, (c) => c.toUpperCase())
     return (
         <div className="page-content">
-            <DesktopTabs tabIndex={tabIndex} handleTabChange={handleTabChange} />
-            <MobileTabs tabIndex={tabIndex} handleTabChange={handleTabChange} />
+            <DesktopTabs tabIndex={tabIndex} handleTabChange={handleTabChange} season={uppercaseSeason} />
+            <MobileTabs tabIndex={tabIndex} handleTabChange={handleTabChange} season={uppercaseSeason} />
             {tabLoading && <Loader text="Loading Season Information" />}
             {!tabLoading && <div className="p-2 py-4">{props.children}</div>}
         </div>

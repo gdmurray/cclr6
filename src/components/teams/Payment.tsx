@@ -1,17 +1,17 @@
 import { useRouter } from 'next/router'
 import { CreateTeamClient, ITeam } from '@lib/models/team'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { PayPalButtons } from '@paypal/react-paypal-js'
 import { Season } from '@lib/models/season'
+import { PaymentContext, PurchaseTarget } from '@components/teams/PaymentContext'
+import { motion } from 'framer-motion'
 
 interface IPaymentForm {
     season: Season
     team: ITeam
-    inProgress: boolean
-    setProgress: React.Dispatch<boolean>
 }
 
-export default function PaymentForm({ season, team, setProgress }: IPaymentForm): JSX.Element {
+export default function PaymentForm({ season, team }: IPaymentForm): JSX.Element {
     const router = useRouter()
     const teamClient = CreateTeamClient(team)
     const [completed, setCompleted] = useState<boolean>(false)
@@ -19,13 +19,15 @@ export default function PaymentForm({ season, team, setProgress }: IPaymentForm)
     const [_o, setOrderId] = useState('')
     const [paypalError, setPaypalError] = useState('')
 
+    const { purchaseEvent, isPurchasing, paymentInProgress, setPaymentInProgress } = useContext(PaymentContext)
+
     const createOrder = (data, actions) => {
         return actions.order
             .create({
                 purchase_units: [
                     {
                         amount: {
-                            value: 40,
+                            value: purchaseEvent.target === PurchaseTarget.SINGLE_QUALIFIER ? 50 : 80,
                         },
                     },
                 ],
@@ -34,7 +36,7 @@ export default function PaymentForm({ season, team, setProgress }: IPaymentForm)
                 },
             })
             .then((orderId) => {
-                setProgress(true)
+                setPaymentInProgress(true)
                 setOrderId(orderId)
                 return orderId
             })
@@ -43,17 +45,19 @@ export default function PaymentForm({ season, team, setProgress }: IPaymentForm)
         return actions.order
             .capture()
             .then(async (details) => {
-                await teamClient.purchasePass(season.id, details)
+                await teamClient.purchasePass(purchaseEvent.id, details)
                 fetch('/api/team/purchase', {
                     method: 'POST',
-                    body: JSON.stringify({ team_id: team.id, season: season.id, details: details }),
+                    body: JSON.stringify({ team_id: team.id, event_name: purchaseEvent.name, details: details }),
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 })
-                    .then(() => {})
+                    .then(() => {
+                        return
+                    })
                     .finally(() => {
-                        setProgress(false)
+                        setPaymentInProgress(false)
                         setCompleted(true)
                     })
             })
@@ -63,7 +67,7 @@ export default function PaymentForm({ season, team, setProgress }: IPaymentForm)
     }
 
     const onCancel = () => {
-        setProgress(false)
+        setPaymentInProgress(false)
     }
 
     useEffect(() => {
@@ -74,10 +78,24 @@ export default function PaymentForm({ season, team, setProgress }: IPaymentForm)
         }
     }, [completed])
 
+    const variants = {
+        open: { height: 'auto', opacity: 1 },
+        closed: { height: '0', opacity: 0 },
+    }
+    console.log('payment in progresS: ', paymentInProgress)
     return (
-        <div className="py-4 px-6 bg-gray-50 rounded-xl border border-gray-600">
+        <motion.div
+            animate={isPurchasing ? 'open' : 'closed'}
+            variants={variants}
+            className="py-4 px-6 bg-gray-50 rounded-xl border border-gray-600"
+            initial={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.5 }}
+        >
             <div className="text-gray-800 text-lg font-bold tracking-tight pb-2">
-                {season.name} <span className="text-gray-600 text-sm">Qualifiers Payment</span>
+                {purchaseEvent.name}{' '}
+                <span className="text-gray-600 text-sm">
+                    {purchaseEvent.target === PurchaseTarget.SEASON_PASS ? 'Qualifier Pass' : 'Individual Qualifier'}
+                </span>
             </div>
             <div className="text-error font-semibold text-sm">{paypalError}</div>
             {completed && (
@@ -115,6 +133,6 @@ export default function PaymentForm({ season, team, setProgress }: IPaymentForm)
                     </div>
                 </>
             )}
-        </div>
+        </motion.div>
     )
 }

@@ -25,8 +25,16 @@ export const SeasonOne: ISeason = {
     BASE_MATCH: new Date(Date.UTC(2021, 6, 10, 18, 0, 0)),
 }
 
+export const SeasonTwo: ISeason = {
+    TITLE: 'CCL Season Two',
+    BASE_URL: '/seasons/one',
+    TOURNAMENT_ID: '',
+    STAGE_ID: '',
+    BASE_MATCH: new Date(new Date().getUTCDate()),
+}
+
 export const Seasons: Record<string, ISeason> = {
-    one: SeasonOne,
+    two: SeasonTwo,
 }
 
 export function getGameDate({ base, match, week }: { base: Date; match: number; week: number }): dayjs.Dayjs {

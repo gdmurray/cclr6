@@ -7,14 +7,14 @@ import { sendMail } from '@lib/platform/mail'
 export default async function purchase(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         const user = await authenticate(req, res)
-        const { team_id } = req.body
+        const { team_id, event_name } = req.body
         const getTeam = await Teams.getTeamByOwnerID(user.uid)
         if (getTeam && getTeam.id === team_id) {
             const team = { id: getTeam.id, ...getTeam.data() } as ITeam
             const teamClient = CreateTeamClient(team, adminFireStore)
             if (teamClient.canSendNotification('payment')) {
                 await sendMail(user.email, 'payment_success', {
-                    event_name: 'CCL Season 1 Qualifiers',
+                    event_name,
                     cta_url: 'https://cclr6.com/team/registration',
                 })
             }

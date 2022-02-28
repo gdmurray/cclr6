@@ -13,17 +13,21 @@ export const defaultLocals = {
 
 export const sendMail = async (emailAddress, template, variables): Promise<void> => {
     if (process.env.NODE_ENV === 'development') {
-        await fetch('http://localhost:5001/ccl-content/us-central1/sendEmail', {
-            method: 'POST',
-            body: JSON.stringify({
-                template: template,
-                emailAddress,
-                variables: { ...variables, ...defaultLocals },
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
+        try {
+            await fetch('http://localhost:5001/ccl-content/us-central1/sendEmail', {
+                method: 'POST',
+                body: JSON.stringify({
+                    template: template,
+                    emailAddress,
+                    variables: { ...variables, ...defaultLocals },
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+        } catch (err) {
+            console.log('Local email service not running')
+        }
     } else {
         console.log('QUEUING MAIL')
         try {

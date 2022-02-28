@@ -1,16 +1,14 @@
-import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
-import { getSeasonPaths } from '@lib/season/common'
-import SeasonLayout from '@components/season/SeasonLayout'
 import React from 'react'
-
-export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
-    return {
-        props: {},
-    }
-}
+import SeasonLayout from '@components/season/SeasonLayout'
+// import { GetStaticPathsResult } from 'next'
+// import { getSeasonPaths } from '@lib/season/common'
 
 const SeasonStats = (): JSX.Element => {
-    return <div>Coming soon</div>
+    return (
+        <div className="max-w-6xl mx-auto">
+            <div className="text-alt-2 font-medium">Stats coming soon</div>
+        </div>
+    )
 }
 
 SeasonStats.layout = (content: React.ReactNode): JSX.Element => {
@@ -19,10 +17,10 @@ SeasonStats.layout = (content: React.ReactNode): JSX.Element => {
 
 export default SeasonStats
 
-export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    const paths = await getSeasonPaths('stats')
-    return {
-        paths,
-        fallback: true,
-    }
-}
+// export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+//     const paths = getSeasonPaths('teams')
+//     return {
+//         paths: paths,
+//         fallback: true,
+//     }
+// }
