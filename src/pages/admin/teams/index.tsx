@@ -12,6 +12,7 @@ import { ITeam } from '@lib/models/team'
 import { RenderExpandIconProps } from 'rc-table/es/interface'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
+import { ColumnsType } from 'antd/es/table'
 
 dayjs.extend(LocalizedFormat)
 
@@ -92,19 +93,25 @@ const expandedRowRender = (team) => {
     )
 }
 
-const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
+type AdminTeam = ITeam & {
+    created: number
+}
+
+const AdminTeams = ({ data }: { data: AdminTeam[] }) => {
     const { push } = useRouter()
     const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([])
-    const columns = [
+    const columns: ColumnsType<AdminTeam> = [
         {
             title: 'Logo',
-            field: 'logo',
+            key: 'logo',
+            dataIndex: 'logo',
             width: 60,
-            render: (rowData) => {
-                if (rowData.logo) {
+            render: (_, record) => {
+                console.log(record)
+                if (record.logo) {
                     return (
                         <div style={{ width: '60px' }}>
-                            <Image src={rowData.logo} alt={'logo'} width={50} />
+                            <Image src={record.logo} alt={'logo'} width={50} />
                         </div>
                     )
                 }
@@ -137,6 +144,7 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
             render: (created) => {
                 return <>{dayjs.unix(created).format('LLL')}</>
             },
+            defaultSortOrder: 'descend',
         },
         // {
         //     title: 'Owner Id',
@@ -176,7 +184,6 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
         return acc
     }, {})
 
-    console.log('OWNERS', owners)
     return (
         <div className="data-table">
             <Table

@@ -10,7 +10,7 @@ import {
     InputLeftElement,
 } from '@chakra-ui/react'
 import { FaArrowRight, FaEnvelope, FaTimes, FaUsers } from 'react-icons/fa'
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { useAuth } from '@lib/auth'
 import { ITeam, Teams } from '@lib/models/team'
 import Loader from '../Loader'
@@ -23,6 +23,7 @@ export default function RegisterTeamForm(): JSX.Element {
 
     const { push } = useRouter()
     const { redirect } = useRedirect('/team/players')
+    const [submitting, setSubmitting] = useState<boolean>(false)
     const { methods, handleLogoClick, handleLogoClear, handleFileInput } = useTeamForm({ uploadRef })
     const {
         getValues,
@@ -44,18 +45,21 @@ export default function RegisterTeamForm(): JSX.Element {
             console.log('User already owns a team')
             return push(redirect)
         }
-        Teams.createTeam(data, user)
-            .then(() => {
-                console.log('SUCCESS')
-                push(redirect)
-            })
-            .catch((err) => {
-                console.log('ERROR', err)
-                // handle error
-            })
+        if (submitting) {
+            Teams.createTeam(data, user)
+                .then(() => {
+                    console.log('SUCCESS')
+                    push(redirect)
+                })
+                .catch((err) => {
+                    console.log('ERROR', err)
+                    // handle error
+                })
+        }
     }
 
     const onSubmit = (data) => {
+        setSubmitting(true)
         const contactEmail = data.contact_email ? data.contact_email : user.email!
         handleCreate({
             name: data.name,
@@ -63,7 +67,7 @@ export default function RegisterTeamForm(): JSX.Element {
             owner: user.uid,
             contact_email: contactEmail,
         }).then((result) => {
-            console.log(result)
+            setSubmitting(false)
         })
     }
 
@@ -128,7 +132,7 @@ export default function RegisterTeamForm(): JSX.Element {
             </div>
             <div className="flex justify-end px-8">
                 <div className="text-right">
-                    <Button colorScheme="green" type="submit" isLoading={isSubmitting}>
+                    <Button colorScheme="green" type="submit" isLoading={isSubmitting} disabled={submitting}>
                         Complete Registration&nbsp;&nbsp;
                         <FaArrowRight className="text-xs" />
                     </Button>
