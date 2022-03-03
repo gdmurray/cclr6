@@ -1,7 +1,7 @@
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import AdminLayout from '@components/admin/layout'
 import { adminFireStore } from '@lib/firebase/admin'
-import Table from 'rc-table'
+import { Table } from 'antd'
 import { getQueryKeyMap } from '@lib/utils'
 import { IRegistration, ITeam } from '@lib/models/team'
 import { Button, useToast } from '@chakra-ui/react'
@@ -99,6 +99,11 @@ const AdminTournament = ({ data }): JSX.Element => {
             title: 'Team Name',
             dataIndex: 'name',
             key: 'name',
+            filters: [...new Set(data.map((elem) => elem.name))].map((elem) => ({
+                value: elem,
+                text: elem,
+            })),
+            onFilter: (value, record) => record.name === value,
         },
         {
             title: 'registered',
@@ -126,8 +131,13 @@ const AdminTournament = ({ data }): JSX.Element => {
         },
     ]
     return (
-        <div>
-            <Table rowKey={(record) => record.id} className="data-table" columns={columns} data={data} />
+        <div className="data-table">
+            <Table
+                pagination={{ pageSize: 100 }}
+                rowKey={(record) => record.id}
+                columns={columns}
+                dataSource={[...data].sort((a, b) => Number(b.registered) - Number(a.registered))}
+            />
         </div>
     )
 }

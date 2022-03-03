@@ -3,6 +3,7 @@ import { Button, Tab, TabList, Tabs } from '@chakra-ui/react'
 import useTabsNavigator from '@components/Layout/useTabsNavigator'
 import Loader from '@components/Loader'
 import { FaArrowLeft } from 'react-icons/fa'
+import 'antd/dist/antd.dark.css'
 
 const tabs = [
     {

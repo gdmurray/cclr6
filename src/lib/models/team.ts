@@ -288,11 +288,23 @@ export const Teams = {
         if (data.logo === undefined) {
             data.logo = null
         }
-        return db.collection('teams').add({
-            owner: user.uid,
-            ...data,
-            setup_completed: false,
-        })
+        return db
+            .collection('teams')
+            .where('owner', '==', user.uid)
+            .get()
+            .then((teams) => {
+                if (teams.size === 0) {
+                    db.collection('teams')
+                        .add({
+                            owner: user.uid,
+                            ...data,
+                            setup_completed: false,
+                        })
+                        .then((result) => {
+                            console.log('Created team')
+                        })
+                }
+            })
     },
     updateTeam: (id, data: Partial<ITeam>) => {
         return db

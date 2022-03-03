@@ -37,18 +37,17 @@ export default function RegisterTeamForm(): JSX.Element {
         return <Loader text={'Loading Team Registration'} />
     }
 
-    const handleCreate = (data: ITeam) => {
+    const handleCreate = async (data: ITeam) => {
+        const teamExists = await Teams.getTeamByOwnerID(user.uid)
+        console.log(teamExists)
+        if (teamExists) {
+            console.log('User already owns a team')
+            return push(redirect)
+        }
         Teams.createTeam(data, user)
-            .then((result) => {
-                console.log('CREATE TEAM...')
-                result.get().then((data) => {
-                    const createdTeam = {
-                        id: data.id,
-                        ...data.data(),
-                    }
-                    console.log(createdTeam)
-                    push(redirect)
-                })
+            .then(() => {
+                console.log('SUCCESS')
+                push(redirect)
             })
             .catch((err) => {
                 console.log('ERROR', err)
@@ -63,6 +62,8 @@ export default function RegisterTeamForm(): JSX.Element {
             logo: data.logo,
             owner: user.uid,
             contact_email: contactEmail,
+        }).then((result) => {
+            console.log(result)
         })
     }
 
