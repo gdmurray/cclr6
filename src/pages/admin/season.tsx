@@ -3,7 +3,7 @@ import AdminLayout from '@components/admin/layout'
 import React, { useRef, useState } from 'react'
 import { SeasonTwoSplit1 } from '@lib/models/season'
 // import { ToornamentClient } from '@lib/api/toornament'
-import Table from 'rc-table'
+import { Table } from 'antd'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
 import { FaCheck, FaChevronCircleRight, FaTimes } from 'react-icons/fa'
@@ -130,9 +130,9 @@ const QualifierTable = ({ qualifiers }: { qualifiers: Tournament[] }) => {
     ]
 
     return (
-        <div>
+        <div className="data-table">
             <h2 className="page-title-sm">Qualifiers</h2>
-            <Table rowKey={(record) => record.id} className="data-table" columns={columns} data={qualifiers} />
+            <Table rowKey={(record) => record.id} columns={columns} dataSource={qualifiers} />
         </div>
     )
 }
@@ -279,9 +279,9 @@ const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
     ]
 
     return (
-        <div>
+        <div className="data-table">
             <h2 className="page-title-sm">Payments</h2>
-            <Table className="data-table" columns={columns} data={payments} rowKey={(elem) => elem.id} />
+            <Table columns={columns} dataSource={payments} rowKey={(elem) => elem.id} />
         </div>
     )
 }

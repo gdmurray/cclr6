@@ -2,13 +2,19 @@ import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import AdminLayout from '@components/admin/layout'
 import React, { useState } from 'react'
 import { adminFireStore } from '@lib/firebase/admin'
-import Table from 'rc-table'
-import { Image } from '@chakra-ui/react'
+// import Table from 'rc-table'
+import { Table } from 'antd'
+import { Image, Tooltip } from '@chakra-ui/react'
 import { FaCheck, FaChevronCircleRight, FaMinusSquare, FaPlusSquare } from 'react-icons/fa'
 import { AlignType } from 'rc-table/lib/interface'
 import { useRouter } from 'next/router'
 import { ITeam } from '@lib/models/team'
 import { RenderExpandIconProps } from 'rc-table/es/interface'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+import dayjs from 'dayjs'
+import { ColumnsType } from 'antd/es/table'
+
+dayjs.extend(LocalizedFormat)
 
 export const getServerSideProps = withAuthSSR({
     whenNotAdmin: AuthAction.REDIRECT_TO_APP,
@@ -20,6 +26,7 @@ export const getServerSideProps = withAuthSSR({
         return Promise.resolve({
             id: team.id,
             ...team.data(),
+            created: team._createTime._seconds,
             players: players.docs.map((player) => ({ id: player.id, ...player.data() })),
         })
     }
@@ -81,24 +88,30 @@ const expandedRowRender = (team) => {
         <Table
             columns={columns}
             rowKey={(record) => record.id}
-            data={team.players ? sortByKey(team.players, 'order') : []}
+            dataSource={team.players ? sortByKey(team.players, 'order') : []}
         />
     )
 }
 
-const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
+type AdminTeam = ITeam & {
+    created: number
+}
+
+const AdminTeams = ({ data }: { data: AdminTeam[] }) => {
     const { push } = useRouter()
     const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([])
-    const columns = [
+    const columns: ColumnsType<AdminTeam> = [
         {
             title: 'Logo',
-            field: 'logo',
+            key: 'logo',
+            dataIndex: 'logo',
             width: 60,
-            render: (rowData) => {
-                if (rowData.logo) {
+            render: (_, record) => {
+                console.log(record)
+                if (record.logo) {
                     return (
                         <div style={{ width: '60px' }}>
-                            <Image src={rowData.logo} alt={'logo'} width={50} />
+                            <Image src={record.logo} alt={'logo'} width={50} />
                         </div>
                     )
                 }
@@ -109,6 +122,9 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            render: (name, team) => {
+                return <Tooltip title={team.id}>{name}</Tooltip>
+            },
         },
         // {
         //     title: 'id',
@@ -119,6 +135,16 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
             title: 'Contact',
             dataIndex: 'contact_email',
             key: 'contact_email',
+        },
+        {
+            title: 'Created',
+            dataIndex: 'created',
+            key: 'created',
+            sorter: (a, b) => a.created - b.created,
+            render: (created) => {
+                return <>{dayjs.unix(created).format('LLL')}</>
+            },
+            defaultSortOrder: 'descend',
         },
         // {
         //     title: 'Owner Id',
@@ -158,13 +184,12 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
         return acc
     }, {})
 
-    console.log('OWNERS', owners)
     return (
-        <div>
+        <div className="data-table">
             <Table
-                className="data-table"
                 columns={columns}
-                data={data}
+                dataSource={data}
+                pagination={{ pageSize: 100 }}
                 rowKey={(record) => record.id}
                 expandable={{
                     expandedRowKeys: expandedRowKeys,
@@ -185,7 +210,12 @@ const AdminTeams = ({ data }: { data: Partial<ITeam>[] }) => {
                         )
                     },
                     expandedRowRender: (team) => {
-                        return <div className="nested">{expandedRowRender(team)}</div>
+                        return (
+                            <div className="nested">
+                                <span>Team ID: {team.id}</span>
+                                {expandedRowRender(team)}
+                            </div>
+                        )
                     },
                 }}
             />

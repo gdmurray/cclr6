@@ -74,7 +74,7 @@ const TeamLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
         }
         if (!authLoading && user && !team && !teamLoading) {
             toast({ title: 'Error Loading Team Information, do you belong to a team?' })
-            push('/')
+            push('/team/register')
         }
     }, [authLoading, user, team, teamLoading])
     return (

@@ -236,6 +236,7 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
 }
 
 export default function Navigation() {
+    const { pathname } = useRouter()
     const { user, signOut } = useAuth()
     const { team } = useTeam({ user })
 
@@ -280,8 +281,9 @@ export default function Navigation() {
     const [routes, setRoutes] = useState<NavItem[]>(getRoutes())
 
     useEffect(() => {
+        console.log('getting routes')
         setRoutes(getRoutes())
-    }, [user, team, isAdmin])
+    }, [user, team, isAdmin, pathname])
 
     // const routes = getRoutes()
 

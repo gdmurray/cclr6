@@ -1,13 +1,14 @@
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import AdminLayout from '@components/admin/layout'
 import { adminFireStore } from '@lib/firebase/admin'
-import Table from 'rc-table'
-import { getQueryKeyMap } from '@lib/utils'
+import { Table } from 'antd'
+// import { getQueryKeyMap } from '@lib/utils'
 import { IRegistration, ITeam } from '@lib/models/team'
 import { Button, useToast } from '@chakra-ui/react'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import React from 'react'
 import { useRouter } from 'next/router'
+import { ColumnsType } from 'antd/es/table'
 
 interface TeamRegistrations extends ITeam {
     registered: boolean
@@ -64,7 +65,10 @@ export const getServerSideProps = withAuthSSR({
     }
 })
 
-const AdminTournament = ({ data }): JSX.Element => {
+type AdminRegistration = IRegistration & {
+    name: string
+}
+const AdminTournament = ({ data }: { data: AdminRegistration[] }): JSX.Element => {
     const router = useRouter()
     const { tId } = router.query as { tId: string }
     const toast = useToast({ position: 'top-right', duration: 2000, variant: 'solid' })
@@ -94,11 +98,16 @@ const AdminTournament = ({ data }): JSX.Element => {
             })
         })
     }
-    const columns = [
+    const columns: ColumnsType<AdminRegistration> = [
         {
             title: 'Team Name',
             dataIndex: 'name',
             key: 'name',
+            filters: [...new Set(data.map((elem) => elem.name))].map((elem) => ({
+                value: elem,
+                text: elem,
+            })),
+            onFilter: (value, record) => record.name === value,
         },
         {
             title: 'registered',
@@ -126,8 +135,13 @@ const AdminTournament = ({ data }): JSX.Element => {
         },
     ]
     return (
-        <div>
-            <Table rowKey={(record) => record.id} className="data-table" columns={columns} data={data} />
+        <div className="data-table">
+            <Table
+                pagination={{ pageSize: 100 }}
+                rowKey={(record) => record.id}
+                columns={columns}
+                dataSource={[...data].sort((a, b) => Number(b.registered) - Number(a.registered))}
+            />
         </div>
     )
 }
