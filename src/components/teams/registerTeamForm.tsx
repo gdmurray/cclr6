@@ -24,12 +24,13 @@ export default function RegisterTeamForm(): JSX.Element {
     const { push } = useRouter()
     const { redirect } = useRedirect('/team/players')
     const [submitting, setSubmitting] = useState<boolean>(false)
+    // const [ss,] = useState<number>(0)
     const { methods, handleLogoClick, handleLogoClear, handleFileInput } = useTeamForm({ uploadRef })
     const {
         getValues,
         handleSubmit,
         register,
-        formState: { errors, isSubmitting },
+        formState: { errors, isSubmitting, submitCount },
     } = methods
 
     const { user, loading: userLoading } = useAuth()
@@ -40,14 +41,17 @@ export default function RegisterTeamForm(): JSX.Element {
 
     const handleCreate = async (data: ITeam) => {
         const teamExists = await Teams.getTeamByOwnerID(user.uid)
-        console.log(teamExists)
+        console.log('Team Exists: ', teamExists)
         if (teamExists) {
             console.log('User already owns a team')
             return push(redirect)
         }
-        if (submitting) {
+
+        if (submitCount === 0) {
+            console.log('Creating team')
             Teams.createTeam(data, user)
                 .then(() => {
+                    setSubmitting(false)
                     console.log('SUCCESS')
                     push(redirect)
                 })
@@ -56,6 +60,7 @@ export default function RegisterTeamForm(): JSX.Element {
                     // handle error
                 })
         }
+        // }
     }
 
     const onSubmit = (data) => {
@@ -66,8 +71,8 @@ export default function RegisterTeamForm(): JSX.Element {
             logo: data.logo,
             owner: user.uid,
             contact_email: contactEmail,
-        }).then((result) => {
-            setSubmitting(false)
+        }).then((_res) => {
+            return _res
         })
     }
 
@@ -132,7 +137,12 @@ export default function RegisterTeamForm(): JSX.Element {
             </div>
             <div className="flex justify-end px-8">
                 <div className="text-right">
-                    <Button colorScheme="green" type="submit" isLoading={isSubmitting} disabled={submitting}>
+                    <Button
+                        colorScheme="green"
+                        type="submit"
+                        isLoading={isSubmitting || submitting}
+                        disabled={isSubmitting}
+                    >
                         Complete Registration&nbsp;&nbsp;
                         <FaArrowRight className="text-xs" />
                     </Button>
