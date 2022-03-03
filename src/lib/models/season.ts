@@ -1,5 +1,8 @@
 import { Tournament } from '@lib/models/tournament'
+import db from '@lib/firebase/firestore'
+import { Firestore } from '@lib/firebase/firebase'
 import dayjs from 'dayjs'
+import { IRegistration } from '@lib/models/team'
 
 export interface Season {
     id: string
@@ -55,6 +58,7 @@ export const SeasonTwoSplit1: Season = {
             scheduled_date_start: '2022-03-04',
             scheduled_date_end: '2022-03-06',
             registration_enabled: true,
+            size: 32,
             registration_opening_datetime: dayjs('2022-02-28').toISOString(),
             registration_closing_datetime: dayjs(new Date('March 4, 2022 16:00:00')).toISOString(),
         },
@@ -65,8 +69,48 @@ export const SeasonTwoSplit1: Season = {
             scheduled_date_start: '2022-03-11',
             scheduled_date_end: '2022-03-13',
             registration_enabled: true,
+            size: 32,
             registration_opening_datetime: dayjs('2022-03-06').toISOString(),
             registration_closing_datetime: dayjs(new Date('March 11, 2022 16:00:00')).toISOString(),
         },
     ],
+}
+
+export function CreateSeasonClient(database: Firestore | any = db) {
+    return {
+        getRegisteredTeams: async (tournamentId, teamData = false): Promise<IRegistration[]> => {
+            const registrations = await database
+                .collectionGroup('registrations')
+                .where('tournament_id', '==', tournamentId)
+                .get()
+            if (teamData == true) {
+                return Promise.all(
+                    registrations.docs.map((elem) => {
+                        const segments = elem.ref.parent._queryOptions.parentPath.segments
+                        return elem.ref.parent._serializer
+                            .createReference(segments.join('/'))
+                            .get()
+                            .then(async (result) => {
+                                const teamData = result.data()
+                                const players = await database
+                                    .collection('teams')
+                                    .doc(result.id)
+                                    .collection('players')
+                                    .get()
+                                return {
+                                    id: result.id,
+                                    name: teamData.name,
+                                    players: players.docs.map((elem) => ({
+                                        ...elem.data(),
+                                    })),
+                                    ...elem.data(),
+                                    ...teamData,
+                                }
+                            })
+                    })
+                )
+            }
+            return registrations.docs.map((elem) => ({ ...elem.data() }))
+        },
+    }
 }

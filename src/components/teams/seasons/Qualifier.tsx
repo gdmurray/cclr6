@@ -19,29 +19,29 @@ type QualifierProps = {
 
 export function Qualifier({ qualifier, eligibility, season }: QualifierProps): JSX.Element {
     const teamContext = useContext(TeamContext)
-    // const [participants, setParticipants] = useState<[]>([])
+    const [participants, setParticipants] = useState<[]>([])
     const { team } = teamContext
     const teamClient = CreateTeamClient(team)
     const tournamentClient = CreateTournamentClient(qualifier)
 
     const { isPurchasing, handlePaymentClick, teamPurchases } = useContext(PaymentContext)
 
-    // useEffect(() => {
-    //     if (qualifier.id) {
-    //         if (qualifier.id.length > 1) {
-    //             fetch(`/api/toornament/${qualifier.id}/participants`, {
-    //                 method: 'GET',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //             }).then((response) => {
-    //                 response.json().then((res) => {
-    //                     setParticipants(res.participants)
-    //                 })
-    //             })
-    //         }
-    //     }
-    // }, [qualifier])
+    useEffect(() => {
+        if (qualifier.id) {
+            if (qualifier.id.length > 1) {
+                fetch(`/api/qualifier/${qualifier.id}/participants`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }).then((response) => {
+                    response.json().then((res) => {
+                        setParticipants(res.participants)
+                    })
+                })
+            }
+        }
+    }, [qualifier])
 
     const [status, setStatus] = useState<{
         message: string
@@ -129,6 +129,15 @@ export function Qualifier({ qualifier, eligibility, season }: QualifierProps): J
                                     return
                                 }
                             } else {
+                                if (participants.length == qualifier.size) {
+                                    setStatus({
+                                        disabled: true,
+                                        message: 'Qualifier full!',
+                                        button: 'Full',
+                                        status: 'default',
+                                    })
+                                    return
+                                }
                                 setStatus({
                                     disabled: false,
                                     message: 'Open for Registration!',
@@ -230,7 +239,7 @@ export function Qualifier({ qualifier, eligibility, season }: QualifierProps): J
                             })
                         }
                     >
-                        {hover.isHovering ? <>$40.00 CAD</> : <>&nbsp;&nbsp;&nbsp;Purchase&nbsp;&nbsp;</>}
+                        {hover.isHovering ? <>$50.00 CAD</> : <>&nbsp;&nbsp;&nbsp;Purchase&nbsp;&nbsp;</>}
                     </Button>
                 </Tooltip>
             )
@@ -285,10 +294,13 @@ export function Qualifier({ qualifier, eligibility, season }: QualifierProps): J
                         ) : (
                             qualifier.name
                         )}
-                        {/*<span className="mx-2 text-alt-2 text-sm font-medium flex flex-row items-center">*/}
-                        {/*    <FaUsers />*/}
-                        {/*    &nbsp;0/16*/}
-                        {/*</span>*/}
+                        <span
+                            onClick={() => router.push(`/seasons/two/teams?sid=${qualifier.id}`)}
+                            className="mx-2 text-alt-2 text-sm font-medium flex flex-row items-center hover:underline cursor-pointer"
+                        >
+                            <FaUsers />
+                            &nbsp;{participants.length}/{qualifier.size}
+                        </span>
                     </div>
                     <div
                         style={{ width: '110px' }}

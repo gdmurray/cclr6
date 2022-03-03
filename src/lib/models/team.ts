@@ -237,6 +237,10 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
 }
 
 export const Teams = {
+    getTeamById: async (teamId: string): Promise<ITeam | null> => {
+        const team = await db.collection('teams').doc(teamId).get()
+        return { id: team.id, ...team.data() } as ITeam
+    },
     getTeamByUserID: async (userId: string): Promise<ITeam | null> => {
         const teamWithOwner = await db.collection('teams').where('owner', '==', userId).get()
         if (!teamWithOwner.empty) {

@@ -4,9 +4,10 @@ import { adminFireStore } from '@lib/firebase/admin'
 import Table from 'rc-table'
 import { getQueryKeyMap } from '@lib/utils'
 import { IRegistration, ITeam } from '@lib/models/team'
-import { Button } from '@chakra-ui/react'
+import { Button, useToast } from '@chakra-ui/react'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import React from 'react'
+import { useRouter } from 'next/router'
 
 interface TeamRegistrations extends ITeam {
     registered: boolean
@@ -64,7 +65,35 @@ export const getServerSideProps = withAuthSSR({
 })
 
 const AdminTournament = ({ data }): JSX.Element => {
-    console.log(data)
+    const router = useRouter()
+    const { tId } = router.query as { tId: string }
+    const toast = useToast({ position: 'top-right', duration: 2000, variant: 'solid' })
+
+    const handleRegister = async (team_id, tournament_id) => {
+        fetch(`/api/admin/qualifier/register`, {
+            method: 'POST',
+            body: JSON.stringify({
+                team_id: team_id,
+                event_name: tournament_id,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((result) => {
+            result.json().then((data) => {
+                console.log('DATA: ', data)
+                if (data.status === 'success') {
+                    toast({
+                        title: `Registered for ${tId}`,
+                        status: 'success',
+                        onCloseComplete: () => {
+                            // router.reload()
+                        },
+                    })
+                }
+            })
+        })
+    }
     const columns = [
         {
             title: 'Team Name',
@@ -87,13 +116,17 @@ const AdminTournament = ({ data }): JSX.Element => {
             title: 'Actions',
             key: 'actions',
             render: (record) => {
-                return <Button type="button">Register</Button>
+                if (!record.registered)
+                    return (
+                        <Button type="button" onClick={() => handleRegister(record.id, tId)}>
+                            Register
+                        </Button>
+                    )
             },
         },
     ]
     return (
         <div>
-            <div>STILL A WIP, NOT FUNCTIONAL</div>
             <Table rowKey={(record) => record.id} className="data-table" columns={columns} data={data} />
         </div>
     )

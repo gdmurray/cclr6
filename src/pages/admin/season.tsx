@@ -1,8 +1,8 @@
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import AdminLayout from '@components/admin/layout'
 import React, { useRef, useState } from 'react'
-import { SeasonOne } from '@lib/models/season'
-import { ToornamentClient } from '@lib/api/toornament'
+import { SeasonTwoSplit1 } from '@lib/models/season'
+// import { ToornamentClient } from '@lib/api/toornament'
 import Table from 'rc-table'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
@@ -38,16 +38,16 @@ dayjs.extend(LocalizedFormat)
 export const getServerSideProps = withAuthSSR({
     whenNotAdmin: AuthAction.REDIRECT_TO_APP,
 })(async () => {
-    const season = SeasonOne
-    const client = new ToornamentClient()
-    const qualifiers = []
-    for (let i = 0; i < season.qualifiers.length; i += 1) {
-        const { id } = season.qualifiers[i]
-        const qual = await client.getTournament(id)
-        qualifiers.push(qual)
-    }
+    // const season = SeasonOne
+    // const client = new ToornamentClient()
+    const qualifiers = SeasonTwoSplit1.qualifiers
+    // for (let i = 0; i < season.qualifiers.length; i += 1) {
+    //     const { id } = season.qualifiers[i]
+    //     const qual = await client.getTournament(id)
+    //     qualifiers.push(qual)
+    // }
 
-    const allPayments = await adminFireStore.collectionGroup('payments').where('season', '==', '1').get()
+    const allPayments = await adminFireStore.collectionGroup('payments').where('season', '>=', 's2').get()
 
     const paymentMap = allPayments.docs.reduce((acc: Record<string, any>, doc) => {
         const teamId = doc.ref.path.split('/')[1]
@@ -160,6 +160,8 @@ const PaymentCell = ({ record }: { record: TeamPayment }): JSX.Element => {
                 team_id: record.id,
                 payment_url: values.payment_url,
                 email_address: values.email_address || record.contact_email,
+                amount: values.amount,
+                season: values.season,
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -200,6 +202,14 @@ const PaymentCell = ({ record }: { record: TeamPayment }): JSX.Element => {
                                 <FormControl>
                                     <FormLabel>Email Address</FormLabel>
                                     <Input {...register('email_address')} type="email" />
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel>Season Id</FormLabel>
+                                    <Input {...register('season')} type="text" />
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel>Payment Amount</FormLabel>
+                                    <Input {...register('amount')} type="text" />
                                 </FormControl>
                             </ModalBody>
                             <ModalFooter>
