@@ -5,8 +5,9 @@ import useTeam from '@lib/useTeam'
 import Loader from '@components/Loader'
 import { TeamProvider } from '@components/teams/teamContext'
 import useTabsNavigator from '@components/Layout/useTabsNavigator'
-import { FaClipboardList, FaCog, FaCreditCard, FaHome, FaUser, FaUsers } from 'react-icons/fa'
+import { FaClipboardList, FaCog, FaCreditCard, FaHome, FaUsers } from 'react-icons/fa'
 import useRedirect from '@components/Layout/useRedirect'
+import { RegistrationSteps } from './RegistrationSteps'
 
 const teamTabs: { label: React.ReactNode; path: string }[] = [
     {
@@ -79,6 +80,7 @@ const TeamLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
     }, [authLoading, user, team, teamLoading])
     return (
         <div className="page-content">
+            <RegistrationSteps team={team} />
             <div className="page-title-sm">Team Information</div>
             <div>
                 <Tabs index={tabIndex} onChange={handleTabChange}>

@@ -254,6 +254,11 @@ const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            filters: [...new Set(payments.map((elem) => elem.name))].map((elem) => ({
+                value: elem,
+                text: elem,
+            })),
+            onFilter: (value, record) => record.name === value,
         },
         {
             title: 'Contact Email',
