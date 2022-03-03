@@ -212,7 +212,9 @@ const AdminTeams = ({ data }: { data: AdminTeam[] }) => {
                     expandedRowRender: (team) => {
                         return (
                             <div className="nested">
-                                <span>Team ID: {team.id}</span>
+                                <span>
+                                    Team ID: {team.id} | Owner ID: {team.owner}{' '}
+                                </span>
                                 {expandedRowRender(team)}
                             </div>
                         )
