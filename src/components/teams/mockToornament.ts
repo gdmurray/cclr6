@@ -3,6 +3,7 @@ import { Tournament } from '@lib/models/tournament'
 export const data: Tournament[] = [
     {
         name: 'CCL: Season 1',
+        short_name: '',
         full_name: 'Canada Contenders Series: Season 1',
         scheduled_date_start: '2021-07-01',
         scheduled_date_end: '2021-08-01',

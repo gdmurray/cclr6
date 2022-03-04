@@ -29,6 +29,7 @@ const tournaments = [
 const tournamentData: Tournament[] = [
     {
         name: 'CCL Open Qualifier #1',
+        short_name: '',
         full_name: 'CCL Stage 1 Open Qualifier #1',
         scheduled_date_start: '2021-06-05',
         scheduled_date_end: '2021-06-06',
@@ -49,6 +50,7 @@ const tournamentData: Tournament[] = [
     {
         name: 'CCL Open Qualifier #2',
         full_name: 'CCL Stage 1 Open Qualifier #2',
+        short_name: '',
         scheduled_date_start: '2021-06-12',
         scheduled_date_end: '2021-06-13',
         timezone: 'America/Toronto',
@@ -68,6 +70,7 @@ const tournamentData: Tournament[] = [
     {
         name: 'CCL Open Qualifier #3',
         full_name: 'CCL Stage 1 Open Qualifier #3',
+        short_name: '',
         scheduled_date_start: '2021-06-19',
         scheduled_date_end: '2021-06-20',
         timezone: 'America/Toronto',
@@ -87,6 +90,7 @@ const tournamentData: Tournament[] = [
     {
         name: 'CCL Open Qualifier #4',
         full_name: 'CCL Stage 1 Open Qualifier #4',
+        short_name: '',
         scheduled_date_start: '2021-06-26',
         scheduled_date_end: '2021-06-27',
         timezone: 'America/Toronto',

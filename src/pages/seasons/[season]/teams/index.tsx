@@ -194,7 +194,7 @@ const SeasonTeams = ({ seasons, participants }): JSX.Element => {
             <div className="text-alt-2 font-medium">
                 <Tabs variant="soft-rounded" colorScheme="green" defaultIndex={getDefaultIndex()}>
                     <TabList className="space-x-2">
-                        {Object.values(seasons).map((event) => (
+                        {Object.values(seasons).map((event: { id: string; short_name: string }) => (
                             <Tab key={event.id}>{event.short_name}</Tab>
                         ))}
                         {/*{SeasonTwoSplit1.qualifiers.map((qual) => (*/}
