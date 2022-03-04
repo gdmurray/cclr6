@@ -4,11 +4,13 @@ import SeasonLayout from '@components/season/SeasonLayout'
 import { GetStaticPathsResult } from 'next'
 import { getSeasonPaths } from '@lib/season/common'
 import { Tab, TabList, TabPanels, Tabs, TabPanel, Image, useColorMode } from '@chakra-ui/react'
-import { SeasonTwoSplit1 } from '@lib/models/season'
+import { CreateSeasonClient, SeasonTwoSplit1 } from '@lib/models/season'
 import { getHostName } from '@lib/utils'
 import { IPlayer } from '@lib/models/player'
 import Loader from '@components/Loader'
 import { useRouter } from 'next/router'
+import { adminFireStore } from '@lib/firebase/admin'
+import { IRegistration, ITeam } from '@lib/models/team'
 
 // import { getStaticProps as getTeamsStaticProps } from '@components/season/one/teams'
 
@@ -21,8 +23,29 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
     // if(season === "two"){
     //
     // }
+    const seasonMap = [SeasonTwoSplit1].reduce((acc, elem) => {
+        acc[elem.id] = elem
+        for (const qual of elem.qualifiers) {
+            acc[qual.id] = qual
+        }
+        return acc
+    }, {})
+    const seasonClient = CreateSeasonClient(adminFireStore)
+    const seasonParticipants = await Promise.all(
+        Object.keys(seasonMap).map((seasonId) => seasonClient.getRegisteredTeams(seasonId, true))
+    )
+    const participants = Object.keys(seasonMap).reduce((acc, elem, idx) => {
+        acc[elem] = seasonParticipants[idx]
+        return acc
+    }, {})
+    console.log(seasonParticipants)
     return {
-        props: {},
+        props: {
+            seasons: seasonMap,
+            participants,
+            // seasons:
+        },
+        revalidate: 3600,
     }
 }
 
@@ -51,26 +74,12 @@ function TeamPlayer({ player }: { player: IPlayer }): JSX.Element {
     )
 }
 
-const QualifierTeams = ({ qualifier_id }: { qualifier_id: string }): JSX.Element => {
-    const [loading, setLoading] = useState<boolean>(true)
-    const [participants, setParticipants] = useState([])
-    useEffect(() => {
-        fetch(`/api/qualifier/${qualifier_id}/participants?team_data=true`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => {
-            response.json().then((res) => {
-                setLoading(false)
-                setParticipants(res.participants)
-            })
-        })
-    }, [])
-
-    if (loading) {
-        return <Loader text={'Loading Teams'} />
+type ParticipantRegistration = ITeam &
+    IRegistration & {
+        players: IPlayer[]
     }
+
+const QualifierTeams = ({ participants }: { participants: ParticipantRegistration[] }): JSX.Element => {
     return (
         <div className="flex flex-col space-y-4">
             {participants.length === 0 && <div className="text-alt-2 font-medium">No teams registered</div>}
@@ -86,7 +95,9 @@ const QualifierTeams = ({ qualifier_id }: { qualifier_id: string }): JSX.Element
                                 {/*<div className="text-alt">1.&nbsp;</div>*/}
                                 <div className="group-hover:underline">{team.name}</div>
                             </div>
-                            <div className="text-lg font-medium">{/*<span className="text-alt-2">pts</span>*/}</div>
+                            <div className="text-lg font-medium">
+                                <span className="text-alt-2">{team.status !== 'REGISTERED' && <>{team.status}</>}</span>
+                            </div>
                         </div>
                         <div className="flex flex-row">
                             <div className=" md:p-2 md:mr-8 ">
@@ -161,14 +172,15 @@ const QualifierTeams = ({ qualifier_id }: { qualifier_id: string }): JSX.Element
         </div>
     )
 }
-const SeasonTeams = (): JSX.Element => {
+const SeasonTeams = ({ seasons, participants }): JSX.Element => {
     const router = useRouter()
+    const seasonKeys = Object.keys(seasons)
 
     function getDefaultIndex() {
         const { sid } = router.query
         if (sid) {
             console.log(sid)
-            const idx = SeasonTwoSplit1.qualifiers.map((elem) => elem.id).indexOf(sid as string)
+            const idx = seasonKeys.indexOf(sid as string)
             console.log('idx: ', idx)
             if (idx != -1) {
                 return idx
@@ -182,16 +194,24 @@ const SeasonTeams = (): JSX.Element => {
             <div className="text-alt-2 font-medium">
                 <Tabs variant="soft-rounded" colorScheme="green" defaultIndex={getDefaultIndex()}>
                     <TabList className="space-x-2">
-                        {SeasonTwoSplit1.qualifiers.map((qual) => (
-                            <Tab key={qual.id}>{qual.name}</Tab>
+                        {Object.values(seasons).map((event) => (
+                            <Tab key={event.id}>{event.short_name}</Tab>
                         ))}
+                        {/*{SeasonTwoSplit1.qualifiers.map((qual) => (*/}
+                        {/*    <Tab key={qual.id}>{qual.name}</Tab>*/}
+                        {/*))}*/}
                     </TabList>
                     <TabPanels>
-                        {SeasonTwoSplit1.qualifiers.map((qual) => (
-                            <TabPanel key={qual.id + '-teams'}>
-                                <QualifierTeams qualifier_id={qual.id} />
+                        {seasonKeys.map((sId) => (
+                            <TabPanel key={seasons[sId].id + '-teams'}>
+                                <QualifierTeams participants={participants[sId]} />
                             </TabPanel>
                         ))}
+                        {/*{SeasonTwoSplit1.qualifiers.map((qual) => (*/}
+                        {/*    <TabPanel key={qual.id + '-teams'}>*/}
+                        {/*        <QualifierTeams qualifier_id={qual.id} />*/}
+                        {/*    </TabPanel>*/}
+                        {/*))}*/}
                     </TabPanels>
                 </Tabs>
             </div>

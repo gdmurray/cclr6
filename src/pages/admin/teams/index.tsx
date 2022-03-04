@@ -13,6 +13,7 @@ import { RenderExpandIconProps } from 'rc-table/es/interface'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
 import { ColumnsType } from 'antd/es/table'
+import { createFilters } from '@lib/utils'
 
 dayjs.extend(LocalizedFormat)
 
@@ -107,7 +108,6 @@ const AdminTeams = ({ data }: { data: AdminTeam[] }) => {
             dataIndex: 'logo',
             width: 60,
             render: (_, record) => {
-                console.log(record)
                 if (record.logo) {
                     return (
                         <div style={{ width: '60px' }}>
@@ -122,6 +122,7 @@ const AdminTeams = ({ data }: { data: AdminTeam[] }) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            ...createFilters<AdminTeam>(data, 'name', { filterSearch: true }),
             render: (name, team) => {
                 return <Tooltip title={team.id}>{name}</Tooltip>
             },

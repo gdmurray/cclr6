@@ -1,3 +1,5 @@
+import { ColumnType } from 'antd/es/table/interface'
+
 export function findWithAttr(array: any[], attr: string, value: any): number[] {
     const idx = []
     try {
@@ -65,4 +67,28 @@ export function omit<T>(obj, omitKey): Partial<T> {
         }
         return result
     }, {})
+}
+
+export function uniqueFilters<T>(data: T[], reducer: (() => string) | string) {
+    const uniqueMap = typeof reducer === 'function' ? data.map(reducer) : data.map((elem) => elem[reducer])
+    return [...new Set(uniqueMap)].map((elem) => ({
+        value: elem,
+        text: elem,
+    }))
+}
+
+export function createFilters<T>(
+    data,
+    accessor: (() => string) | string,
+    additionalOptions: Partial<ColumnType<T>> = {}
+): Partial<ColumnType<T>> {
+    const onFilter =
+        typeof accessor === 'function'
+            ? (value, record) => [record].map(accessor).pop() === value
+            : (value, record) => record[accessor] === value
+    return {
+        filters: uniqueFilters<T>(data, accessor),
+        onFilter: onFilter,
+        ...additionalOptions,
+    }
 }

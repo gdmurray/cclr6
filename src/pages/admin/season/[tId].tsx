@@ -4,11 +4,33 @@ import { adminFireStore } from '@lib/firebase/admin'
 import { Table } from 'antd'
 // import { getQueryKeyMap } from '@lib/utils'
 import { IRegistration, ITeam } from '@lib/models/team'
-import { Button, useToast } from '@chakra-ui/react'
-import { FaCheck, FaTimes } from 'react-icons/fa'
-import React from 'react'
+import {
+    Button,
+    Input,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Select,
+    useDisclosure,
+    useToast,
+} from '@chakra-ui/react'
+import { FaCheck, FaTimes, FaChevronDown } from 'react-icons/fa'
+import React, { useRef } from 'react'
 import { useRouter } from 'next/router'
 import { ColumnsType } from 'antd/es/table'
+import { createFilters } from '@lib/utils'
+import { Season, SeasonTwoSplit1 } from '@lib/models/season'
+import { Tournament } from '@lib/models/tournament'
+import { useForm } from 'react-hook-form'
+import { FormControl, FormLabel } from '@chakra-ui/form-control'
 
 interface TeamRegistrations extends ITeam {
     registered: boolean
@@ -22,6 +44,14 @@ export const getServerSideProps = withAuthSSR({
         query: { tId },
     } = ctx
     const registrations = await adminFireStore.collectionGroup('registrations').where('tournament_id', '==', tId).get()
+
+    const seasonMap = [SeasonTwoSplit1].reduce((acc, elem) => {
+        acc[elem.id] = elem
+        for (const qual of elem.qualifiers) {
+            acc[qual.id] = qual
+        }
+        return acc
+    }, {})
 
     const teams = await adminFireStore.collection('teams').get()
 
@@ -60,15 +90,90 @@ export const getServerSideProps = withAuthSSR({
     const teamData = Object.values(teamMap)
     return {
         props: {
+            seasons: seasonMap,
             data: teamData,
         },
     }
 })
 
+const MarkAsAction = ({ tournament_id, team }): JSX.Element => {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { register, handleSubmit } = useForm()
+    const cancelRef = useRef(null)
+    const toast = useToast({ position: 'top-right', duration: 2000, variant: 'solid' })
+
+    const onSubmit = (values) => {
+        console.log('Values: ', values)
+        fetch('/api/admin/qualifier/upsert', {
+            method: 'POST',
+            body: JSON.stringify({
+                event_name: tournament_id,
+                team_id: values.team_id,
+                status: values.status,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((result) => {
+            if (result.ok) {
+                toast({
+                    title: `Marked team as ${values.status} for ${tournament_id}`,
+                    status: 'success',
+                    onCloseComplete: () => {
+                        onClose()
+                    },
+                })
+            }
+        })
+    }
+
+    return (
+        <MenuItem onClick={onOpen}>
+            Mark as...
+            <Modal isOpen={isOpen} onClose={onClose} colorScheme="gray">
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Edit Registration</ModalHeader>
+                    <ModalCloseButton />
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <ModalBody>
+                            <FormControl>
+                                <FormLabel>Team Id</FormLabel>
+                                <Input {...register('team_id', { value: team.id })} isReadOnly={true} type="text" />
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel>Status</FormLabel>
+                                <Select {...register('status')}>
+                                    <option value="INVITED">Invited</option>
+                                    <option value="QUALIFIED">Qualified</option>
+                                </Select>
+                            </FormControl>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button type="submit" colorScheme="blue" mr={4}>
+                                Upsert
+                            </Button>
+                            <Button ref={cancelRef} onClick={onClose}>
+                                Cancel
+                            </Button>
+                        </ModalFooter>
+                    </form>
+                </ModalContent>
+            </Modal>
+        </MenuItem>
+    )
+}
+
 type AdminRegistration = IRegistration & {
     name: string
 }
-const AdminTournament = ({ data }: { data: AdminRegistration[] }): JSX.Element => {
+const AdminTournament = ({
+    data,
+    seasons,
+}: {
+    data: AdminRegistration[]
+    seasons: Record<string, Tournament | Season>
+}): JSX.Element => {
     const router = useRouter()
     const { tId } = router.query as { tId: string }
     const toast = useToast({ position: 'top-right', duration: 2000, variant: 'solid' })
@@ -90,24 +195,18 @@ const AdminTournament = ({ data }: { data: AdminRegistration[] }): JSX.Element =
                     toast({
                         title: `Registered for ${tId}`,
                         status: 'success',
-                        onCloseComplete: () => {
-                            // router.reload()
-                        },
                     })
                 }
             })
         })
     }
+
     const columns: ColumnsType<AdminRegistration> = [
         {
             title: 'Team Name',
             dataIndex: 'name',
             key: 'name',
-            filters: [...new Set(data.map((elem) => elem.name))].map((elem) => ({
-                value: elem,
-                text: elem,
-            })),
-            onFilter: (value, record) => record.name === value,
+            ...createFilters<AdminRegistration>(data, 'name', { filterSearch: true }),
         },
         {
             title: 'registered',
@@ -125,17 +224,38 @@ const AdminTournament = ({ data }: { data: AdminRegistration[] }): JSX.Element =
             title: 'Actions',
             key: 'actions',
             render: (record) => {
-                if (!record.registered)
+                console.log(record)
+                return (
+                    <Menu>
+                        <MenuButton as={Button} rightIcon={<FaChevronDown />}>
+                            Actions
+                        </MenuButton>
+                        <MenuList>
+                            <MarkAsAction tournament_id={tId} team={record} />
+                            {!record.registered && (
+                                <MenuItem onClick={() => handleRegister(record.id, tId)}>Register</MenuItem>
+                            )}
+                        </MenuList>
+                    </Menu>
+                )
+                if (record.registered) {
                     return (
                         <Button type="button" onClick={() => handleRegister(record.id, tId)}>
-                            Register
+                            Mark as qualified
                         </Button>
                     )
+                }
+                return (
+                    <Button type="button" onClick={() => handleRegister(record.id, tId)}>
+                        Register
+                    </Button>
+                )
             },
         },
     ]
     return (
-        <div className="data-table">
+        <div>
+            <div className="page-title-sm">{seasons[tId].name}</div>
             <Table
                 pagination={{ pageSize: 100 }}
                 rowKey={(record) => record.id}

@@ -130,7 +130,7 @@ const QualifierTable = ({ qualifiers }: { qualifiers: Tournament[] }) => {
     ]
 
     return (
-        <div className="data-table">
+        <div>
             <h2 className="page-title-sm">Qualifiers</h2>
             <Table rowKey={(record) => record.id} columns={columns} dataSource={qualifiers} />
         </div>
@@ -296,11 +296,64 @@ interface IAdminSeason {
     payments: TeamPayment[]
 }
 
+const SeasonTable = (): JSX.Element => {
+    const { push } = useRouter()
+    const columns = [
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Date',
+            dataIndex: 'start_date',
+            key: 'start_date',
+        },
+        {
+            title: 'Reg Open',
+            dataIndex: 'registration_opens',
+            key: 'registration_opens',
+            render: (val) => {
+                return <>{dayjs(val).format('LLL')}</>
+            },
+        },
+        {
+            title: 'Reg Closed',
+            dataIndex: 'registration_closes',
+            key: 'registration_closes',
+            render: (val) => {
+                return <>{dayjs(val).format('LLL')}</>
+            },
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (val) => {
+                return (
+                    <>
+                        <FaChevronCircleRight
+                            className="cursor-pointer"
+                            onClick={() => push(`/admin/season/${val.id}`)}
+                        />
+                    </>
+                )
+            },
+        },
+    ]
+    return (
+        <div className="data-table">
+            <h2 className="page-title-sm">Seasons</h2>
+            <Table rowKey={(record) => record.id} columns={columns} dataSource={[SeasonTwoSplit1]} />
+        </div>
+    )
+}
+
 const AdminSeason = ({ qualifiers, payments }: IAdminSeason) => {
     return (
         <div className="space-y-2">
             <QualifierTable qualifiers={qualifiers} />
-            <PaymentTable payments={payments} />
+            <SeasonTable />
+            {/*<PaymentTable payments={payments} />*/}
         </div>
     )
 }

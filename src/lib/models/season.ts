@@ -8,6 +8,7 @@ export interface Season {
     id: string
     active: boolean
     name: string
+    short_name: string
     toornamentId: string
     start_date: string
     end_date: string
@@ -24,6 +25,7 @@ export const SeasonOne: Season = {
     end_date: '2021-09-01',
     registration_opens: '2021-02-22',
     registration_closes: '',
+    short_name: 'Season 1',
     name: 'Canada Contenders Series: Season 1',
     qualifiers: [
         {
@@ -49,10 +51,12 @@ export const SeasonTwoSplit1: Season = {
     end_date: '2022-04-15',
     registration_opens: '2022-02-28',
     registration_closes: '2022-03-12',
+    short_name: 'Season 2 - Split 1',
     name: 'Canada Contenders Series: Season 2 - Split 1',
     qualifiers: [
         {
             id: 's2p1q1',
+            short_name: 'Split 1 - Qualifier #1',
             name: 'CCL: S2 Split 1 Qual #1',
             full_name: 'Canada Contenders Series: Season 2 - Split 1 - Qualifier #1',
             scheduled_date_start: '2022-03-04',
@@ -60,10 +64,11 @@ export const SeasonTwoSplit1: Season = {
             registration_enabled: true,
             size: 32,
             registration_opening_datetime: dayjs('2022-02-28').toISOString(),
-            registration_closing_datetime: dayjs(new Date('March 4, 2022 16:00:00')).toISOString(),
+            registration_closing_datetime: dayjs(new Date('March 4, 2022 21:00:00')).toISOString(),
         },
         {
             id: 's2p1q2',
+            short_name: 'Split 1 - Qualifier #2',
             name: 'CCL: S2 Split 2 Qual #2',
             full_name: 'Canada Contenders Series: Season 2 - Split 1 - Qualifier #2',
             scheduled_date_start: '2022-03-11',

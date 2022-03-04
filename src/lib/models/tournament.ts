@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 
 export interface Tournament {
+    short_name: string
     name: string
     full_name: string
     scheduled_date_start: string
