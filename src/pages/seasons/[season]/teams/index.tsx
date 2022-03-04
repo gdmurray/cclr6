@@ -1,20 +1,20 @@
 import { GetStaticPropsResult } from 'next'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
 import { GetStaticPathsResult } from 'next'
 import { getSeasonPaths } from '@lib/season/common'
 import { Tab, TabList, TabPanels, Tabs, TabPanel, Image, useColorMode } from '@chakra-ui/react'
-import { CreateSeasonClient, SeasonTwoSplit1 } from '@lib/models/season'
+import { CreateSeasonClient, Season, SeasonTwoSplit1 } from '@lib/models/season'
 import { getHostName } from '@lib/utils'
 import { IPlayer } from '@lib/models/player'
-import Loader from '@components/Loader'
 import { useRouter } from 'next/router'
 import { adminFireStore } from '@lib/firebase/admin'
 import { IRegistration, ITeam } from '@lib/models/team'
+import { Tournament } from '@lib/models/tournament'
 
 // import { getStaticProps as getTeamsStaticProps } from '@components/season/one/teams'
 
-export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
+export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
     // const { season } = params
     // if (season === 'one') {
     // this needs to be wrapped in { }, but lets ignore that for now.
@@ -30,6 +30,7 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
         }
         return acc
     }, {})
+    console.log(seasonMap)
     const seasonClient = CreateSeasonClient(adminFireStore)
     const seasonParticipants = await Promise.all(
         Object.keys(seasonMap).map((seasonId) => seasonClient.getRegisteredTeams(seasonId, true))
@@ -38,7 +39,6 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
         acc[elem] = seasonParticipants[idx]
         return acc
     }, {})
-    console.log(seasonParticipants)
     return {
         props: {
             seasons: seasonMap,
@@ -172,9 +172,15 @@ const QualifierTeams = ({ participants }: { participants: ParticipantRegistratio
         </div>
     )
 }
-const SeasonTeams = ({ seasons, participants }): JSX.Element => {
+const SeasonTeams = ({
+    seasons = {},
+    participants = {},
+}: {
+    seasons: Record<string, Season | Tournament>
+    participants: Record<string, ParticipantRegistration[]>
+}): JSX.Element => {
     const router = useRouter()
-    const seasonKeys = Object.keys(seasons)
+    const seasonKeys = seasons != null ? Object.keys(seasons) : []
 
     function getDefaultIndex() {
         const { sid } = router.query
@@ -194,7 +200,7 @@ const SeasonTeams = ({ seasons, participants }): JSX.Element => {
             <div className="text-alt-2 font-medium">
                 <Tabs variant="soft-rounded" colorScheme="green" defaultIndex={getDefaultIndex()}>
                     <TabList className="space-x-2">
-                        {Object.values(seasons).map((event: { id: string; short_name: string }) => (
+                        {Object.values(seasons).map((event) => (
                             <Tab key={event.id}>{event.short_name}</Tab>
                         ))}
                         {/*{SeasonTwoSplit1.qualifiers.map((qual) => (*/}
