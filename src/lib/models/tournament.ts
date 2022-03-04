@@ -46,10 +46,11 @@ export function CreateTournamentClient(tournament: Tournament): TournamentClient
         },
 
         hasStarted(): boolean {
-            return dayjs().toDate() > dayjs(tournament.scheduled_date_start).toDate()
+            return dayjs().toDate() > dayjs(tournament.scheduled_date_start).add(1, 'days').toDate()
         },
 
         isRegistrationOpen(): boolean {
+            console.log('Has Started: ', this.hasStarted())
             if (this.hasStarted()) {
                 return false
             }

@@ -18,6 +18,10 @@ const baseRoutes: NavItem[] = [
         href: '/',
     },
     {
+        label: 'Register',
+        href: '/team/register',
+    },
+    {
         label: 'Season Two',
         href: '/seasons/two',
     },

@@ -45,7 +45,7 @@ export default async function create(req: NextApiRequest, res: NextApiResponse) 
     if (team.data().notification_settings?.payment !== false) {
         console.log('Can Send to team')
         await sendMail(team.data().contact_email, 'payment_success', {
-            event_name: 'CCL Season 1 Qualifiers',
+            event_name: 'CCL Season 2 Qualifiers',
             cta_url: 'https://cclr6.com/team/registration',
         })
     }
