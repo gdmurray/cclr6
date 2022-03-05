@@ -32,6 +32,7 @@ import { useForm } from 'react-hook-form'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import { Tournament } from '@lib/models/tournament'
 import { IPayment } from '@lib/models/payment'
+import { createFilters } from '@lib/utils'
 
 dayjs.extend(LocalizedFormat)
 
@@ -254,11 +255,7 @@ const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            filters: [...new Set(payments.map((elem) => elem.name))].map((elem) => ({
-                value: elem,
-                text: elem,
-            })),
-            onFilter: (value, record) => record.name === value,
+            ...createFilters<TeamPayment>(payments, 'name', { filterSearch: true }),
         },
         {
             title: 'Contact Email',
@@ -284,7 +281,7 @@ const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
     ]
 
     return (
-        <div className="data-table">
+        <div>
             <h2 className="page-title-sm">Payments</h2>
             <Table columns={columns} dataSource={payments} rowKey={(elem) => elem.id} />
         </div>
@@ -341,7 +338,7 @@ const SeasonTable = (): JSX.Element => {
         },
     ]
     return (
-        <div className="data-table">
+        <div>
             <h2 className="page-title-sm">Seasons</h2>
             <Table rowKey={(record) => record.id} columns={columns} dataSource={[SeasonTwoSplit1]} />
         </div>
@@ -353,7 +350,7 @@ const AdminSeason = ({ qualifiers, payments }: IAdminSeason) => {
         <div className="space-y-2">
             <QualifierTable qualifiers={qualifiers} />
             <SeasonTable />
-            {/*<PaymentTable payments={payments} />*/}
+            <PaymentTable payments={payments} />
         </div>
     )
 }

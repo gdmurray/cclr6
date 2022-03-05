@@ -23,6 +23,8 @@
     "@next/bundle-analyzer": "^10.1.3",
     "@paypal/react-paypal-js": "^6.0.0",
     "@tailwindcss/jit": "^0.1.18",
+    "@twurple/api": "^5.0.18",
+    "@twurple/auth": "^5.0.18",
     "@types/js-yaml": "^4.0.0",
     "antd": "^4.18.9",
     "aws-sdk": "^2.897.0",

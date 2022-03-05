@@ -201,6 +201,52 @@ const AdminTournament = ({
         })
     }
 
+    const handleSheet = async (team_id, tournament_id) => {
+        fetch(`/api/admin/qualifier/sheet`, {
+            method: 'POST',
+            body: JSON.stringify({
+                team_id: team_id,
+                event_name: tournament_id,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((result) => {
+            result.json().then((data) => {
+                console.log('DATA: ', data)
+                if (data.status === 'success') {
+                    toast({
+                        title: `Unregistered for ${tId}`,
+                        status: 'success',
+                    })
+                }
+            })
+        })
+    }
+
+    const handleUnregister = async (team_id, tournament_id) => {
+        fetch(`/api/admin/qualifier/unregister`, {
+            method: 'POST',
+            body: JSON.stringify({
+                team_id: team_id,
+                event_name: tournament_id,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((result) => {
+            result.json().then((data) => {
+                console.log('DATA: ', data)
+                if (data.status === 'success') {
+                    toast({
+                        title: `Unregistered for ${tId}`,
+                        status: 'success',
+                    })
+                }
+            })
+        })
+    }
+
     const columns: ColumnsType<AdminRegistration> = [
         {
             title: 'Team Name',
@@ -235,6 +281,10 @@ const AdminTournament = ({
                             {!record.registered && (
                                 <MenuItem onClick={() => handleRegister(record.id, tId)}>Register</MenuItem>
                             )}
+                            {record.registered && (
+                                <MenuItem onClick={() => handleUnregister(record.id, tId)}>Unregister</MenuItem>
+                            )}
+                            <MenuItem onClick={() => handleSheet(record.id, tId)}>Test sheet</MenuItem>
                         </MenuList>
                     </Menu>
                 )

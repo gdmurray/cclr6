@@ -1,7 +1,18 @@
 import { useRouter } from 'next/router'
 import { useAuth } from '@lib/auth'
 import React, { useEffect, useState } from 'react'
-import { Button, Collapse, Flex, Menu, MenuButton, MenuItem, MenuList, Stack, useDisclosure } from '@chakra-ui/react'
+import {
+    Badge,
+    Button,
+    Collapse,
+    Flex,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+    Stack,
+    useDisclosure,
+} from '@chakra-ui/react'
 import { FaBars, FaChevronDown, FaChevronLeft, FaTimes } from 'react-icons/fa'
 import { useSuspenseNavigation } from './useSuspenseNavigation'
 import useTeam from '@lib/useTeam'
@@ -39,14 +50,21 @@ const baseRoutes: NavItem[] = [
     },
 ]
 
-const MobileNavigationItem = ({ children, label, onClick, href }: INavItem) => {
+const MobileNavigationItem = ({ children, label, onClick, href, subLabel }: INavItem) => {
     const router = useRouter()
     const { navigate, isLoading } = useSuspenseNavigation()
     const { isOpen, onToggle } = useDisclosure()
     if (!children) {
         return (
             <div onClick={onClick ? onClick : () => navigate(label, href)} className="nav-item">
-                <span className={`${isLoading(label) ? 'primary-loading' : ''}`}>{label}</span>
+                <span className={`${isLoading(label) ? 'primary-loading' : ''}`}>
+                    {label}{' '}
+                    {subLabel && subLabel === 'live' && (
+                        <Badge variant="solid" colorScheme="red">
+                            LIVE
+                        </Badge>
+                    )}
+                </span>
             </div>
         )
     } else {
@@ -75,7 +93,7 @@ const MobileNavigationItem = ({ children, label, onClick, href }: INavItem) => {
     }
 }
 
-const DesktopNavigationItem = ({ children, label, onClick, href, active }: INavItem) => {
+const DesktopNavigationItem = ({ children, label, onClick, href, active, subLabel }: INavItem) => {
     const { navigate, isLoading } = useSuspenseNavigation()
     if (!children) {
         if (!onClick) {
@@ -86,7 +104,21 @@ const DesktopNavigationItem = ({ children, label, onClick, href, active }: INavI
                             active ? 'text-primary' : 'text-gray-900 dark:text-gray-50'
                         }`}
                     >
-                        {label}
+                        {label}{' '}
+                        {subLabel && subLabel === 'live' && (
+                            <div
+                                style={{
+                                    height: '0px',
+                                    position: 'relative',
+                                    top: '-45px',
+                                    left: '45px',
+                                }}
+                            >
+                                <Badge colorScheme="red" variant="solid">
+                                    LIVE
+                                </Badge>
+                            </div>
+                        )}
                     </div>
                 </div>
             )
@@ -239,20 +271,43 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
     )
 }
 
+function getBaseRoutes(isLive: boolean) {
+    if (isLive) {
+        const liveIndex = baseRoutes.findIndex((elem) => elem.href === '/watch')
+        baseRoutes[liveIndex] = Object.assign(baseRoutes[liveIndex], { subLabel: 'live' })
+        console.log('is live: ', baseRoutes)
+        return baseRoutes
+    }
+    return baseRoutes
+}
+
 export default function Navigation() {
     const { pathname } = useRouter()
     const { user, signOut } = useAuth()
     const { team } = useTeam({ user })
+    const [isLive, setIsLive] = useState<boolean>(false)
 
     const { isAdmin } = useAdminCheck()
 
+    useEffect(() => {
+        fetch('/api/twitch/live').then((result) => {
+            if (result.ok) {
+                result.json().then((response) => {
+                    if (response.status === 'live') {
+                        setIsLive(true)
+                    }
+                })
+            }
+        })
+    }, [])
+
     const getRoutes = (): NavItem[] => {
         if (!features.login) {
-            return baseRoutes
+            return getBaseRoutes(isLive)
         }
         if (!user) {
             return [
-                ...baseRoutes,
+                ...getBaseRoutes(isLive),
                 {
                     label: 'Login',
                     href: '/login',
@@ -260,7 +315,7 @@ export default function Navigation() {
             ]
         } else {
             return [
-                ...baseRoutes,
+                ...getBaseRoutes(isLive),
                 {
                     label: 'Profile',
                     children: [
@@ -285,7 +340,6 @@ export default function Navigation() {
     const [routes, setRoutes] = useState<NavItem[]>(getRoutes())
 
     useEffect(() => {
-        console.log('getting routes')
         setRoutes(getRoutes())
     }, [user, team, isAdmin, pathname])
 

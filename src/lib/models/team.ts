@@ -33,7 +33,7 @@ interface TeamClient {
 
     hasMinimumCanadians(): Promise<boolean>
 
-    hasTeamRegistered(tournamentId: string): Promise<boolean | IRegistration>
+    hasTeamRegistered(tournamentId: string): Promise<false | IRegistration>
 
     canUserRegister(uid: string): boolean
 
