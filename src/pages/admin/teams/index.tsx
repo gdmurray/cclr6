@@ -186,7 +186,7 @@ const AdminTeams = ({ data }: { data: AdminTeam[] }) => {
     }, {})
 
     return (
-        <div className="data-table">
+        <div>
             <Table
                 columns={columns}
                 dataSource={data}

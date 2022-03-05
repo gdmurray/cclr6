@@ -22,7 +22,7 @@ const Watch = () => {
                                         controls
                                         width="100%"
                                         height="100%"
-                                        url={'https://www.twitch.tv/cclr6s'}
+                                        url={'https://www.twitch.tv/NorthernArena'}
                                         style={{
                                             marginLeft: 'auto',
                                             marginRight: 'auto',

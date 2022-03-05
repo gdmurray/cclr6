@@ -38,6 +38,15 @@ module.exports = withBundleAnalyzer({
                     },
                 ],
             },
+            {
+                source: '/api/twitch/live',
+                headers: [
+                    {
+                        key: 'cache-control',
+                        value: 's-maxage=3600',
+                    },
+                ],
+            },
         ]
     },
     async rewrites() {

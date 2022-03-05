@@ -85,16 +85,15 @@ function buildInsertPayload(
     }
 ) {
     const players = [...payload.players].sort((a, b) => a.index - b.index);
-    const teamPayload = [
-        payload.team.id,
-        payload.team.name,
-        payload.team.contact_email,
-        `PAID: ${payload.team.paid.toString().toUpperCase()}`,
-        `REGISTERED: ${payload.team.registered.toString().toUpperCase()}`,
-    ];
     const updateSheetsPayload = [];
     if (options.team) {
-        updateSheetsPayload.push(teamPayload);
+        updateSheetsPayload.push([
+            payload.team.id,
+            payload.team.name,
+            payload.team.contact_email,
+            `PAID: ${payload.team.paid.toString().toUpperCase()}`,
+            `REGISTERED: ${payload.team.registered.toString().toUpperCase()}`,
+        ]);
     }
     if (options.players) {
         for (let i = 0; i < 8; i += 1) {
@@ -165,6 +164,10 @@ async function insertOrAppend(
     }
 }
 
+interface Params$Resource$Spreadsheets$Batchupdate {
+    requests: any[]
+}
+
 export async function handleSheetEvent(payload: SheetPayload) {
     const client = await getSheetsClient();
     const teamRow = await searchForTeamId(client, payload.team.id, payload.event);
@@ -173,21 +176,33 @@ export async function handleSheetEvent(payload: SheetPayload) {
     try {
         switch (payload.type) {
         case "TEAM_UNREGISTER": {
-            const teamRowNumber = parseInt(teamRow);
-            const insertPayload = buildInsertPayload(payload, {
-                team: true, players: false,
-            });
-            const insertResponse = await client.spreadsheets.values.update({
-                spreadsheetId: spreadsheet,
-                includeValuesInResponse: true,
-                valueInputOption: "USER_ENTERED",
-                range: `${payload.event}!A${teamRowNumber}`,
-                requestBody: {
-                    range: `${payload.event.trim()}!A${teamRowNumber}`,
-                    values: insertPayload,
-                },
-            });
-            console.log("unregister response: ", insertResponse);
+            const sheets = await client.spreadsheets.get({spreadsheetId: spreadsheet});
+            if (sheets.data.sheets && teamRow !== "#N/A") {
+                const sheet = sheets.data.sheets.find((elem) => elem.properties?.title === payload.event);
+                console.log(sheets.data.sheets[0]);
+                const teamRowNumber = parseInt(teamRow);
+                if (sheet) {
+                    const request: Params$Resource$Spreadsheets$Batchupdate = {
+                        requests: [
+                            {
+                                deleteDimension: {
+                                    range: {
+                                        sheetId: sheet.properties!.sheetId,
+                                        dimension: "ROWS",
+                                        startIndex: teamRowNumber - 1,
+                                        endIndex: teamRowNumber + 8,
+                                    },
+                                },
+                            },
+                        ],
+                    };
+                    const deleteResponse = await client.spreadsheets.batchUpdate({
+                        spreadsheetId: spreadsheet,
+                        requestBody: request,
+                    });
+                    console.log(deleteResponse);
+                }
+            }
             return;
         }
         case "PLAYER_UPDATE":
