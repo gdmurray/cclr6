@@ -114,7 +114,7 @@ const DesktopNavigationItem = ({ children, label, onClick, href, active, subLabe
                                     left: '45px',
                                 }}
                             >
-                                <Badge colorScheme="red" variant="solid">
+                                <Badge colorScheme="red" variant="solid" style={{ display: 'inline' }}>
                                     LIVE
                                 </Badge>
                             </div>
