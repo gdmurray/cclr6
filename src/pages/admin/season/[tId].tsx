@@ -96,12 +96,17 @@ export const getServerSideProps = withAuthSSR({
     }
 })
 
-const MarkAsAction = ({ tournament_id, team }): JSX.Element => {
+type MarkAsActionProps = {
+    tournament_id: string
+    team: ITeam
+}
+
+const MarkAsAction = ({ tournament_id, team }: MarkAsActionProps): JSX.Element => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { register, handleSubmit } = useForm()
     const cancelRef = useRef(null)
     const toast = useToast({ position: 'top-right', duration: 2000, variant: 'solid' })
-
+    const router = useRouter()
     const onSubmit = (values) => {
         console.log('Values: ', values)
         fetch('/api/admin/qualifier/upsert', {
@@ -117,10 +122,11 @@ const MarkAsAction = ({ tournament_id, team }): JSX.Element => {
         }).then((result) => {
             if (result.ok) {
                 toast({
-                    title: `Marked team as ${values.status} for ${tournament_id}`,
+                    title: `Marked team ${team.name} as ${values.status} for ${tournament_id}`,
                     status: 'success',
                     onCloseComplete: () => {
                         onClose()
+                        router.replace(router.asPath)
                     },
                 })
             }
@@ -166,6 +172,7 @@ const MarkAsAction = ({ tournament_id, team }): JSX.Element => {
 
 type AdminRegistration = IRegistration & {
     name: string
+    registration?: IRegistration
 }
 const AdminTournament = ({
     data,
@@ -272,10 +279,21 @@ const AdminTournament = ({
             },
         },
         {
+            title: 'qualified',
+            dataIndex: 'qualified',
+            key: 'qualifier',
+            render: (_, record): JSX.Element => {
+                if (record.registration && record.registration.status === 'QUALIFIED') {
+                    return <FaCheck className="text-success" />
+                } else {
+                    return <FaTimes className="text-warning" />
+                }
+            },
+        },
+        {
             title: 'Actions',
             key: 'actions',
             render: (record) => {
-                console.log(record)
                 return (
                     <Menu>
                         <MenuButton as={Button} rightIcon={<FaChevronDown />}>

@@ -24,7 +24,7 @@ export interface IRegistration {
     id?: string
     participant_id: string
     tournament_id: string
-    status: 'REGISTERED'
+    status: 'REGISTERED' | 'QUALIFIED'
     registered: any
 }
 

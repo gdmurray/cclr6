@@ -35,8 +35,17 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
     const seasonParticipants = await Promise.all(
         Object.keys(seasonMap).map((seasonId) => seasonClient.getRegisteredTeams(seasonId, true))
     )
+    const registrationPriority = {
+        INVITED: 0,
+        QUALIFIED: 1,
+        REGISTERED: 2,
+    }
     const participants = Object.keys(seasonMap).reduce((acc, elem, idx) => {
-        acc[elem] = seasonParticipants[idx]
+        acc[elem] = [
+            ...seasonParticipants[idx].sort((a, b) => {
+                return registrationPriority[a.status] - registrationPriority[b.status]
+            }),
+        ]
         return acc
     }, {})
     return {
@@ -116,7 +125,12 @@ const QualifierTeams = ({ participants }: { participants: ParticipantRegistratio
                                             {players
                                                 .filter((_, idx) => idx < 5)
                                                 .map((player) => {
-                                                    return <TeamPlayer key={player.id} player={player} />
+                                                    return (
+                                                        <TeamPlayer
+                                                            key={`${team.id}-${player.email}`}
+                                                            player={player}
+                                                        />
+                                                    )
                                                 })}
                                         </div>
                                     </div>
@@ -131,7 +145,7 @@ const QualifierTeams = ({ participants }: { participants: ParticipantRegistratio
                                                     .map((player) => {
                                                         return (
                                                             <div
-                                                                key={player.id}
+                                                                key={`${team.id}-${player.email}`}
                                                                 className="flex flex-row mt-1 text-sm font-medium whitespace-nowrap justify-end sm:justify-center"
                                                             >
                                                                 <span style={{ paddingTop: '6px' }}>

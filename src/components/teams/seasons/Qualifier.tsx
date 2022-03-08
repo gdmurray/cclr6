@@ -177,7 +177,7 @@ export function Qualifier({ qualifier, eligibility, season }: QualifierProps): J
                                 title: `Registered for ${tournament.name}`,
                                 status: 'success',
                                 onCloseComplete: () => {
-                                    router.reload()
+                                    router.replace(router.asPath)
                                 },
                             })
                         }
