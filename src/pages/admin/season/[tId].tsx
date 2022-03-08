@@ -255,6 +255,11 @@ const AdminTournament = ({
             ...createFilters<AdminRegistration>(data, 'name', { filterSearch: true }),
         },
         {
+            title: 'Contact',
+            dataIndex: 'contact_email',
+            key: 'contact_email',
+        },
+        {
             title: 'registered',
             dataIndex: 'registered',
             key: 'registered',

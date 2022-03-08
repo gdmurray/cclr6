@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react'
-import { FaRegCreditCard, FaTimes } from 'react-icons/fa'
-import { Button, Tooltip } from '@chakra-ui/react'
+import React, { useContext } from 'react'
+// import { FaRegCreditCard, FaTimes } from 'react-icons/fa'
+// import { Button, Tooltip } from '@chakra-ui/react'
 import { Season } from '@lib/models/season'
 import { TeamContext } from '@components/teams/teamContext'
 import useEligibility from '@components/teams/seasons/Eligibility'
@@ -10,7 +10,7 @@ import PaymentForm from '@components/teams/Payment'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
 import { Qualifier } from './Qualifier'
-import { PaymentContext, PurchaseTarget } from '@components/teams/PaymentContext'
+import { PaymentContext } from '@components/teams/PaymentContext'
 
 dayjs.extend(LocalizedFormat)
 
@@ -18,50 +18,50 @@ export default function SeasonComponent({ season }: { season: Season }): JSX.Ele
     const teamContext = useContext(TeamContext)
     const { team, user } = teamContext
 
-    const { isPurchasing, teamPurchases, handlePaymentClick } = useContext(PaymentContext)
-    const [isHovering, setIsHovering] = useState<boolean>(false)
+    const { isPurchasing } = useContext(PaymentContext)
+    // const [isHovering, setIsHovering] = useState<boolean>(false)
 
-    const handleHover = (e: React.MouseEvent<HTMLButtonElement>): void => {
-        const { type } = e
-        if (type === 'mouseenter') {
-            if (!isHovering) {
-                setIsHovering(true)
-            }
-        } else if (type === 'mouseleave') {
-            if (isHovering) {
-                setIsHovering(false)
-            }
-        }
-    }
+    // const handleHover = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    //     const { type } = e
+    //     if (type === 'mouseenter') {
+    //         if (!isHovering) {
+    //             setIsHovering(true)
+    //         }
+    //     } else if (type === 'mouseleave') {
+    //         if (isHovering) {
+    //             setIsHovering(false)
+    //         }
+    //     }
+    // }
 
-    const getButtonContent = () => {
-        if (!season.active) {
-            return <>Event Passed</>
-        }
-        if (isPurchasing) {
-            return (
-                <>
-                    Cancel Purchase&nbsp;
-                    <FaTimes />
-                </>
-            )
-        }
-
-        if (isHovering) {
-            return (
-                <>
-                    $80.00 CAD&nbsp;
-                    <FaRegCreditCard />
-                </>
-            )
-        }
-        return (
-            <>
-                Purchase Pass&nbsp;
-                <FaRegCreditCard />
-            </>
-        )
-    }
+    // const getButtonContent = () => {
+    //     if (!season.active) {
+    //         return <>Event Passed</>
+    //     }
+    //     if (isPurchasing) {
+    //         return (
+    //             <>
+    //                 Cancel Purchase&nbsp;
+    //                 <FaTimes />
+    //             </>
+    //         )
+    //     }
+    //
+    //     if (isHovering) {
+    //         return (
+    //             <>
+    //                 $80.00 CAD&nbsp;
+    //                 <FaRegCreditCard />
+    //             </>
+    //         )
+    //     }
+    //     return (
+    //         <>
+    //             Purchase Pass&nbsp;
+    //             <FaRegCreditCard />
+    //         </>
+    //     )
+    // }
 
     const { eligibility, eligibilityChecklist, loading } = useEligibility({ team, user })
     return (
@@ -87,28 +87,28 @@ export default function SeasonComponent({ season }: { season: Season }): JSX.Ele
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        {teamPurchases.length === 0 && (
-                            <Tooltip
-                                isDisabled={isPurchasing}
-                                label="Pass grants you access to all Qualifiers"
-                                hasArrow
-                            >
-                                <Button
-                                    colorScheme={isPurchasing || !season.active ? 'red' : 'green'}
-                                    onClick={() =>
-                                        handlePaymentClick({
-                                            target: PurchaseTarget.SEASON_PASS,
-                                            id: season.id,
-                                            name: season.name,
-                                        })
-                                    }
-                                    onMouseEnter={handleHover}
-                                    onMouseLeave={handleHover}
-                                >
-                                    {getButtonContent()}
-                                </Button>
-                            </Tooltip>
-                        )}
+                        {/*{teamPurchases.length === 0 && (*/}
+                        {/*    <Tooltip*/}
+                        {/*        isDisabled={isPurchasing}*/}
+                        {/*        label="Pass grants you access to all Qualifiers"*/}
+                        {/*        hasArrow*/}
+                        {/*    >*/}
+                        {/*        <Button*/}
+                        {/*            colorScheme={isPurchasing || !season.active ? 'red' : 'green'}*/}
+                        {/*            onClick={() =>*/}
+                        {/*                handlePaymentClick({*/}
+                        {/*                    target: PurchaseTarget.SEASON_PASS,*/}
+                        {/*                    id: season.id,*/}
+                        {/*                    name: season.name,*/}
+                        {/*                })*/}
+                        {/*            }*/}
+                        {/*            onMouseEnter={handleHover}*/}
+                        {/*            onMouseLeave={handleHover}*/}
+                        {/*        >*/}
+                        {/*            {getButtonContent()}*/}
+                        {/*        </Button>*/}
+                        {/*    </Tooltip>*/}
+                        {/*)}*/}
                         {eligibilityChecklist()}
                     </div>
                 </div>
