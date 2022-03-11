@@ -76,7 +76,7 @@ export const SeasonTwoSplit1: Season = {
             registration_enabled: true,
             size: 32,
             registration_opening_datetime: dayjs('2022-03-06').toISOString(),
-            registration_closing_datetime: dayjs(new Date('March 11, 2022 16:00:00')).toISOString(),
+            registration_closing_datetime: dayjs(new Date('March 11, 2022 21:00:00')).toISOString(),
         },
     ],
 }
