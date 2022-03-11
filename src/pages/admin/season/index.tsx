@@ -6,7 +6,15 @@ import { SeasonTwoSplit1 } from '@lib/models/season'
 import { Table } from 'antd'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
-import { FaCheck, FaChevronCircleRight, FaTimes } from 'react-icons/fa'
+import {
+    FaCheck,
+    FaChevronCircleRight,
+    FaMinusSquare,
+    FaPaypal,
+    FaPlusSquare,
+    FaRegEnvelope,
+    FaTimes,
+} from 'react-icons/fa'
 import { useRouter } from 'next/router'
 import { adminFireStore } from '@lib/firebase/admin'
 import {
@@ -33,6 +41,9 @@ import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import { Tournament } from '@lib/models/tournament'
 import { IPayment } from '@lib/models/payment'
 import { createFilters } from '@lib/utils'
+import { ColumnsType } from 'antd/es/table'
+import { RenderExpandIconProps } from 'rc-table/es/interface'
+// import { ITeam } from '@lib/models/team'
 
 dayjs.extend(LocalizedFormat)
 
@@ -52,10 +63,20 @@ export const getServerSideProps = withAuthSSR({
 
     const paymentMap = allPayments.docs.reduce((acc: Record<string, any>, doc) => {
         const teamId = doc.ref.path.split('/')[1]
-        acc[teamId] = {
-            id: doc.id,
-            ...doc.data(),
+        if (teamId in acc) {
+            acc[teamId].push({
+                id: doc.id,
+                ...doc.data(),
+            })
+        } else {
+            acc[teamId] = [
+                {
+                    id: doc.id,
+                    ...doc.data(),
+                },
+            ]
         }
+
         return acc
     }, {})
 
@@ -65,10 +86,10 @@ export const getServerSideProps = withAuthSSR({
         id: team.id,
         ...team.data(),
         ...(team.id in paymentMap
-            ? { has_paid: true, payment: { ...paymentMap[team.id] } }
+            ? { has_paid: true, payments: [...paymentMap[team.id]] }
             : {
                   has_paid: false,
-                  payment: {},
+                  payments: [],
               }),
     }))
 
@@ -143,7 +164,7 @@ interface TeamPayment {
     id: string
     contact_email: string
     has_paid: boolean
-    payment: IPayment
+    payments: IPayment[]
 }
 
 const PaymentCell = ({ record }: { record: TeamPayment }): JSX.Element => {
@@ -239,7 +260,7 @@ const PaymentCell = ({ record }: { record: TeamPayment }): JSX.Element => {
                         <AlertDialogHeader>Payment Info</AlertDialogHeader>
                         <AlertDialogBody>
                             <Code>
-                                <pre>{JSON.stringify(record.payment, null, '\t')}</pre>
+                                <pre>{JSON.stringify(record.payments, null, '\t')}</pre>
                             </Code>
                         </AlertDialogBody>
                     </AlertDialogContent>
@@ -247,6 +268,63 @@ const PaymentCell = ({ record }: { record: TeamPayment }): JSX.Element => {
             </AlertDialog>
         </div>
     )
+}
+
+const ExpandedPaymentTable = ({ record }: { record: TeamPayment }): JSX.Element => {
+    const seasonMap = [SeasonTwoSplit1].reduce((acc, elem) => {
+        acc[elem.id] = elem.name
+        for (const qual of elem.qualifiers) {
+            acc[qual.id] = qual.name
+        }
+        return acc
+    }, {})
+
+    const columns: ColumnsType<IPayment> = [
+        {
+            title: 'Season',
+            dataIndex: 'season',
+            key: 'season',
+            render: (season_name: string) => {
+                if (season_name in seasonMap) {
+                    return <>{seasonMap[season_name]}</>
+                }
+                return <>{season_name}</>
+            },
+        },
+        {
+            title: 'Payment Type',
+            dataIndex: 'type',
+            key: 'type',
+            render: (payment_type: string) => {
+                if (payment_type === 'paypal') {
+                    return <FaPaypal />
+                } else {
+                    return <FaRegEnvelope />
+                }
+            },
+        },
+        {
+            title: 'Payment Email',
+            dataIndex: ['payment', 'payer', 'email_address'],
+        },
+        {
+            title: 'Amount',
+            dataIndex: ['payment', 'purchase_units'],
+            key: 'amount',
+            render: (purchase_units) => {
+                console.log(purchase_units)
+                const [{ amount }] = purchase_units
+                return `$${amount.value} ${amount.currency_code}`
+            },
+        },
+        {
+            title: 'Status',
+            dataIndex: ['payment', 'status'],
+            key: 'status',
+        },
+    ]
+
+    return <Table columns={columns} dataSource={record.payments} rowKey={(elem) => elem.payment.id} />
 }
 
 const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
@@ -280,10 +358,48 @@ const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
         },
     ]
 
+    console.log(payments)
+
     return (
         <div>
             <h2 className="page-title-sm">Payments</h2>
-            <Table columns={columns} dataSource={payments} rowKey={(elem) => elem.id} />
+            <Table
+                expandable={{
+                    expandIcon: (props: RenderExpandIconProps<TeamPayment>) => {
+                        if (props.record.payments.length > 0) {
+                            if (props.expanded) {
+                                return (
+                                    <>
+                                        <FaMinusSquare
+                                            className="cursor-pointer"
+                                            onClick={(e) => props.onExpand(props.record, e)}
+                                        />
+                                        ({props.record.payments.length})
+                                    </>
+                                )
+                            }
+                            return (
+                                <>
+                                    <FaPlusSquare
+                                        className="cursor-pointer"
+                                        onClick={(e) => props.onExpand(props.record, e)}
+                                    />
+                                    ({props.record.payments.length})
+                                </>
+                            )
+                        }
+                        return <></>
+                    },
+                    expandedRowRender: (team) => {
+                        if (team.payments.length > 0) {
+                            return <ExpandedPaymentTable record={team} />
+                        }
+                    },
+                }}
+                columns={columns}
+                dataSource={payments}
+                rowKey={(elem) => elem.id}
+            />
         </div>
     )
 }
