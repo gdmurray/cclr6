@@ -369,23 +369,15 @@ const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
                         if (props.record.payments.length > 0) {
                             if (props.expanded) {
                                 return (
-                                    <>
-                                        <FaMinusSquare
-                                            className="cursor-pointer"
-                                            onClick={(e) => props.onExpand(props.record, e)}
-                                        />
-                                        ({props.record.payments.length})
-                                    </>
+                                    <span onClick={(e) => props.onExpand(props.record, e)}>
+                                        <FaMinusSquare className="cursor-pointer" />({props.record.payments.length})
+                                    </span>
                                 )
                             }
                             return (
-                                <>
-                                    <FaPlusSquare
-                                        className="cursor-pointer"
-                                        onClick={(e) => props.onExpand(props.record, e)}
-                                    />
-                                    ({props.record.payments.length})
-                                </>
+                                <span onClick={(e) => props.onExpand(props.record, e)}>
+                                    <FaPlusSquare className="cursor-pointer" />({props.record.payments.length})
+                                </span>
                             )
                         }
                         return <></>
