@@ -122,10 +122,14 @@ export const SeasonTwoSplit1: Season = {
     BASE_MATCH: new Date(new Date().getUTCDate()),
     MATCH_DAYS: ['Mon', 'Wednes', 'Fri'],
     WEEK_FORMATTER: (week: { matches: MatchWithDate[] }[]) => {
-        return week.reduce((acc, elem) => {
-            acc.push(elem.matches)
-            return acc
-        }, [])
+        return week
+            .reduce((acc, elem) => {
+                acc.push(elem.matches)
+                return acc
+            }, [])
+            .sort((a, b) => {
+                return new Date(a[0].scheduled_datetime).getTime() - new Date(b[0].scheduled_datetime).getTime()
+            })
     },
 }
 
