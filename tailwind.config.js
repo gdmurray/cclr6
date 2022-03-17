@@ -18,7 +18,7 @@ const extendedColors = {
 }
 module.exports = {
     // mode: 'jit',
-    purge: ['./src/**/*.{js,ts,jsx,tsx}'],
+    purge: ['./src/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{tsx}'],
     darkMode: 'media', // or 'media' or 'class'
     theme: {
         backgroundColor: (theme) => ({
