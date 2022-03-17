@@ -2,7 +2,7 @@ import React from 'react'
 import DashboardButton from '@components/DashboardButton'
 import { Flex, Image } from '@chakra-ui/react'
 import ReactPlayer from 'react-player'
-import { SeasonTwoSplit1 } from '@lib/models/season'
+import { SeasonTwoSplit1 } from '@lib/season/common'
 import dayjs from 'dayjs'
 
 const Index = (): JSX.Element => {

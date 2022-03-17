@@ -1,10 +1,10 @@
 import { Match, Round } from '@lib/models/toornament'
 import { ToornamentClient } from '@lib/api/toornament'
-import { getGameDate, ISeason, MatchData, SeasonOne, Seasons } from '@lib/season/common'
+import { getGameDate, Season, MatchData, SeasonOne, Seasons } from '@lib/season/common'
 import { bucket } from '@lib/api/cms'
 import { adminFireStore } from '@lib/firebase/admin'
 
-export async function getMatchData(matches: Match[], season: ISeason): Promise<MatchData[]> {
+export async function getMatchData(matches: Match[], season: Season): Promise<MatchData[]> {
     const client = new ToornamentClient()
     const rounds: Round[] = await client.getRounds(season.STAGE_ID)
 

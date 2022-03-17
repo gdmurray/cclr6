@@ -2,7 +2,7 @@ import db from '@lib/firebase/firestore'
 import { CaptureOrderResponseBody } from '@paypal/paypal-js/types/apis/orders'
 import { IPlayer } from '@lib/models/player'
 import { Firestore, storage } from '@lib/firebase/firebase'
-import { SeasonTwoSplit1 } from '@lib/models/season'
+import { SeasonTwoSplit1 } from '@lib/season/common'
 
 export interface ITeam {
     id?: string

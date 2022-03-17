@@ -1,7 +1,7 @@
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import AdminLayout from '@components/admin/layout'
 import React, { useRef, useState } from 'react'
-import { SeasonTwoSplit1 } from '@lib/models/season'
+import { SeasonTwoSplit1 } from '@lib/season'
 // import { ToornamentClient } from '@lib/api/toornament'
 import { Table } from 'antd'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'

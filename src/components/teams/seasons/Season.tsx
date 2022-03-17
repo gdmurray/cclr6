@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 // import { FaRegCreditCard, FaTimes } from 'react-icons/fa'
 // import { Button, Tooltip } from '@chakra-ui/react'
-import { Season } from '@lib/models/season'
+import { Season } from '@lib/season'
 import { TeamContext } from '@components/teams/teamContext'
 import useEligibility from '@components/teams/seasons/Eligibility'
 import { Tournament } from '@lib/models/tournament'

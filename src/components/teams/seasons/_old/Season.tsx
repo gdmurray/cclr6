@@ -13,7 +13,7 @@ import {
     AlertDialogFooter,
     AlertDialogOverlay,
 } from '@chakra-ui/react'
-import { Season, SeasonClient } from '@lib/models/season'
+import { Season, SeasonClient } from '@lib/season'
 import { TeamContext } from '@components/teams/teamContext'
 import { CreateTeamClient, IRegistration } from '@lib/models/team'
 import { useRouter } from 'next/router'

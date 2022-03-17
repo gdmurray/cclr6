@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { CreateSeasonClient } from '@lib/models/season'
+import { CreateSeasonClient } from '@lib/season/client'
 import { adminFireStore } from '@lib/firebase/admin'
 
 export default async function participants(req: NextApiRequest, res: NextApiResponse) {

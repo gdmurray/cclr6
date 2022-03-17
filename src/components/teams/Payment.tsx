@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import { CreateTeamClient, ITeam } from '@lib/models/team'
 import React, { useContext, useEffect, useState } from 'react'
 import { PayPalButtons } from '@paypal/react-paypal-js'
-import { Season } from '@lib/models/season'
+import { Season } from '@lib/season'
 import { PaymentContext, PurchaseTarget } from '@components/teams/PaymentContext'
 import { motion } from 'framer-motion'
 

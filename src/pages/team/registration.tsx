@@ -4,7 +4,7 @@ import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { FaTrophy } from 'react-icons/fa'
 import EmptyState from '@components/EmptyState'
 import { ToornamentClient } from '@lib/api/toornament'
-import { Season, SeasonTwoSplit1 } from '@lib/models/season'
+import { Season, SeasonTwoSplit1 } from '@lib/season'
 
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'

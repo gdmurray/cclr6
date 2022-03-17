@@ -5,6 +5,12 @@ import { Table } from 'antd'
 // import { getQueryKeyMap } from '@lib/utils'
 import { IRegistration, ITeam } from '@lib/models/team'
 import {
+    AlertDialog,
+    AlertDialogOverlay,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogBody,
+    AlertDialogFooter,
     Button,
     Input,
     Menu,
@@ -27,7 +33,7 @@ import React, { useRef } from 'react'
 import { useRouter } from 'next/router'
 import { ColumnsType } from 'antd/es/table'
 import { createFilters } from '@lib/utils'
-import { Season, SeasonTwoSplit1 } from '@lib/models/season'
+import { Season, SeasonTwoSplit1 } from '@lib/season'
 import { Tournament } from '@lib/models/tournament'
 import { useForm } from 'react-hook-form'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
@@ -46,6 +52,8 @@ export const getServerSideProps = withAuthSSR({
     const registrations = await adminFireStore.collectionGroup('registrations').where('tournament_id', '==', tId).get()
 
     const seasonMap = [SeasonTwoSplit1].reduce((acc, elem) => {
+        delete elem.WEEK_FORMATTER
+        delete elem.BASE_MATCH
         acc[elem.id] = elem
         for (const qual of elem.qualifiers) {
             acc[qual.id] = qual
@@ -96,14 +104,79 @@ export const getServerSideProps = withAuthSSR({
     }
 })
 
-type MarkAsActionProps = {
+type ActionProps = {
     tournament_id: string
-    team: ITeam
+    team: AdminRegistration
 }
 
-const MarkAsAction = ({ tournament_id, team }: MarkAsActionProps): JSX.Element => {
+const SyncToornamentAction = ({ tournament_id, team }: ActionProps): JSX.Element => {
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { register, handleSubmit } = useForm()
+    const cancelRef = useRef(null)
+    const toast = useToast({ position: 'top-right', duration: 2000, variant: 'solid' })
+
+    const onConfirm = () => {
+        fetch('/api/admin/toornament/sync', {
+            method: 'POST',
+            body: JSON.stringify({
+                team_id: team.id,
+                tournament_id: tournament_id,
+                participant_id: team.registration.participant_id,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((result) => {
+            if (result.ok) {
+                toast({
+                    title: `Synced team data for tournament`,
+                    status: 'success',
+                    onCloseComplete: () => {
+                        onClose()
+                    },
+                })
+            }
+        })
+    }
+
+    return (
+        <MenuItem onClick={onOpen}>
+            Sync with Toornament
+            <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                            Sync Team Information
+                        </AlertDialogHeader>
+
+                        <AlertDialogBody>
+                            Sync team data for team {team.name} and participant id: {team.registration.participant_id}{' '}
+                            with whats registered in toornament
+                        </AlertDialogBody>
+
+                        <AlertDialogFooter>
+                            <Button ref={cancelRef} onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button colorScheme="red" onClick={onConfirm} ml={3}>
+                                Sync
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
+        </MenuItem>
+    )
+}
+
+const MarkAsAction = ({ tournament_id, team }: ActionProps): JSX.Element => {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { register, handleSubmit } = useForm({
+        defaultValues: {
+            team_id: team.id,
+            participant_id: team.registration?.participant_id,
+            status: 'INVITED',
+        },
+    })
     const cancelRef = useRef(null)
     const toast = useToast({ position: 'top-right', duration: 2000, variant: 'solid' })
     const router = useRouter()
@@ -115,6 +188,7 @@ const MarkAsAction = ({ tournament_id, team }: MarkAsActionProps): JSX.Element =
                 event_name: tournament_id,
                 team_id: values.team_id,
                 status: values.status,
+                participant_id: values.participant_id,
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -146,6 +220,10 @@ const MarkAsAction = ({ tournament_id, team }: MarkAsActionProps): JSX.Element =
                             <FormControl>
                                 <FormLabel>Team Id</FormLabel>
                                 <Input {...register('team_id', { value: team.id })} isReadOnly={true} type="text" />
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel>Participant Id</FormLabel>
+                                <Input {...register('participant_id')} type={'text'} />
                             </FormControl>
                             <FormControl>
                                 <FormLabel>Status</FormLabel>
@@ -307,21 +385,12 @@ const AdminTournament = ({
                             {record.registered && (
                                 <MenuItem onClick={() => handleUnregister(record.id, tId)}>Unregister</MenuItem>
                             )}
+                            {record.registration?.participant_id != null && (
+                                <SyncToornamentAction tournament_id={tId} team={record} />
+                            )}
                             <MenuItem onClick={() => handleSheet(record.id, tId)}>Test sheet</MenuItem>
                         </MenuList>
                     </Menu>
-                )
-                if (record.registered) {
-                    return (
-                        <Button type="button" onClick={() => handleRegister(record.id, tId)}>
-                            Mark as qualified
-                        </Button>
-                    )
-                }
-                return (
-                    <Button type="button" onClick={() => handleRegister(record.id, tId)}>
-                        Register
-                    </Button>
                 )
             },
         },

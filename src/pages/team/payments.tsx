@@ -6,7 +6,7 @@ import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import Table from 'rc-table'
 // import { TeamContext } from '@components/teams/teamContext'
 import Loader from '@components/Loader'
-import { SeasonTwoSplit1 } from '@lib/models/season'
+import { SeasonTwoSplit1 } from '@lib/season'
 
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,

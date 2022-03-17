@@ -99,21 +99,27 @@ const FooterData: FooterData[] = [
     },
 ]
 
-const PoweredBy = () => {
+type PoweredByPartner = {
+    link: string
+    logo_dark: string
+    logo_light: string
+    alt: string
+}
+const PoweredBy = ({ partner }: { partner: PoweredByPartner }) => {
     return (
         <div className="mt-6">
             <div className="px-5 text-xs font-semibold text-alt-2 mb-0 antialiased">Powered By</div>
-            <a href="https://www.firstblood.io/" target="_blank" rel="noopener noreferrer">
+            <a href={partner.link} target="_blank" rel="noopener noreferrer">
                 <img
-                    alt="firstblood"
+                    alt={partner.alt}
                     className="mx-auto logo-dark cursor-pointer"
-                    src={'/images/firstblood-logo-white.svg'}
+                    src={partner.logo_dark}
                     width="150"
                 />
                 <img
-                    alt="firstblood"
+                    alt={partner.alt}
                     className="mx-auto logo-light cursor-pointer"
-                    src={'/images/firstblood-logo-black.svg'}
+                    src={partner.logo_light}
                     width="150"
                 />
             </a>
@@ -165,7 +171,22 @@ export default function Footer(): JSX.Element {
                             className="logo-light mx-auto"
                             src={'/images/ccl-logo-redblack.svg'}
                         />
-                        <PoweredBy />
+                        <PoweredBy
+                            partner={{
+                                link: 'https://www.firstblood.io/',
+                                alt: 'firstblood',
+                                logo_light: '/images/firstblood-logo-black.svg',
+                                logo_dark: '/images/firstblood-logo-white.svg',
+                            }}
+                        />
+                        <PoweredBy
+                            partner={{
+                                link: 'https://www.toornament.com',
+                                alt: 'toornament',
+                                logo_light: '/images/toornament_logo_black.png',
+                                logo_dark: '/images/toornament_logo_white.png',
+                            }}
+                        />
                     </>
                 </div>
                 <div className="flex-grow flex items-center sm:items-start flex-col sm:flex-row justify-around">

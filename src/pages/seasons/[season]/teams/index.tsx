@@ -2,9 +2,9 @@ import { GetStaticPropsResult } from 'next'
 import React from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
 import { GetStaticPathsResult } from 'next'
-import { getSeasonPaths } from '@lib/season/common'
+import { Season, SeasonTwoSplit1, getSeasonPaths } from '@lib/season'
+import { CreateSeasonClient } from '@lib/season/client'
 import { Tab, TabList, TabPanels, Tabs, TabPanel, Image, useColorMode } from '@chakra-ui/react'
-import { CreateSeasonClient, Season, SeasonTwoSplit1 } from '@lib/models/season'
 import { getHostName } from '@lib/utils'
 import { IPlayer } from '@lib/models/player'
 import { useRouter } from 'next/router'
@@ -14,7 +14,7 @@ import { Tournament } from '@lib/models/tournament'
 
 // import { getStaticProps as getTeamsStaticProps } from '@components/season/one/teams'
 
-export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
+export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
     // const { season } = params
     // if (season === 'one') {
     // this needs to be wrapped in { }, but lets ignore that for now.
@@ -23,7 +23,11 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
     // if(season === "two"){
     //
     // }
+    console.log('params: ', params)
+    // const currentSeason = getCurrentSeason()
     const seasonMap = [SeasonTwoSplit1].reduce((acc, elem) => {
+        delete elem.BASE_MATCH
+        delete elem.WEEK_FORMATTER
         acc[elem.id] = elem
         for (const qual of elem.qualifiers) {
             acc[qual.id] = qual
@@ -52,6 +56,10 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
         props: {
             seasons: seasonMap,
             participants,
+            SEO: {
+                title: 'Teams',
+                // title: `${curr}`,
+            },
             // seasons:
         },
         revalidate: 3600,

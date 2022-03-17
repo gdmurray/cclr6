@@ -237,7 +237,7 @@ const DesktopNav = ({ routes }: { routes: NavItem[] }) => {
             return true
         }
         if (href) {
-            if (href !== '/' && router.pathname.startsWith(href)) {
+            if (href !== '/' && router.asPath.startsWith(href)) {
                 return true
             }
         }

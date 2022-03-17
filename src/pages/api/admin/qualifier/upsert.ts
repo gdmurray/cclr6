@@ -15,10 +15,18 @@ export default async function upsert(req: NextApiRequest, res: NextApiResponse) 
         return res.status(400).end()
     }
 
-    const { team_id, event_name, status } = req.body
+    const { team_id, event_name, status, participant_id } = req.body
     const team = await Teams.getTeamById(team_id)
     const teamClient = CreateTeamClient(team, adminFireStore)
     const hasRegistration = await teamClient.getRegistration(event_name)
+
+    function getParticipantId(): { participant_id: string } | Record<string, unknown> {
+        if (participant_id != null) {
+            return { participant_id }
+        }
+        return {}
+    }
+
     console.log(hasRegistration)
     if (hasRegistration) {
         await adminFireStore
@@ -28,14 +36,20 @@ export default async function upsert(req: NextApiRequest, res: NextApiResponse) 
             .doc(hasRegistration.id)
             .update({
                 status,
+                ...getParticipantId(),
             })
         return res.status(200).end()
     }
-    await adminFireStore.collection('teams').doc(team.id).collection('registrations').add({
-        status: status,
-        registered: new Date().toISOString(),
-        tournament_id: event_name,
-    })
+    await adminFireStore
+        .collection('teams')
+        .doc(team.id)
+        .collection('registrations')
+        .add({
+            status: status,
+            registered: new Date().toISOString(),
+            tournament_id: event_name,
+            ...getParticipantId(),
+        })
     return res.status(200).end()
     // if (hasRegistered) {
     //     return res.status(400).json({ status: 'failure', message: 'already registered' })

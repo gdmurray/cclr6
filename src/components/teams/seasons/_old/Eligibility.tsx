@@ -3,7 +3,7 @@ import { CreateTournamentClient } from '@lib/models/tournament'
 import { CreateTeamClient } from '@lib/models/team'
 import React, { useEffect, useState } from 'react'
 import { FaBan, FaCheck } from 'react-icons/fa'
-import { SeasonClient } from '@lib/models/season'
+import { SeasonClient } from '@lib/season'
 
 interface RegistrationStatus {
     active: boolean

@@ -1,5 +1,5 @@
 import { GetStaticPropsResult } from 'next'
-import { getCurrentSeason, Seasons } from '@lib/season/common'
+import { getCurrentSeason, Seasons } from '@lib/season'
 import { getSeasonHome } from '@lib/season/api'
 import { CMSPost } from '@components/posts/Post'
 import React from 'react'
@@ -17,6 +17,7 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
                 image: null,
                 url: currentSeason.BASE_URL,
             }
+            console.log(seo)
             return { SEO: seo }
         }
         return {}
