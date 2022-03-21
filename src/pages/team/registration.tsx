@@ -3,7 +3,6 @@ import TeamLayout from '@components/teams/layout'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { FaTrophy } from 'react-icons/fa'
 import EmptyState from '@components/EmptyState'
-import { ToornamentClient } from '@lib/api/toornament'
 import { Season, SeasonTwoSplit1 } from '@lib/season'
 
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
@@ -20,9 +19,12 @@ export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
     referral: url,
 })(async () => {
+    const season = SeasonTwoSplit1
+    delete season.BASE_MATCH
+    delete season.WEEK_FORMATTER
     return {
         props: {
-            seasons: [SeasonTwoSplit1],
+            seasons: [season],
         },
     }
 })

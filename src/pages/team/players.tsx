@@ -109,17 +109,17 @@ function TeamPlayers(): JSX.Element {
     const [lockState, lockDispatch] = useReducer(lockReducer, { loading: true, locked: true, message: '' })
     useEffect(() => {
         lockDispatch({ type: 'update', locked: false, message: '' })
-        // fetch('/api/team/players/locked', {
-        //     method: 'GET',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        // }).then((response) => {
-        //     response.json().then((res) => {
-        //         const { status, message } = res
-        //         lockDispatch({ type: 'update', locked: status === 'locked', message })
-        //     })
-        // })
+        fetch('/api/team/players/locked', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((response) => {
+            response.json().then((res) => {
+                const { status, message } = res
+                lockDispatch({ type: 'update', locked: status === 'locked', message })
+            })
+        })
     }, [])
 
     useEffect(() => {

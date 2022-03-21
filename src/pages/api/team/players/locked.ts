@@ -1,52 +1,20 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import authenticate from '@lib/api/authenticate'
-import { Teams } from '@lib/models/team'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 import dayjs from 'dayjs'
-import getTeamRegistrations from '@lib/api/getTeamRegistrations'
-import { adminFireStore } from '@lib/firebase/admin'
 
-// TODO: ADD A FILTER IF THE TEAM HAS QUALIFIED... DO THIS FOR THE NEXT ONE!
-export default async function locked(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method === 'GET') {
-        const user = await authenticate(req, res)
-        const team = await Teams.getTeamByUserID(user.uid)
-        const activeRegistrations = await getTeamRegistrations(team)
-        const isInSeason = await adminFireStore
-            .collection('season')
-            .doc('one')
-            .collection('players')
-            .where('team_id', '==', team.id)
-            .get()
-        if (isInSeason.size > 0) {
-            const response = {
-                status: 'locked',
-                message: `Roster changes locked during Season`,
-            }
-            res.status(200).json({ ...response })
-        } else {
-            let response = {}
-            if (activeRegistrations.length > 0) {
-                const [active] = activeRegistrations
-                // if current date is less than or equal to end date
-                console.log(dayjs().toDate(), dayjs(active.tournament.scheduled_date_end).toDate())
-                if (
-                    dayjs(active.tournament.registration_closing_datetime).diff(dayjs(), 'minutes') < 30 &&
-                    dayjs().toDate() < dayjs(active.tournament.scheduled_date_end).toDate()
-                ) {
-                    response = {
-                        status: 'locked',
-                        message: `Roster changes locked during ${active.tournament.name}`,
-                    }
-                }
-            } else {
-                response = {
-                    status: 'unlocked',
-                    message: '',
-                }
-            }
-            res.status(200).json({ ...response })
-        }
+dayjs.extend(utc)
+dayjs.extend(timezone)
+export default async function locked(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    const now = dayjs().tz('America/Toronto')
+    const close = dayjs('2022-03-21 18:00').tz('America/Toronto')
+
+    if (now.isAfter(close)) {
+        res.status(200).json({ status: 'locked', message: `Roster changes locked` })
     } else {
-        return res.status(405).end()
+        res.status(200).json({
+            status: 'unlocked',
+            message: '',
+        })
     }
 }
