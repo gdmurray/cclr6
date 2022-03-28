@@ -45,10 +45,11 @@ export const mappedHeaders = {
 }
 
 export const statsValueFormatter: Record<string, (value: string | number) => string> = {
+    player_name: (value): string => (value as string).toUpperCase(),
     rating: (value) => numeral(value).format('0.00'),
-    kill_differential: (value) => `'${numeral(value).format('+0')}`,
+    kill_differential: (value) => numeral(value).format('+0'),
     kd_ratio: (value) => numeral(value).format('0.00'),
-    entry_differential: (value) => `'${numeral(value).format('+0')}`,
+    entry_differential: (value) => numeral(value).format('+0'),
     kills_per_round: (value) => numeral(value).format('0.00'),
     survivability: (value) => numeral(typeof value === 'string' ? value.replace('%', '') : value).format('0%'),
     kost: (value) => numeral(typeof value === 'string' ? value.replace('%', '') : value).format('0%'),
@@ -56,7 +57,7 @@ export const statsValueFormatter: Record<string, (value: string | number) => str
 
 export function formatStatsValue(key: string, value: string) {
     if (key in statsValueFormatter) {
-        return statsValueFormatter[key](value)
+        return `'${statsValueFormatter[key](value)}`
     }
     return value
 }
