@@ -75,7 +75,7 @@ function PreviousMatch({ match, teamMap }: { match: MatchWithDate; teamMap: Reco
                         )}`}
                         style={{ minWidth: '50px', width: '50px' }}
                     >
-                        <span className="font-heavy text-3xl">{team1.score}</span>
+                        <span className="font-heavy text-3xl">{team1.score ?? '-'}</span>
                     </div>
                 </div>
                 <div className="text-lg font-semibold text-center text-alt-2 w-8 self-center">vs</div>
@@ -86,7 +86,7 @@ function PreviousMatch({ match, teamMap }: { match: MatchWithDate; teamMap: Reco
                         )}`}
                         style={{ minWidth: '50px', width: '50px' }}
                     >
-                        <span className="font-heavy text-3xl">{team2.score}</span>
+                        <span className="font-heavy text-3xl">{team2.score ?? '-'}</span>
                     </div>
                     <Image
                         className="mx-2"
