@@ -1,6 +1,6 @@
 import { getSheetsClient } from '@lib/api/sheets'
 import { sheets_v4 } from 'googleapis'
-import { MapStatsForm, MatchStatsSchema } from '@components/analyst/match/use-match-form'
+import { MapStatsForm, MatchStatsSchema, PlayerStatsForm } from '@components/analyst/match/use-match-form'
 import { ITeam } from '@lib/models/team'
 import { formatStatsValue, headerValues } from '@components/analyst/match'
 
@@ -53,6 +53,47 @@ function getScore(i: number, score: string | number) {
     return ''
 }
 
+type TeamScore = {
+    score: number
+    players: PlayerStatsForm[]
+    team: ITeam
+}
+
+function getTeams(
+    stats: MapStatsForm,
+    teamOne: ITeam,
+    teamTwo: ITeam
+): { teamOneData: TeamScore; teamTwoData: TeamScore } {
+    const team_one_data = {
+        score: stats.team_one_score,
+        players: [
+            ...stats.team_one_players.sort((a, b) => {
+                return b.rating - a.rating
+            }),
+        ],
+        team: teamOne,
+    }
+    const team_two_data = {
+        score: stats.team_two_score,
+        players: [
+            ...stats.team_two_players.sort((a, b) => {
+                return b.rating - a.rating
+            }),
+        ],
+        team: teamTwo,
+    }
+    if (stats.team_one_score > stats.team_two_score) {
+        return {
+            teamOneData: team_one_data,
+            teamTwoData: team_two_data,
+        }
+    }
+    return {
+        teamOneData: team_two_data,
+        teamTwoData: team_one_data,
+    }
+}
+
 export async function updateStatSheets(stats: MatchStatsSchema, teamOne: ITeam, teamTwo: ITeam) {
     const client = await getSheetsClient()
 
@@ -67,22 +108,24 @@ export async function updateStatSheets(stats: MatchStatsSchema, teamOne: ITeam, 
         }
         const payload = [['map', 'team', 'score', ...headerValues]]
 
-        for (let i = 0; i < mapResults.team_one_players.length; i += 1) {
-            const player = mapResults.team_one_players[i]
+        const { teamOneData, teamTwoData } = getTeams(mapResults, teamOne, teamTwo)
+        console.log(teamOneData, teamTwoData)
+        for (let i = 0; i < teamOneData.players.length; i += 1) {
+            const player = teamOneData.players[i]
             const row = [
                 getMapName(i, mapResults),
-                getTeamName(i, teamOne),
-                getScore(i, mapResults.team_one_score),
+                getTeamName(i, teamOneData.team),
+                getScore(i, teamOneData.score),
                 ...headerValues.map((key) => formatStatsValue(key, player[key])),
             ]
             payload.push(row)
         }
-        for (let i = 0; i < mapResults.team_two_players.length; i += 1) {
-            const player = mapResults.team_two_players[i]
+        for (let i = 0; i < teamTwoData.players.length; i += 1) {
+            const player = teamTwoData.players[i]
             const row = [
                 '',
-                getTeamName(i, teamTwo),
-                getScore(i, mapResults.team_two_score),
+                getTeamName(i, teamTwoData.team),
+                getScore(i, teamTwoData.score),
                 ...headerValues.map((key) => formatStatsValue(key, player[key])),
             ]
             payload.push(row)

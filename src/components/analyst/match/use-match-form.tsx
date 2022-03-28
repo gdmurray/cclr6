@@ -15,7 +15,7 @@ export const playerStats = yup.object().shape({
     opening_kills: yup.number(),
     opening_deaths: yup.number(),
     entry_differential: yup.number(),
-    kills_per_round: yup.number(),
+    kills_per_round: yup.number().default(0.0),
     survivability: yup.string(),
     kost: yup.string(),
     oneVX: yup.mixed().nullable(),
@@ -44,7 +44,7 @@ const matchStatsSchema = yup.object().shape({
 
 export type MatchStatsSchema = yup.InferType<typeof matchStatsSchema>
 
-type PlayerStatsForm = {
+export type PlayerStatsForm = {
     player_id: string
     player_name: string
     rating: number

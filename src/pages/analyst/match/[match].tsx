@@ -90,21 +90,13 @@ type Props = {
 }
 
 const MatchDetailAnalysis = ({ teamOne, teamTwo, match, uplayMap, previousStats }: Props): JSX.Element => {
-    // const [playerMap, setPlayerMap] = useState()
-    //
-    // useEffect(() => {
-    //     if (uplayMap && !playerMap) {
-    //         setPlayerMap(playerMap)
-    //     }
-    // }, [uplayMap, playerMap])
-
     const defaultValues =
         previousStats ??
         ({
             match_id: match.id,
             match_date: match.scheduled_datetime,
             team_one_id: teamOne.id,
-            team_two_id: teamOne.id,
+            team_two_id: teamTwo.id,
             maps: [],
         } as Partial<MatchStatsForm>)
 
