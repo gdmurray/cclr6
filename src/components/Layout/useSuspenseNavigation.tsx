@@ -38,10 +38,7 @@ export function useSuspenseNavigation() {
         }
 
         const handleFinish = (_: string) => {
-            console.log('Loading Finished: ', key)
-            if (loading) {
-                setLoading(false)
-            }
+            setLoading(false)
             if (key != null) {
                 setKey(null)
             }
