@@ -38,9 +38,9 @@ function PreviousMatch({ match, teamMap }: { match: MatchWithDate; teamMap: Reco
     function getBackground(team: Opponent): string {
         if (team.score === 2) {
             return 'bg-success'
-        } else if (team.score === 1) {
+        } else if (team.score == null) {
             return 'bg-warning'
-        } else if (team.score === 0) {
+        } else {
             return 'bg-error'
         }
     }
