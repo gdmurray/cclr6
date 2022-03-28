@@ -32,7 +32,7 @@ export function useSuspenseNavigation() {
     useEffect(() => {
         const handleStart = (_: string) => {
             if (!loading) {
-                console.log('HandleStart: ', loading)
+                // console.log('HandleStart: ', loading)
                 setLoading(true)
             }
         }

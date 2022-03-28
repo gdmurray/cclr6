@@ -55,8 +55,6 @@ export const SeasonSchedule = ({ data, teams }: SeasonScheduleProps): JSX.Elemen
         return acc
     }
 
-    console.log(season.WEEK_FORMATTER)
-
     return (
         <div className="max-w-7xl mx-auto">
             <div className="hidden lg:flex flex-row space-x-6 justify-evenly">
