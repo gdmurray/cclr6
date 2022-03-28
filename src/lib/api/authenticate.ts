@@ -19,3 +19,12 @@ export async function isAdmin(user: firebaseAdmin.auth.DecodedIdToken, res: Next
         return true
     }
 }
+
+export async function isAnalyst(user: firebaseAdmin.auth.DecodedIdToken, res: NextApiResponse) {
+    const analystQuery = await adminFireStore.collection('analysts').where('user', '==', user.uid).get()
+    if (analystQuery.empty) {
+        res.status(403).end()
+    } else {
+        return true
+    }
+}

@@ -14,10 +14,10 @@ import {
     useDisclosure,
 } from '@chakra-ui/react'
 import { FaBars, FaChevronDown, FaChevronLeft, FaTimes } from 'react-icons/fa'
-import { useSuspenseNavigation } from './useSuspenseNavigation'
+import { useLoading, useSuspenseNavigation } from './useSuspenseNavigation'
 import useTeam from '@lib/useTeam'
 import { features } from '@lib/platform/features'
-import { useAdminCheck } from '@components/Layout/useAdminCheck'
+import { useRoleCheck } from '@components/Layout/useRoleCheck'
 
 interface INavItem extends NavItem {
     active: boolean
@@ -52,7 +52,7 @@ const baseRoutes: NavItem[] = [
 
 const MobileNavigationItem = ({ children, label, onClick, href, subLabel }: INavItem) => {
     const router = useRouter()
-    const { navigate, isLoading } = useSuspenseNavigation()
+    const { navigate, isLoading } = useLoading()
     const { isOpen, onToggle } = useDisclosure()
     if (!children) {
         return (
@@ -94,7 +94,7 @@ const MobileNavigationItem = ({ children, label, onClick, href, subLabel }: INav
 }
 
 const DesktopNavigationItem = ({ children, label, onClick, href, active, subLabel }: INavItem) => {
-    const { navigate, isLoading } = useSuspenseNavigation()
+    const { navigate, isLoading } = useLoading()
     if (!children) {
         if (!onClick) {
             return (
@@ -275,7 +275,6 @@ function getBaseRoutes(isLive: boolean) {
     if (isLive) {
         const liveIndex = baseRoutes.findIndex((elem) => elem.href === '/watch')
         baseRoutes[liveIndex] = Object.assign(baseRoutes[liveIndex], { subLabel: 'live' })
-        console.log('is live: ', baseRoutes)
         return baseRoutes
     }
     return baseRoutes
@@ -287,7 +286,7 @@ export default function Navigation() {
     const { team } = useTeam({ user })
     const [isLive, setIsLive] = useState<boolean>(false)
 
-    const { isAdmin } = useAdminCheck()
+    const { isAdmin, isAnalyst } = useRoleCheck()
 
     useEffect(() => {
         fetch('/api/twitch/live').then((result) => {
@@ -325,6 +324,7 @@ export default function Navigation() {
                         },
                         ...(team ? [{ label: 'Team', href: '/team' }] : []),
                         ...(isAdmin ? [{ label: 'Admin', href: '/admin' }] : []),
+                        ...(isAnalyst ? [{ label: 'Analyst', href: '/analyst' }] : []),
                         {
                             label: 'Sign Out',
                             onClick: () => {

@@ -6,7 +6,7 @@ import { TeamContext } from '@components/teams/teamContext'
 import { Teams } from '@lib/models/team'
 import { basePlayers, IPlayer, Players } from '@lib/models/player'
 import Loader from '@components/Loader'
-import { InvitationProvider } from '@components/teams/invitationContext'
+import { InvitationProvider } from '@components/teams/players/invitationContext'
 import { useToast } from '@chakra-ui/react'
 import { resetServerContext } from 'react-beautiful-dnd'
 

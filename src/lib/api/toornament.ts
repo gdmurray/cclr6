@@ -318,6 +318,18 @@ export class ToornamentClient {
         return Promise.resolve(data)
     }
 
+    async getMatchById(match_id: string): Promise<any> {
+        await this.init()
+        const response = await fetch(this.url + `/matches/${match_id}`, {
+            method: 'GET',
+            headers: {
+                ...this.headers(),
+            },
+        })
+        const data = await response.json()
+        return data
+    }
+
     async getTeamMatches(tournament_id: string, participant_id: string): Promise<any> {
         await this.init()
         const response = await fetch(

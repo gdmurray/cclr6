@@ -1,8 +1,8 @@
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import { FaQuestionCircle, FaTimes } from 'react-icons/fa'
-import { Button, FormErrorMessage, Image, Input, Tooltip, useToast } from '@chakra-ui/react'
+import { Button, Checkbox, FormErrorMessage, Image, Input, Tooltip, useToast } from '@chakra-ui/react'
 import React, { useRef } from 'react'
-import { useTeamForm } from '@components/teams/useTeamForm'
+import { useTeamForm } from '@components/teams/detail/useTeamForm'
 import { ITeam } from '@lib/models/team'
 
 const AdminEditTeam = ({ team }: { team: ITeam }) => {
@@ -19,11 +19,13 @@ const AdminEditTeam = ({ team }: { team: ITeam }) => {
 
     const onSubmit = (values) => {
         console.log(values)
+        const { update_toornament, ...formValues } = values
         fetch('/api/admin/team/update', {
             method: 'POST',
             body: JSON.stringify({
                 team_id: team.id,
-                values,
+                update_toornament,
+                values: formValues,
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -129,6 +131,23 @@ const AdminEditTeam = ({ team }: { team: ITeam }) => {
                             placeholder={'Team Twitter Acount'}
                         />
                         <FormErrorMessage>{errors?.twitter?.message}</FormErrorMessage>
+                    </FormControl>
+                    <FormControl id="slug" isRequired={false}>
+                        <FormLabel>Team Slug</FormLabel>
+                        <Input
+                            {...register('slug')}
+                            defaultValue={team.slug}
+                            width={300}
+                            size="lg"
+                            px={5}
+                            py={5}
+                            variant="flushed"
+                            placeholder={'Slug'}
+                        />
+                    </FormControl>
+                    <FormControl id={'update_toornament'} isRequired={false} display={'flex'}>
+                        <FormLabel>Update Toornament</FormLabel>
+                        <Checkbox {...register('update_toornament')} defaultIsChecked={false} size={'lg'} />
                     </FormControl>
                 </div>
             </div>

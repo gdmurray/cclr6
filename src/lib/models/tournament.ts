@@ -25,6 +25,7 @@ export interface Tournament {
     id: string
     discipline: string
     platforms: string[]
+    toornament_id?: string
 }
 
 interface TournamentClient {

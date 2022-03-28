@@ -13,10 +13,10 @@ import { FaArrowRight, FaEnvelope, FaTimes, FaUsers } from 'react-icons/fa'
 import React, { useRef, useState } from 'react'
 import { useAuth } from '@lib/auth'
 import { ITeam, Teams } from '@lib/models/team'
-import Loader from '../Loader'
-import useRedirect from '../Layout/useRedirect'
+import Loader from '../../Loader'
+import useRedirect from '../../Layout/useRedirect'
 import { useRouter } from 'next/router'
-import { useTeamForm } from '@components/teams/useTeamForm'
+import { useTeamForm } from '@components/teams/detail/useTeamForm'
 
 export default function RegisterTeamForm(): JSX.Element {
     const uploadRef = useRef<HTMLInputElement>()

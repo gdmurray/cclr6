@@ -13,6 +13,8 @@ const schema = yup.object().shape({
     twitter: yup.string().max(15, 'Twitter handle cannot be longer than 15 characters').notRequired(),
     contact_email: yup.string().email().notRequired(),
     logo: yup.string().nullable(),
+    slug: yup.string().nullable().notRequired(),
+    update_toornament: yup.boolean().default(true),
 })
 
 interface TeamInformationForm {
@@ -20,6 +22,8 @@ interface TeamInformationForm {
     contact_email?: string
     twitter?: string
     logo: string
+    slug?: string
+    update_toornament?: boolean
 }
 
 interface UseTeamFormProps {
@@ -40,6 +44,7 @@ export function useTeamForm({ uploadRef, team }: UseTeamFormProps) {
                   logo: team.logo,
                   twitter: team.twitter,
                   contact_email: team.contact_email,
+                  slug: undefined,
               },
           }
         : defaultFormProps

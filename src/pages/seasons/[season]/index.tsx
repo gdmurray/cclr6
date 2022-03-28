@@ -17,7 +17,6 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
                 image: null,
                 url: currentSeason.BASE_URL,
             }
-            console.log(seo)
             return { SEO: seo }
         }
         return {}

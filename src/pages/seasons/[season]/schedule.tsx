@@ -1,5 +1,5 @@
-import React from 'react'
-import SeasonLayout from '@components/season/SeasonLayout'
+import React, { useContext } from 'react'
+import SeasonLayout, { SeasonContext, useSeason } from '@components/season/SeasonLayout'
 import { getSeasonPaths, getCurrentSeason, MatchWithDate } from '@lib/season/common'
 import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
 import { ITeam, Teams } from '@lib/models/team'
@@ -34,7 +34,6 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
         props: {
             data: matchData,
             teams: teamMap,
-            seasonKey: params.season,
             SEO: {
                 title: `${currentSeason.TITLE} Schedule `,
                 image: null,
@@ -43,14 +42,10 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
         },
         revalidate: 3600,
     }
-    // return {
-    //     props: {},
-    //     revalidate: 3600,
-    // }
 }
 
-export const SeasonSchedule = ({ data, teams, seasonKey }: SeasonScheduleProps): JSX.Element => {
-    const season = getCurrentSeason({ season: seasonKey })
+export const SeasonSchedule = ({ data, teams }: SeasonScheduleProps): JSX.Element => {
+    const season = useSeason()
     const matchReducer = (acc: Record<number, Match[]>, elem: Match) => {
         if (elem.number in acc) {
             acc[elem.number].push(elem)
@@ -59,6 +54,8 @@ export const SeasonSchedule = ({ data, teams, seasonKey }: SeasonScheduleProps):
         }
         return acc
     }
+
+    console.log(season.WEEK_FORMATTER)
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -118,20 +115,6 @@ export const SeasonSchedule = ({ data, teams, seasonKey }: SeasonScheduleProps):
         </div>
     )
 }
-
-// const SeasonSchedule = ({ data, teams }: SeasonScheduleProps): JSX.Element => {
-//     // const {
-//     //     query: { season },
-//     // } = useRouter()
-//     // if (season === 'one') {
-//     //     return <SeasonOneSchedule data={data} teams={teams} />
-//     // }
-//     return (
-//         <div className="max-w-6xl mx-auto">
-//             <div className="text-alt-2 font-medium">Schedule coming soon</div>
-//         </div>
-//     )
-// }
 
 SeasonSchedule.layout = (content: React.ReactNode): JSX.Element => {
     return <SeasonLayout>{content}</SeasonLayout>

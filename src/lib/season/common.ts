@@ -14,6 +14,7 @@ export interface Season {
     STAGE_ID: string
 
     id: string
+    slug: string
     active: boolean
     name: string
     short_name: string
@@ -34,6 +35,7 @@ export const SeasonOne: Season = {
     BASE_URL: '/seasons/one',
     TOURNAMENT_ID: '4585711997166354432',
     STAGE_ID: '4753738149735563264',
+    slug: 'one',
     id: '1',
     active: false,
     toornamentId: '4585711997166354432',
@@ -84,6 +86,7 @@ export const SeasonTwoSplit1: Season = {
     STAGE_ID: '5502112228531617792',
 
     id: 's2p1',
+    slug: 'two',
     active: true,
     toornamentId: '5502105625157156864',
     start_date: '2022-03-21',
@@ -137,6 +140,8 @@ export const Seasons: Record<string, Season> = {
     one: SeasonOne,
     two: SeasonTwoSplit1,
 }
+
+export const defaultSeason = SeasonTwoSplit1
 
 export function getGameDate({ base, match, week }: { base: Date; match: number; week: number }): dayjs.Dayjs {
     const dayDelta = match > 2 ? 1 : 0

@@ -42,7 +42,7 @@ const FooterData: FooterData[] = [
             },
             {
                 name: 'Liquipedia',
-                link: 'https://liquipedia.net/rainbowsix/Canada_Contenders_League/2021',
+                link: 'https://liquipedia.net/rainbowsix/Canada_Contenders_League/2022',
                 icon: <LiquipediaIcon />,
             },
         ],

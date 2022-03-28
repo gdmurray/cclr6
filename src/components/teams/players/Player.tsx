@@ -52,7 +52,6 @@ function Player({ locked, player, order, captainRadioProps }: IPlayerProps): JSX
 
     useEffect(() => {
         if (setCountryFormValue === undefined) {
-            console.log('Setting country value')
             setValue(`players.${order}.setCountryValue`, setCountryValue)
         }
     }, [setCountryFormValue, setCountryValue, setValue, order])

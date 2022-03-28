@@ -1,8 +1,11 @@
 import { Match, Round } from '@lib/models/toornament'
 import { ToornamentClient } from '@lib/api/toornament'
-import { getGameDate, Season, MatchData, SeasonOne, Seasons } from '@lib/season/common'
+import { Season, MatchData, Seasons } from '@lib/season/common'
 import { bucket } from '@lib/api/cms'
 import { adminFireStore } from '@lib/firebase/admin'
+import dayjs from 'dayjs'
+import { ITeam } from '@lib/models/team'
+import { getMatchDate } from '@components/analyst/match/utils'
 
 export async function getMatchData(matches: Match[], season: Season): Promise<MatchData[]> {
     const client = new ToornamentClient()
@@ -16,6 +19,7 @@ export async function getMatchData(matches: Match[], season: Season): Promise<Ma
         }
         return acc
     }, {})
+
     const matchData: MatchData[] = rounds.map((round) => {
         return {
             ...round,
@@ -24,18 +28,14 @@ export async function getMatchData(matches: Match[], season: Season): Promise<Ma
     })
 
     for (let i = 0; i < matchData.length; i += 1) {
-        const round = matchData[i]
-        for (let j = 0; j < matchData[i].matches.length; j += 1) {
-            const match = matchData[i].matches[j]
-            const gameDate = getGameDate({
-                match: match.number,
-                week: round.number,
-                base: SeasonOne.BASE_MATCH,
-            })
-            matchData[i].matches[j].match_date = gameDate.toISOString()
+        if (matchData[i].matches != null) {
+            for (let j = 0; j < matchData[i].matches.length; j += 1) {
+                const match = matchData[i].matches[j]
+                const gameDate = dayjs(getMatchDate(match))
+                matchData[i].matches[j].match_date = gameDate.toISOString()
+            }
         }
     }
-
     return matchData
 }
 
@@ -89,9 +89,24 @@ export async function getIdToSlugMap(season) {
 
 export async function getSeasonTeamsUrls() {
     let paths = []
+    const teams = await adminFireStore.collection('teams').get()
+
+    const teamMap = teams.docs.reduce((acc: Record<string, Partial<ITeam>>, team) => {
+        acc[team.id] = team
+        return acc
+    }, {})
+
     for (const season of Object.keys(Seasons)) {
-        const teams = await adminFireStore.collection('season').doc(season).collection('teams').get()
-        const slugs = teams.docs.map((doc) => `/seasons/${season}/teams/${doc.data().slug}`)
+        const seasonObject = Seasons[season]
+        const registrations = await adminFireStore
+            .collectionGroup('registrations')
+            .where('tournament_id', '==', seasonObject.id)
+            .get()
+
+        const registeredTeams = registrations.docs.map((doc) => doc.ref.path.split('/')[1])
+        const slugs = registeredTeams.map(
+            (team) => `/seasons/${season}/teams/${teamMap[team].slug ?? teamMap[team].id}`
+        )
         paths = paths.concat(slugs)
     }
     return paths

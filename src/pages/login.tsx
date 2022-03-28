@@ -14,7 +14,6 @@ export const getServerSideProps = withAuthSSR({
 
 const Login = (): JSX.Element => {
     const router = useRouter()
-    console.log('LOGIN ROUTER: ', router)
     const { redirect } = useRedirect()
 
     useEffect(() => {

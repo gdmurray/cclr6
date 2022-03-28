@@ -21,6 +21,7 @@ export const withAuthSSR =
         whenAuthed = AuthAction.RENDER,
         whenUnauthed = AuthAction.RENDER,
         whenNotAdmin = AuthAction.RENDER,
+        whenNotAnalyst = AuthAction.RENDER,
         appPageURL = AppPageURL,
         authPageURL = AuthPageURL,
         referral = null,
@@ -28,7 +29,6 @@ export const withAuthSSR =
     (getServerSidePropsFunc) =>
     async (ctx) => {
         const { resolvedUrl } = ctx
-        console.log('resolved: ', resolvedUrl)
         if (!Features.isRouteValid(resolvedUrl)) {
             return {
                 redirect: {
@@ -54,7 +54,6 @@ export const withAuthSSR =
         }
         const constructUrl = (destination: string): string => {
             if (referral) {
-                console.log('encoded: ', encodeURIComponent(referral))
                 return `${destination}?next=${encodeURIComponent(referral)}`
             }
             return destination
@@ -101,7 +100,6 @@ export const withAuthSSR =
 
         if (whenNotAdmin !== AuthAction.RENDER) {
             if (!AuthUser) {
-                console.log('Not logged in')
                 return {
                     redirect: {
                         destination: constructUrl(authPageURL),
@@ -111,6 +109,26 @@ export const withAuthSSR =
             }
             const isAdmin = await adminFireStore.collection('admins').where('user', '==', AuthUser.uid).get()
             if (isAdmin.empty) {
+                return {
+                    redirect: {
+                        destination: constructUrl(appPageURL),
+                        permanent: false,
+                    },
+                }
+            }
+        }
+
+        if (whenNotAnalyst !== AuthAction.RENDER) {
+            if (!AuthUser) {
+                return {
+                    redirect: {
+                        destination: constructUrl(authPageURL),
+                        permanent: false,
+                    },
+                }
+            }
+            const isAnalyst = await adminFireStore.collection('analysts').where('user', '==', AuthUser.uid).get()
+            if (isAnalyst.empty) {
                 return {
                     redirect: {
                         destination: constructUrl(appPageURL),

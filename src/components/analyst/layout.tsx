@@ -7,28 +7,20 @@ import 'antd/dist/antd.dark.css'
 
 const tabs = [
     {
-        label: 'Home',
-        path: '/admin',
+        label: 'Seasons',
+        path: '/analyst',
     },
     {
-        label: 'Teams',
-        path: '/admin/teams',
-    },
-    {
-        label: 'Season',
-        path: '/admin/season',
-    },
-    {
-        label: 'Email Test',
-        path: '/admin/test',
+        label: 'Matches',
+        path: '/analyst/matches',
     },
 ]
 
-const AdminLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
+export const AnalystLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
     const { tabIndex, handleTabChange, tabLoading, isQuery, navigate } = useTabsNavigator({ tabs })
     return (
         <div className="page-content">
-            <div className="page-title-sm">Admin Portal</div>
+            <div className="page-title-sm">Analyst Portal</div>
             <div>
                 <Tabs index={tabIndex} onChange={handleTabChange}>
                     <TabList>
@@ -40,7 +32,7 @@ const AdminLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
             </div>
             <div>
                 <div className="py-4">
-                    {tabLoading && <Loader text="Loading Admin Content" />}
+                    {tabLoading && <Loader text="Loading Analyst Content" />}
                     {!tabLoading && !isQuery && <>{props.children}</>}
                     {!tabLoading && isQuery && (
                         <div>
@@ -56,5 +48,3 @@ const AdminLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
         </div>
     )
 }
-
-export default AdminLayout

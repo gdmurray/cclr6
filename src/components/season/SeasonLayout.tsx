@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { createContext, useContext } from 'react'
 import { Collapse, Flex, Stack, Tab, TabList, Tabs, useDisclosure } from '@chakra-ui/react'
 import useTabsNavigator from '@components/Layout/useTabsNavigator'
 import Loader from '@components/Loader'
 import { FaCaretDown, FaCaretLeft } from 'react-icons/fa'
 // import styled from '@emotion/styled'
 import { useRouter } from 'next/router'
+import { defaultSeason, getCurrentSeason, Season, SeasonTwoSplit1 } from '@lib/season'
 
 const seasonTabs: { label: React.ReactNode; path: string }[] = [
     {
@@ -140,24 +141,43 @@ function getSeasonFromPath(path: string): string {
     return seasonSplit[seasonSplit.findIndex((elem) => elem === 'seasons') + 1]
 }
 
+type SeasonContext = {
+    season: Season
+}
+
+export const SeasonContext = createContext<SeasonContext>({
+    season: defaultSeason,
+})
+
+export function useSeason(): Season {
+    const seasonContext = useContext(SeasonContext)
+    if (seasonContext != null && seasonContext.season != null) {
+        return seasonContext.season
+    }
+    return defaultSeason
+}
+
 const SeasonLayout = (props: React.PropsWithChildren<React.ReactNode>) => {
     const {
-        query: { season },
+        query: { season: seasonQuery },
         pathname,
     } = useRouter()
-    const currentSeason = season ?? getSeasonFromPath(pathname)
+    const currentSeason = seasonQuery ?? getSeasonFromPath(pathname)
+    const season = getCurrentSeason({ season: currentSeason as string })
     const { handleTabChange, tabIndex, tabLoading } = useTabsNavigator({
         tabs: seasonTabs,
         baseUrl: `/seasons/${currentSeason}`,
     })
     const uppercaseSeason = (currentSeason as string).replace(/^\w/, (c) => c.toUpperCase())
     return (
-        <div className="page-content">
-            <DesktopTabs tabIndex={tabIndex} handleTabChange={handleTabChange} season={uppercaseSeason} />
-            <MobileTabs tabIndex={tabIndex} handleTabChange={handleTabChange} season={uppercaseSeason} />
-            {tabLoading && <Loader text="Loading Season Information" />}
-            {!tabLoading && <div className="p-2 py-4">{props.children}</div>}
-        </div>
+        <SeasonContext.Provider value={{ season }}>
+            <div className="page-content">
+                <DesktopTabs tabIndex={tabIndex} handleTabChange={handleTabChange} season={uppercaseSeason} />
+                <MobileTabs tabIndex={tabIndex} handleTabChange={handleTabChange} season={uppercaseSeason} />
+                {tabLoading && <Loader text="Loading Season Information" />}
+                {!tabLoading && <div className="p-2 py-4">{props.children}</div>}
+            </div>
+        </SeasonContext.Provider>
     )
 }
 

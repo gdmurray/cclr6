@@ -3,7 +3,7 @@ import { CreateTeamClient, ITeam } from '@lib/models/team'
 import React, { useContext, useEffect, useState } from 'react'
 import { PayPalButtons } from '@paypal/react-paypal-js'
 import { Season } from '@lib/season'
-import { PaymentContext, PurchaseTarget } from '@components/teams/PaymentContext'
+import { PaymentContext, PurchaseTarget } from '@components/teams/registration/payment/PaymentContext'
 import { motion } from 'framer-motion'
 
 interface IPaymentForm {
@@ -82,7 +82,6 @@ export default function PaymentForm({ season, team }: IPaymentForm): JSX.Element
         open: { height: 'auto', opacity: 1 },
         closed: { height: '0', opacity: 0 },
     }
-    console.log('payment in progresS: ', paymentInProgress)
     return (
         <motion.div
             animate={isPurchasing ? 'open' : 'closed'}

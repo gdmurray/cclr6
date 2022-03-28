@@ -1,9 +1,9 @@
 import { GetStaticPropsResult } from 'next'
 import React from 'react'
-import SeasonLayout from '@components/season/SeasonLayout'
+import SeasonLayout, { useSeason } from '@components/season/SeasonLayout'
 import { GetStaticPathsResult } from 'next'
-import { Season, SeasonTwoSplit1, getSeasonPaths } from '@lib/season'
-import { CreateSeasonClient } from '@lib/season/client'
+import { Season, getSeasonPaths, getCurrentSeason } from '@lib/season'
+import * as client from '@lib/season/client'
 import { Tab, TabList, TabPanels, Tabs, TabPanel, Image, useColorMode } from '@chakra-ui/react'
 import { getHostName } from '@lib/utils'
 import { IPlayer } from '@lib/models/player'
@@ -11,34 +11,27 @@ import { useRouter } from 'next/router'
 import { adminFireStore } from '@lib/firebase/admin'
 import { IRegistration, ITeam } from '@lib/models/team'
 import { Tournament } from '@lib/models/tournament'
-
-// import { getStaticProps as getTeamsStaticProps } from '@components/season/one/teams'
+import { useLoading } from '@components/Layout/useSuspenseNavigation'
 
 export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
-    // const { season } = params
-    // if (season === 'one') {
-    // this needs to be wrapped in { }, but lets ignore that for now.
-    //     return getTeamsStaticProps(params)
-    // }
-    // if(season === "two"){
-    //
-    // }
-    console.log('params: ', params)
-    // const currentSeason = getCurrentSeason()
-    const seasonMap = [SeasonTwoSplit1].reduce((acc, elem) => {
+    const currentSeason = getCurrentSeason(params)
+    const seasonMap = [currentSeason].reduce((acc, elem) => {
         delete elem.BASE_MATCH
         delete elem.WEEK_FORMATTER
         acc[elem.id] = elem
         for (const qual of elem.qualifiers) {
-            acc[qual.id] = qual
+            if (qual.short_name != null) {
+                acc[qual.id] = qual
+            }
         }
         return acc
     }, {})
-    console.log(seasonMap)
-    const seasonClient = CreateSeasonClient(adminFireStore)
+
+    const seasonClient = client.CreateSeasonClient(adminFireStore)
     const seasonParticipants = await Promise.all(
         Object.keys(seasonMap).map((seasonId) => seasonClient.getRegisteredTeams(seasonId, true))
     )
+
     const registrationPriority = {
         INVITED: 0,
         QUALIFIED: 1,
@@ -52,6 +45,7 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
         ]
         return acc
     }, {})
+
     return {
         props: {
             seasons: seasonMap,
@@ -60,7 +54,6 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
                 title: 'Teams',
                 // title: `${curr}`,
             },
-            // seasons:
         },
         revalidate: 3600,
     }
@@ -97,6 +90,8 @@ type ParticipantRegistration = ITeam &
     }
 
 const QualifierTeams = ({ participants }: { participants: ParticipantRegistration[] }): JSX.Element => {
+    const { navigate, isLoading } = useLoading()
+    const season = useSeason()
     return (
         <div className="flex flex-col space-y-4">
             {participants.length === 0 && <div className="text-alt-2 font-medium">No teams registered</div>}
@@ -105,7 +100,10 @@ const QualifierTeams = ({ participants }: { participants: ParticipantRegistratio
                 return (
                     <div
                         key={team.id}
-                        className="bordered group border rounded-lg py-2 px-4 flex flex-col text-main dark:hover:border-gray-700 hover:border-gray-400 hover:shadow-sm"
+                        onClick={() => {
+                            navigate(team.slug ?? team.id, `/seasons/${season.slug}/teams/${team.slug ?? team.id}`)
+                        }}
+                        className="cursor-pointer bordered group border rounded-lg py-2 px-4 flex flex-col text-main dark:hover:border-gray-700 hover:border-gray-400 hover:shadow-sm"
                     >
                         <div className="flex flex-row justify-between py-2">
                             <div className="flex flex-row text-xl font-semibold">
@@ -153,7 +151,7 @@ const QualifierTeams = ({ participants }: { participants: ParticipantRegistratio
                                                     .map((player) => {
                                                         return (
                                                             <div
-                                                                key={`${team.id}-${player.email}`}
+                                                                key={`${team.id}-${player.email}-${player.index}`}
                                                                 className="flex flex-row mt-1 text-sm font-medium whitespace-nowrap justify-end sm:justify-center"
                                                             >
                                                                 <span style={{ paddingTop: '6px' }}>
@@ -207,9 +205,7 @@ const SeasonTeams = ({
     function getDefaultIndex() {
         const { sid } = router.query
         if (sid) {
-            console.log(sid)
             const idx = seasonKeys.indexOf(sid as string)
-            console.log('idx: ', idx)
             if (idx != -1) {
                 return idx
             }

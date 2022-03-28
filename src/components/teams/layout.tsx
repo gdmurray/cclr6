@@ -7,7 +7,7 @@ import { TeamProvider } from '@components/teams/teamContext'
 import useTabsNavigator from '@components/Layout/useTabsNavigator'
 import { FaClipboardList, FaCog, FaCreditCard, FaHome, FaUsers } from 'react-icons/fa'
 import useRedirect from '@components/Layout/useRedirect'
-import { RegistrationSteps } from './RegistrationSteps'
+import { RegistrationSteps } from './registration/RegistrationSteps'
 
 const teamTabs: { label: React.ReactNode; path: string }[] = [
     {

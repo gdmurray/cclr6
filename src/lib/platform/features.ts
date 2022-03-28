@@ -1,17 +1,17 @@
 import { isLocal } from '@lib/platform/env'
 
 interface IFeatures {
-    registration: boolean;
-    login: boolean;
-    profile: boolean;
-    invite: boolean;
+    registration: boolean
+    login: boolean
+    profile: boolean
+    invite: boolean
 }
 
 export const defaultFeatures = {
     registration: true,
     login: true,
     profile: true,
-    invite: false
+    invite: false,
 }
 
 const getFeatures = (): IFeatures => {
@@ -28,7 +28,6 @@ const getFeatures = (): IFeatures => {
                     acc[feature] = defaultFeatures[feature]
                 }
                 return acc
-
             }, {})
             return allowedFeatures as IFeatures
         } catch (e) {
@@ -42,18 +41,18 @@ export const featureUrls: Record<string, string[]> = {
     registration: ['/team/register', '/register'],
     login: ['/login'],
     profile: ['/profile'],
-    invite: ['/invitation']
+    invite: ['/invitation'],
 }
 
 export const Features = {
     isRouteValid: (url): boolean => {
-        console.log("URL: ", url)
         const allowedFeatures = getFeatures()
-        return !Object.keys(allowedFeatures).filter(
-            (f) => !allowedFeatures[f]
-        ).map((feature) => {
-            return featureUrls[feature].some((val) => url.startsWith(val))
-        }).some(val => val)
-    }
+        return !Object.keys(allowedFeatures)
+            .filter((f) => !allowedFeatures[f])
+            .map((feature) => {
+                return featureUrls[feature].some((val) => url.startsWith(val))
+            })
+            .some((val) => val)
+    },
 }
 export const features = getFeatures()

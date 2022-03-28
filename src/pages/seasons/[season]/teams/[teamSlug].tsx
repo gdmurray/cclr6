@@ -2,40 +2,45 @@ import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
 import { getCurrentSeason, MatchData } from '@lib/season/common'
 import { ToornamentClient } from '@lib/api/toornament'
 import React from 'react'
-import SeasonLayout from '@components/season/SeasonLayout'
-import { getIdToSlugMap, getMatchData, getSeasonTeamsUrls } from '@lib/season/api'
+import SeasonLayout, { useSeason } from '@components/season/SeasonLayout'
+import { getMatchData, getSeasonTeamsUrls } from '@lib/season/api'
 import { adminFireStore } from '@lib/firebase/admin'
 import { IPlayer } from '@lib/models/player'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { Image } from '@chakra-ui/react'
+import { Image, useColorMode } from '@chakra-ui/react'
 import { FaTwitter } from 'react-icons/fa'
 import Players from '@components/season/team/Players'
 import Matches from '@components/season/team/Matches'
-import { ITeam, Teams } from '@lib/models/team'
+import { CreateTeamClient, ITeam, Teams } from '@lib/models/team'
+import { getHostName } from '@lib/utils'
+import { getMatchDate } from '@components/analyst/match/utils'
 
 export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
     const { teamSlug } = params
-    Object.assign(params, { season: 'one' })
     const currentSeason = getCurrentSeason(params)
+
     const client = new ToornamentClient()
 
-    const slugs = await adminFireStore.collection('season').doc(params.season).collection('teams').get()
-    const slugToIdMap = slugs.docs.reduce((acc, elem) => {
-        const data = elem.data()
-        acc[data.slug] = {
-            team_id: data.team_id,
-            participant_id: data.participant_id,
+    const teamBySlug = await Teams.getTeamBySlug(teamSlug)
+    const teamById = await Teams.getTeamById(teamSlug)
+    const team = teamBySlug ?? teamById
+    if (team == null) {
+        return {
+            notFound: true,
         }
-        return acc
-    }, {})
+    }
+    const teamClient = await CreateTeamClient(team, adminFireStore)
+    const registration = await teamClient.getRegistration(currentSeason.id)
 
-    const idToSlugMap = await getIdToSlugMap(params.season)
+    if (registration == null) {
+        console.log('registration null')
+        return {
+            notFound: true,
+        }
+    }
 
-    const { team_id } = slugToIdMap[teamSlug]
-    const teamData = await adminFireStore.collection('teams').doc(team_id).get()
-    const team = { id: teamData.id, ...teamData.data() } as ITeam
-    const playerData = await adminFireStore.collection('teams').doc(team_id).collection('players').get()
+    const playerData = await adminFireStore.collection('teams').doc(team.id).collection('players').get()
     const players = playerData.docs.map((player) => {
         return {
             id: player.id,
@@ -43,10 +48,10 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
         } as IPlayer
     })
 
-    const matches = await client.getTeamMatches(currentSeason.TOURNAMENT_ID, slugToIdMap[teamSlug].participant_id)
-    const matchData = await getMatchData(matches, currentSeason)
+    const matches = await client.getTeamMatches(currentSeason.TOURNAMENT_ID, registration.participant_id)
 
-    const ranking = await client.getTeamRanking(currentSeason.TOURNAMENT_ID, team_id)
+    const matchData = await getMatchData(matches, currentSeason)
+    const ranking = await client.getTeamRanking(currentSeason.TOURNAMENT_ID, team.id)
     const teamMap = await Teams.getTeamIdMap()
 
     return {
@@ -55,8 +60,7 @@ export async function getStaticProps({ params }): Promise<GetStaticPropsResult<a
             ranking,
             teamMap,
             players: players.sort((a: IPlayer, b: IPlayer): number => (a.index > b.index ? 1 : -1)),
-            matches: matchData,
-            slugMap: idToSlugMap,
+            matches: matchData.filter((match) => match.matches != null),
             SEO: {
                 title: `${team.name}`,
                 image: null,
@@ -72,7 +76,6 @@ const SeasonTeamPage = ({
     players,
     matches,
     ranking,
-    slugMap,
     teamMap,
 }: {
     team: ITeam
@@ -84,16 +87,17 @@ const SeasonTeamPage = ({
     slugMap: Record<string, string>
     teamMap: Record<string, ITeam>
 }): JSX.Element => {
+    const season = useSeason()
     const previous_matches = matches
         ? matches
-              .filter((round) => round.matches.some((match) => dayjs(match.match_date) < dayjs()))
+              .filter((round) => round.matches.some((match) => dayjs(getMatchDate(match)) < dayjs()))
               .map((round) => {
                   return round.matches[0]
               })
         : []
     const upcoming_matches = matches
         ? matches
-              .filter((round) => round.matches.some((match) => dayjs(match.match_date) > dayjs()))
+              .filter((round) => round.matches.some((match) => dayjs(getMatchDate(match)) > dayjs()))
               .map((round) => {
                   return round.matches[0]
               })
@@ -107,10 +111,11 @@ const SeasonTeamPage = ({
 
         const match_date = dayjs(next_match.match_date)
         const opponent = next_match.opponents.filter((opp) => opp.participant.custom_user_identifier !== team.id)[0]
+        const opponentTeam = teamMap[opponent.participant.custom_user_identifier]
         return (
             <span>
                 Next Match on <span className="text-alt">{match_date.format('dddd, MMM D [at] ha')}</span> against{' '}
-                <Link href={`/seasons/one/teams/${slugMap[opponent.participant.custom_user_identifier]}`}>
+                <Link href={`/seasons/${season.slug}/teams/${opponentTeam.slug ?? opponentTeam.id}`}>
                     <span className="text-alt cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
                         {opponent.participant.name}
                     </span>
@@ -119,6 +124,7 @@ const SeasonTeamPage = ({
         )
     }
 
+    const { colorMode } = useColorMode()
     if (team) {
         return (
             <div className="max-w-4xl mx-auto">
@@ -130,6 +136,11 @@ const SeasonTeamPage = ({
                                 width={{ base: 100, md: 125 }}
                                 height={{ base: 100, md: 125 }}
                                 minWidth={{ base: 100, md: 125 }}
+                                fallbackSrc={`${getHostName()}/images/${
+                                    colorMode === 'light'
+                                        ? 'liquipedia_default_light.png'
+                                        : 'liquipedia_default_dark.png'
+                                }`}
                             />
                         </div>
                         <div className="py-4">
@@ -149,7 +160,7 @@ const SeasonTeamPage = ({
                                 )}
                             </div>
                             <div className="ml-1 text-subtitle">
-                                Rank &nbsp;{ranking[0].rank ? `#${ranking[0].rank}` : '-'}&nbsp; in CCL Season One
+                                Rank &nbsp;{ranking[0].rank ? `#${ranking[0].rank}` : '-'}&nbsp; in CCL Season Two
                             </div>
                             <div className="ml-1 text-subtitle-description">{getNextMatchText()}</div>
                         </div>
@@ -158,7 +169,6 @@ const SeasonTeamPage = ({
                     <Matches
                         upcoming_matches={upcoming_matches}
                         previous_matches={previous_matches}
-                        slugMap={slugMap}
                         teamMap={teamMap}
                     />
                 </div>

@@ -6,11 +6,12 @@ export default async function verifyAdmin(req: NextApiRequest, res: NextApiRespo
     try {
         const user = await authenticate(req, res)
         if (user) {
-            const isAdmin = await adminFireStore.collection('admins').where('user', '==', user.uid).get()
-            if (!isAdmin.empty) {
-                res.status(200).json({ status: 'success', message: 'You are an admin' })
+            console.log(user.uid)
+            const isAnalyst = await adminFireStore.collection('analysts').where('user', '==', user.uid).get()
+            if (!isAnalyst.empty) {
+                res.status(200).json({ status: 'success', message: 'You are an analyst' })
             } else {
-                res.status(403).json({ status: 'failure', message: 'Not n admin' })
+                res.status(403).json({ status: 'failure', message: 'Not an analyst' })
             }
         } else {
             res.status(401).end()

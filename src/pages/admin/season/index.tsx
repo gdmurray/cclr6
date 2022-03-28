@@ -358,8 +358,6 @@ const PaymentTable = ({ payments }: { payments: TeamPayment[] }) => {
         },
     ]
 
-    console.log(payments)
-
     return (
         <div>
             <h2 className="page-title-sm">Payments</h2>

@@ -369,6 +369,11 @@ const AdminTournament = ({
             },
         },
         {
+            title: 'slug',
+            dataIndex: 'slug',
+            key: 'slug',
+        },
+        {
             title: 'Actions',
             key: 'actions',
             render: (record) => {
@@ -378,6 +383,7 @@ const AdminTournament = ({
                             Actions
                         </MenuButton>
                         <MenuList>
+                            <MenuItem onClick={() => router.push(`/admin/teams/${record.id}`)}>Edit Team</MenuItem>
                             <MarkAsAction tournament_id={tId} team={record} />
                             {!record.registered && (
                                 <MenuItem onClick={() => handleRegister(record.id, tId)}>Register</MenuItem>

@@ -6,7 +6,7 @@ import { Button, FormErrorMessage, Image, Input, Tooltip, useToast } from '@chak
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import { FaQuestionCircle, FaTimes } from 'react-icons/fa'
 import { CreateTeamClient, Teams } from '@lib/models/team'
-import { useTeamForm } from '@components/teams/useTeamForm'
+import { useTeamForm } from '@components/teams/detail/useTeamForm'
 
 const url = '/team'
 export const getServerSideProps = withAuthSSR({

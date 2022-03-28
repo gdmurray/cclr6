@@ -1,10 +1,11 @@
 import React from 'react'
 import { MatchWithDate } from '@lib/season/common'
 import { ITeam } from '@lib/models/team'
-import { Box, Image, useColorMode } from '@chakra-ui/react'
+import { Box, Image, Spinner, useColorMode } from '@chakra-ui/react'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import { motion } from 'framer-motion'
 
 import dayjs from 'dayjs'
 
@@ -13,6 +14,11 @@ dayjs.extend(utc)
 dayjs.extend(advancedFormat)
 
 import { getHostName } from '@lib/utils'
+import { useSeason } from '@components/season/SeasonLayout'
+import { useRouter } from 'next/router'
+import { useLoading } from '@components/Layout/useSuspenseNavigation'
+import { getMatchDate } from '@components/analyst/match/utils'
+// import { Match } from '@lib/models/toornament'
 
 interface ScheduledMatchProps {
     match: MatchWithDate
@@ -29,11 +35,25 @@ function ignoreDaylight(tz_string: string): string {
 
 function TeamScheduleDetail({ team, match }: { team: ITeam; match: MatchWithDate }): JSX.Element {
     const { colorMode } = useColorMode()
-    if (match.report_closed) {
+    const season = useSeason()
+    const router = useRouter()
+    const { navigate, isLoading } = useLoading()
+    if (match && match.report_closed) {
+        const label = `${team.slug ?? team.id}-${match.id}`
         const teamResult = match.opponents.filter((elem) => elem.participant.custom_user_identifier === team.id)[0]
         return (
-            <Box width={{ base: 100, sm: 120 }} height={{ base: 120, sm: 140 }}>
-                <div className="schedule-score-overlay">{teamResult.score}</div>
+            <Box
+                as={motion.div}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.95 }}
+                className={'cursor-pointer'}
+                width={{ base: 100, sm: 120 }}
+                height={{ base: 120, sm: 140 }}
+                onClick={() => navigate(label, `/seasons/${season.slug}/teams/${team.slug ?? team.id}`)}
+            >
+                <div className="schedule-score-overlay">
+                    {isLoading(label) ? <Spinner className={'mt-5'} size={'lg'} /> : <>{teamResult.score}</>}
+                </div>
                 <Image
                     className="mx-auto schedule-logo-overlay"
                     src={team?.logo}
@@ -48,7 +68,15 @@ function TeamScheduleDetail({ team, match }: { team: ITeam; match: MatchWithDate
         )
     }
     return (
-        <Box width={{ base: 100, sm: 120 }} height={{ base: 120, sm: 140 }}>
+        <Box
+            as={motion.div}
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.95 }}
+            className={'cursor-pointer'}
+            width={{ base: 100, sm: 120 }}
+            height={{ base: 120, sm: 140 }}
+            onClick={() => router.push(`/seasons/${season.slug}/teams/${team.slug ?? team.id}`)}
+        >
             <Image
                 className="mx-auto"
                 src={team?.logo}
@@ -65,13 +93,6 @@ function TeamScheduleDetail({ team, match }: { team: ITeam; match: MatchWithDate
 
 export default function ScheduledMatch({ match, teams }: ScheduledMatchProps): JSX.Element {
     const [team1, team2] = match.opponents
-
-    function getMatchDate(match: MatchWithDate) {
-        if (match.scheduled_datetime == null) {
-            return match.match_date
-        }
-        return match.scheduled_datetime
-    }
 
     return (
         <div className="flex flex-row">

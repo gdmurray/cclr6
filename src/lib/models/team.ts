@@ -8,6 +8,7 @@ export interface ITeam {
     id?: string
     name: string
     short_name?: string
+    slug?: string
     logo: string
     contact_email: string
     owner: string
@@ -72,7 +73,6 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
                 .doc(team.id)
                 .collection('payments')
                 .add({ type: 'paypal', ...data })
-            console.log(paymentResult.id)
             console.log(paymentResult.get().then((result) => console.log(result.data())))
             return Promise.resolve()
         },
@@ -173,9 +173,6 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
                 status: 'REGISTERED',
                 registered: new Date().toISOString(),
             })
-            console.log(tournamentId)
-            console.log(registration)
-            // const data = await registration.get()
             return Promise.resolve(true)
         },
         unregisterForTournament: async (registrationID): Promise<boolean> => {
@@ -237,9 +234,16 @@ export function CreateTeamClient(team: ITeam, database: Firestore | any = db): T
 }
 
 export const Teams = {
-    getTeamById: async (teamId: string): Promise<ITeam | null> => {
-        const team = await db.collection('teams').doc(teamId).get()
+    getTeamById: async (teamId: string, database: Firestore | any = db): Promise<ITeam | null> => {
+        const team = await database.collection('teams').doc(teamId).get()
         return { id: team.id, ...team.data() } as ITeam
+    },
+    getTeamBySlug: async (teamSlug: string): Promise<ITeam | null> => {
+        const team = await db.collection('teams').where('slug', '==', teamSlug).get()
+        if (team.empty) {
+            return null
+        }
+        return { id: team.docs[0].id, ...team.docs[0].data() } as ITeam
     },
     getTeamByUserID: async (userId: string): Promise<ITeam | null> => {
         const teamWithOwner = await db.collection('teams').where('owner', '==', userId).get()
@@ -302,8 +306,8 @@ export const Teams = {
                 ...data,
             })
     },
-    getPlayers: (id) => {
-        return db.collection('teams').doc(id).collection('players').get()
+    getPlayers: (id, database: Firestore | any = db) => {
+        return database.collection('teams').doc(id).collection('players').get()
     },
     getPlayersCollection: (id) => {
         return db.collection('teams').doc(id)

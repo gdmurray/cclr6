@@ -2,44 +2,38 @@ import React, { useEffect, useState } from 'react'
 import { MatchWithDate } from '@lib/season/common'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import { ITeam, Teams } from '@lib/models/team'
-import Loader from '@components/Loader'
-import { Image } from '@chakra-ui/react'
-import { useRouter } from 'next/router'
+import { ITeam } from '@lib/models/team'
+import { Image, useColorMode } from '@chakra-ui/react'
 import Link from 'next/link'
 import { Opponent } from '@lib/models/toornament'
+import { getHostName } from '@lib/utils'
+import { useSeason } from '@components/season/SeasonLayout'
 
 dayjs.extend(duration)
 
 const Timer = ({ match_date }: { match_date: string }) => {
-    const [timeleft, setTimeLeft] = useState<string>()
+    const [timeLeft, setTimeLeft] = useState<string>()
+
     useEffect(() => {
-        const _timer = setTimeout(() => {
+        // const _timer = setTimeout(() => {
+        //     setTimeLeft(dayjs.duration(dayjs(match_date).diff(dayjs())).format('D[d] H[h] m[m] s[s]'))
+        // }, 1000)
+        const timer = setInterval(() => {
             setTimeLeft(dayjs.duration(dayjs(match_date).diff(dayjs())).format('D[d] H[h] m[m] s[s]'))
         }, 1000)
+        return () => clearInterval(timer)
     })
 
     return (
         <div className="text-center font-semibold text-alt py-2">
             <span>{dayjs(match_date).format('ha [EST]')} · </span>
-            <span className="text-alt-2 text-sm">Game in</span> {timeleft}
+            <span className="text-alt-2 text-sm">Game in</span> {timeLeft}
         </div>
     )
 }
 
-function PreviousMatch({
-    match,
-    teamMap,
-    slugMap,
-}: {
-    match: MatchWithDate
-    teamMap: Record<string, ITeam>
-    slugMap: Record<string, string>
-}): JSX.Element {
+function PreviousMatch({ match, teamMap }: { match: MatchWithDate; teamMap: Record<string, ITeam> }): JSX.Element {
     const [team1, team2] = match.opponents
-    const {
-        query: { teamSlug },
-    } = useRouter()
 
     function getBackground(team: Opponent): string {
         if (team.score === 2) {
@@ -51,25 +45,29 @@ function PreviousMatch({
         }
     }
 
+    const teamOne = teamMap[team1.participant.custom_user_identifier]
+    const teamTwo = teamMap[team2.participant.custom_user_identifier]
+
+    const { colorMode } = useColorMode()
+    const season = useSeason()
     return (
         <div>
             <div className="text-subtitle pb-1">{dayjs(match.match_date).format('dddd, MMMM D')}</div>
             <div className="flex flex-row justify-center space-x-4">
                 <div className="w-full bordered items-center border rounded-lg flex flex-row text-lg sm:text-xl text-main font-semibold w-2/5 justify-end">
-                    {slugMap[team1.participant.custom_user_identifier] === teamSlug ? (
-                        <span>{team1.participant.name}</span>
-                    ) : (
-                        <Link href={`/seasons/one/teams/${slugMap[team1.participant.custom_user_identifier]}`}>
-                            <span className="cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
-                                {team1.participant.name}
-                            </span>
-                        </Link>
-                    )}{' '}
+                    <Link href={`/seasons/${season.slug}/teams/${teamOne.slug ?? teamOne.id}`}>
+                        <span className="cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
+                            {team1.participant.name}
+                        </span>
+                    </Link>
                     <Image
                         className="mx-2"
                         height={25}
                         width={25}
-                        src={teamMap[team1.participant.custom_user_identifier].logo}
+                        src={teamOne.logo}
+                        fallbackSrc={`${getHostName()}/images/${
+                            colorMode === 'light' ? 'liquipedia_default_light.png' : 'liquipedia_default_dark.png'
+                        }`}
                     />
                     <div
                         className={`p-1.5 text-center bg-success rounded-r-lg h-full flex justify-center items-center  ${getBackground(
@@ -94,38 +92,29 @@ function PreviousMatch({
                         className="mx-2"
                         height={25}
                         width={25}
-                        src={teamMap[team2.participant.custom_user_identifier].logo}
+                        src={teamTwo.logo}
+                        fallbackSrc={`${getHostName()}/images/${
+                            colorMode === 'light' ? 'liquipedia_default_light.png' : 'liquipedia_default_dark.png'
+                        }`}
                     />
-                    {slugMap[team2.participant.custom_user_identifier] === teamSlug ? (
-                        <span>{team2.participant.name}</span>
-                    ) : (
-                        <Link href={`/seasons/one/teams/${slugMap[team2.participant.custom_user_identifier]}`}>
-                            <span className="cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
-                                {team2.participant.name}
-                            </span>
-                        </Link>
-                    )}
+                    <Link href={`/seasons/${season.slug}/teams/${teamTwo.slug ?? teamTwo.id}`}>
+                        <span className="cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
+                            {team2.participant.name}
+                        </span>
+                    </Link>
                 </div>
             </div>
         </div>
     )
 }
 
-function UpcomingMatch({
-    match,
-    teamMap,
-    slugMap,
-}: {
-    match: MatchWithDate
-    teamMap: Record<string, ITeam>
-    slugMap: Record<string, string>
-}): JSX.Element {
+function UpcomingMatch({ match, teamMap }: { match: MatchWithDate; teamMap: Record<string, ITeam> }): JSX.Element {
     const [team1, team2] = match.opponents
 
-    const {
-        query: { teamSlug },
-    } = useRouter()
-
+    const teamOne = teamMap[team1.participant.custom_user_identifier]
+    const teamTwo = teamMap[team2.participant.custom_user_identifier]
+    const { colorMode } = useColorMode()
+    const season = useSeason()
     return (
         <div>
             <div className="text-subtitle pb-1">{dayjs(match.match_date).format('dddd, MMMM D')}</div>
@@ -133,20 +122,21 @@ function UpcomingMatch({
                 <div className="bordered border rounded-lg px-4 pt-4 flex flex-col">
                     <div className="flex flex-row w-full space-x-1 sm:space-x-6 justify-center ">
                         <div className="flex flex-row text-lg sm:text-xl text-main font-semibold w-2/5 justify-end">
-                            {slugMap[team1.participant.custom_user_identifier] === teamSlug ? (
-                                <span>{team1.participant.name}</span>
-                            ) : (
-                                <Link href={`/seasons/one/teams/${slugMap[team1.participant.custom_user_identifier]}`}>
-                                    <span className="cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
-                                        {team1.participant.name}
-                                    </span>
-                                </Link>
-                            )}{' '}
+                            <Link href={`/seasons/${season.slug}/teams/${teamOne.slug ?? teamOne.id}`}>
+                                <span className="cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
+                                    {team1.participant.name}
+                                </span>
+                            </Link>
                             <Image
                                 className="ml-2"
                                 height={25}
                                 width={25}
-                                src={teamMap[team1.participant.custom_user_identifier].logo}
+                                src={teamOne.logo}
+                                fallbackSrc={`${getHostName()}/images/${
+                                    colorMode === 'light'
+                                        ? 'liquipedia_default_light.png'
+                                        : 'liquipedia_default_dark.png'
+                                }`}
                             />
                         </div>
                         <div className="text-lg font-semibold text-center text-alt-2 w-8">vs</div>
@@ -155,20 +145,21 @@ function UpcomingMatch({
                                 className="mr-2"
                                 height={25}
                                 width={25}
-                                src={teamMap[team2.participant.custom_user_identifier].logo}
+                                src={teamTwo.logo}
+                                fallbackSrc={`${getHostName()}/images/${
+                                    colorMode === 'light'
+                                        ? 'liquipedia_default_light.png'
+                                        : 'liquipedia_default_dark.png'
+                                }`}
                             />
-                            {slugMap[team2.participant.custom_user_identifier] === teamSlug ? (
-                                <span>{team2.participant.name}</span>
-                            ) : (
-                                <Link href={`/seasons/one/teams/${slugMap[team2.participant.custom_user_identifier]}`}>
-                                    <span className="cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
-                                        {team2.participant.name}
-                                    </span>
-                                </Link>
-                            )}
+                            <Link href={`/seasons/${season.slug}/teams/${teamTwo.slug ?? teamTwo.id}`}>
+                                <span className="cursor-pointer hover:underline hover:text-primary duration-150 transition-colors">
+                                    {team2.participant.name}
+                                </span>
+                            </Link>
                         </div>
                     </div>
-                    <Timer match_date={match.match_date} />
+                    <Timer key={match.id} match_date={match.match_date} />
                 </div>
             </div>
         </div>
@@ -178,12 +169,10 @@ function UpcomingMatch({
 const Matches = ({
     upcoming_matches,
     previous_matches,
-    slugMap,
     teamMap,
 }: {
     upcoming_matches: MatchWithDate[]
     previous_matches: MatchWithDate[]
-    slugMap: Record<string, string>
     teamMap: Record<string, ITeam>
 }): JSX.Element => {
     return (
@@ -193,7 +182,7 @@ const Matches = ({
                 {upcoming_matches.length > 0 ? (
                     <div className="flex flex-col space-y-4">
                         {upcoming_matches.map((match) => {
-                            return <UpcomingMatch key={match.id} match={match} teamMap={teamMap} slugMap={slugMap} />
+                            return <UpcomingMatch key={match.id} match={match} teamMap={teamMap} />
                         })}
                     </div>
                 ) : (
@@ -207,7 +196,7 @@ const Matches = ({
                 {previous_matches.length > 0 ? (
                     <div className="flex flex-col space-y-4">
                         {previous_matches.map((match) => {
-                            return <PreviousMatch key={match.id} match={match} teamMap={teamMap} slugMap={slugMap} />
+                            return <PreviousMatch key={match.id} match={match} teamMap={teamMap} />
                         })}
                     </div>
                 ) : (

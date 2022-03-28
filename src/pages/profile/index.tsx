@@ -22,7 +22,6 @@ const Profile = () => {
     if (loading || !user) {
         return <Loader text={'Loading Profile'} />
     }
-    console.log('USER: ', user)
     const usersTwitter = (): TwitterProvider => {
         if (user) {
             if ('twitter.com' in user.providers) {

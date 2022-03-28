@@ -3,13 +3,13 @@ import TeamLayout from '@components/teams/layout'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
 import { FaTrophy } from 'react-icons/fa'
 import EmptyState from '@components/EmptyState'
-import { Season, SeasonTwoSplit1 } from '@lib/season'
+import { defaultSeason } from '@lib/season'
 
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
-import SeasonComponent from '@components/teams/seasons/Season'
+import SeasonComponent from '@components/teams/registration/Season'
 import { TeamContext } from '@components/teams/teamContext'
-import { PaymentProvider } from '@components/teams/PaymentContext'
+import { PaymentProvider } from '@components/teams/registration/payment/PaymentContext'
 
 dayjs.extend(LocalizedFormat)
 
@@ -18,16 +18,7 @@ const url = '/team/registration'
 export const getServerSideProps = withAuthSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
     referral: url,
-})(async () => {
-    const season = SeasonTwoSplit1
-    delete season.BASE_MATCH
-    delete season.WEEK_FORMATTER
-    return {
-        props: {
-            seasons: [season],
-        },
-    }
-})
+})({})
 
 // Different States
 /*
@@ -37,11 +28,8 @@ First check if EVENT has ended
     3. Registration has closed
  */
 
-interface IRegistration {
-    seasons: Season[]
-}
-
-function Registration({ seasons }: IRegistration): JSX.Element {
+function Registration(): JSX.Element {
+    const seasons = [defaultSeason]
     const teamContext = useContext(TeamContext)
     const { team } = teamContext
     return (

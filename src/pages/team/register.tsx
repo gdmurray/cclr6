@@ -1,6 +1,6 @@
 import React from 'react'
 import { AuthAction, withAuthSSR } from '@lib/withSSRAuth'
-import RegisterTeamForm from '@components/teams/registerTeamForm'
+import RegisterTeamForm from '@components/teams/detail/registerTeamForm'
 import EmptyState from '@components/EmptyState'
 import { FaEnvelope } from 'react-icons/fa'
 import { adminFireStore } from '@lib/firebase/admin'

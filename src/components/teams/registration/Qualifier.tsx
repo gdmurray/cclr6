@@ -1,5 +1,5 @@
 import { CreateTournamentClient, Tournament } from '@lib/models/tournament'
-import { IEligibility } from '@components/teams/seasons/Eligibility'
+import { IEligibility } from '@components/teams/registration/Eligibility'
 import React, { useContext, useEffect, useState } from 'react'
 import { TeamContext } from '@components/teams/teamContext'
 import { CreateTeamClient, IRegistration } from '@lib/models/team'
@@ -8,8 +8,8 @@ import { useRouter } from 'next/router'
 import { Button, Tooltip, useToast } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import { FaCalendarAlt, FaLock, FaLockOpen, FaTimes, FaTrophy, FaUsers } from 'react-icons/fa'
-import { PaymentContext, PurchaseTarget } from '@components/teams/PaymentContext'
-import { useUnregister } from '@components/teams/seasons/useUnregister'
+import { PaymentContext, PurchaseTarget } from '@components/teams/registration/payment/PaymentContext'
+import { useUnregister } from '@components/teams/registration/useUnregister'
 
 type QualifierProps = {
     qualifier: Tournament

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { useSuspenseNavigation } from '@components/Layout/useSuspenseNavigation'
+import { useLoading, useSuspenseNavigation } from '@components/Layout/useSuspenseNavigation'
 
 export interface Tab {
     label: string | React.ReactNode
@@ -20,7 +20,7 @@ interface TabsNavigator {
 export default function useTabsNavigator({ tabs, baseUrl }: { tabs: Tab[]; baseUrl?: string }): TabsNavigator {
     const [tabIndex, setTabIndex] = useState<number>(0)
     const { pathname, events, query } = useRouter()
-    const { navigate, isLoading } = useSuspenseNavigation()
+    const { navigate, isLoading } = useLoading()
 
     function withBase(path: string): string {
         if (baseUrl && baseUrl !== path) {
@@ -56,11 +56,8 @@ export default function useTabsNavigator({ tabs, baseUrl }: { tabs: Tab[]; baseU
 
     useEffect(() => {
         const activeTab = tabs[tabIndex]
-        // console.log('Active: ', activeTab)
-        // console.log(activeTab.path, withBase(activeTab.path), getPathName().pathname)
         if (withBase(activeTab.path) !== getPathName().pathname) {
             const tab = tabs.map((e) => withBase(e.path)).indexOf(getPathName().pathname)
-            // console.log('Tab: ', tab)
             if (tab !== -1) {
                 setTabIndex(tab)
             }

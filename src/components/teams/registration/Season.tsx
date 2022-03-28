@@ -3,14 +3,14 @@ import React, { useContext } from 'react'
 // import { Button, Tooltip } from '@chakra-ui/react'
 import { Season } from '@lib/season'
 import { TeamContext } from '@components/teams/teamContext'
-import useEligibility from '@components/teams/seasons/Eligibility'
+import useEligibility from '@components/teams/registration/Eligibility'
 import { Tournament } from '@lib/models/tournament'
 import Loader from '@components/Loader'
-import PaymentForm from '@components/teams/Payment'
+import PaymentForm from '@components/teams/registration/payment/Payment'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import dayjs from 'dayjs'
 import { Qualifier } from './Qualifier'
-import { PaymentContext } from '@components/teams/PaymentContext'
+import { PaymentContext } from '@components/teams/registration/payment/PaymentContext'
 
 dayjs.extend(LocalizedFormat)
 
