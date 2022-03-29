@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import SeasonLayout from '@components/season/SeasonLayout'
 import { GetStaticPathsResult, GetStaticPropsResult } from 'next'
-import { getSeasonPaths } from '@lib/season/common'
+import { getCurrentSeason, getSeasonPaths } from '@lib/season/common'
 import { getYoutubeClient } from '@lib/api/youtube'
 import { Image } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
@@ -10,7 +10,8 @@ import dayjs from 'dayjs'
 
 dayjs.extend(relativeTime)
 
-export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
+export async function getStaticProps({ params }): Promise<GetStaticPropsResult<any>> {
+    const season = getCurrentSeason(params)
     const youtubeClient = await getYoutubeClient()
     const response = await youtubeClient.playlistItems.list({
         part: ['id,snippet,contentDetails,status'],
@@ -23,6 +24,11 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<any>> {
     return {
         props: {
             vods: response.data.items,
+            SEO: {
+                title: `${season.TITLE} Vods`,
+                image: null,
+                url: `${season.BASE_URL}/vods`,
+            },
         },
         revalidate: 3600,
     }
@@ -70,7 +76,7 @@ const SeasonVods = ({ vods = [] }: { vods: any[] }): JSX.Element => {
                         return dayjs(a.snippet.publishedAt).isAfter(dayjs(b.snippet.publishedAt)) ? -1 : 1
                     })
                     .map((video) => (
-                        <Video video={video} />
+                        <Video key={video.id} video={video} />
                     ))}
             </div>
         </div>
