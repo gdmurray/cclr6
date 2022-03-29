@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { useLoading, useSuspenseNavigation } from '@components/Layout/useSuspenseNavigation'
+import { useLoading } from '@components/Layout/useSuspenseNavigation'
 
 export interface Tab {
     label: string | React.ReactNode
